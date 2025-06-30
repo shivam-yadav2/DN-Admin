@@ -584,7 +584,7 @@ const Services = () => {
                                         placeholder="Enter service description"
                                     />
                                 </div>
-                                <div className="space-y-2">
+                                <div className="space-y-2 overflow-hidden">
                                     <Label
                                         htmlFor="images"
                                         className="text-sm font-semibold text-gray-700"
@@ -603,15 +603,15 @@ const Services = () => {
                                         }
                                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                                     />
-                                    {serviceFormData.images && (
-                                        <p className="text-sm text-gray-500 bg-gray-50 p-2 rounded">
+                                    {/* {serviceFormData.images && (
+                                        <p className="text-sm text-gray-500 bg-gray-50 p-2 rounded w-fit">
                                             Current:{" "}
                                             {typeof serviceFormData.images ===
                                             "string"
                                                 ? serviceFormData.images
                                                 : serviceFormData.images.name}
                                         </p>
-                                    )}
+                                    )} */}
                                 </div>
                             </div>
                             <DialogFooter className="gap-2">

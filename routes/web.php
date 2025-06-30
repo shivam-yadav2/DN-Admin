@@ -22,6 +22,9 @@ Route::get('/services', function () {
 Route::get('/dashboard', function () {
     return Inertia::render('Admin/Dashboard');
 })->name('dashboard');
+Route::get('/leads', function () {
+    return Inertia::render('Admin/Enquiry/Leads');
+})->name('leads');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
