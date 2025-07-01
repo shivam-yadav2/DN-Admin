@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\ServiceController;
+use App\Http\Controllers\API\SubServiceController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -16,6 +17,11 @@ Route::get('/test', function () {
 // Service routes
 Route::get('/get_service', [ServiceController::class, 'index']);
 Route::post('/post_service', [ServiceController::class, 'store']);
+
+// SubService routes
+Route::get('/get_subservice', [SubServiceController::class, 'index']);
+Route::post('/post_subservice', [SubServiceController::class, 'store']);
+Route::get('/get_subserviceId/{serviceId}', [SubServiceController::class, 'getByServiceId']);
 
 
 

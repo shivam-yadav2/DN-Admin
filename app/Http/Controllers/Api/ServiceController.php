@@ -13,15 +13,34 @@ class ServiceController extends Controller
     // GET all
     public function index()
     {
-       $services = Service::all()->map(function ($service){
+        // To only get the services 522
+    //    $services = Service::all()->map(function ($service){
+    //         return [
+    //             'id' => $service->id,
+    //             'name' => $service->name,
+    //             'description' => $service->description,
+    //             'image' => asset('assets/images/' . $service->image), // Assuming image is stored in public/assets/images
+    //         ];
+    //     });
+ 
+    // Get all services with their subservices
+        $services = Service::with('subservices')->get()->map(function ($service) {
             return [
                 'id' => $service->id,
                 'name' => $service->name,
                 'description' => $service->description,
                 'image' => asset('assets/images/' . $service->image), // Assuming image is stored in public/assets/images
+
+                'subservices' => $service->subservices->map(function ($subService) {
+                    return [
+                        'id' => $subService->id,
+                        'name' => $subService->name,
+                        'description' => $subService->description,
+                        'image' => asset('assets/images/subservices/' . $subService->image), // Assuming subservice images are stored in public/assets/images/subservices
+                    ];
+                }),
             ];
         });
-
         return response()->json($services, 200);
     }
 
