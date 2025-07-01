@@ -15,7 +15,7 @@ Route::get('/test', function () {
 
 // Service routes
 Route::get('/get_service', [ServiceController::class, 'index']);
-Route::post('/services', [ServiceController::class, 'store']);
+Route::post('/post_service', [ServiceController::class, 'store']);
 
 
 

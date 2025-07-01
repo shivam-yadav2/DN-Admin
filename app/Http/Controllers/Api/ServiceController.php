@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Service; // Assuming you have a Service model
+use App\Models\Service; //  Service model
 
 
 class ServiceController extends Controller
@@ -28,26 +28,31 @@ class ServiceController extends Controller
     // POST
     public function store(Request $request)
     {
+        // Validate request
         $request->validate([
-            'name' => 'required',
-            'description' => 'required',
-            'image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'name' => 'required|string|max:255|unique:services,name',
+            'description' => 'required|string|max:255|',
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        // Save image to public/assets/images
+        // Handle image upload
         $imageName = null;
         if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->image->extension();
-            $request->image->move(public_path('assets/images'), $imageName);
+            $imageName = time() . '.' . $request->file('image')->getClientOriginalExtension();
+            $request->file('image')->move(public_path('assets/images'), $imageName);
         }
 
-        // Save data
-        Service::create([
+        // Create new service record
+        $service = Service::create([
             'name' => $request->name,
             'description' => $request->description,
             'image' => $imageName,
         ]);
 
-        return response()->json('Service added', 200);
+        return response()->json([
+            'message' => 'Service added successfully.',
+            'data' => $service,
+        ], 201);
     }
+
 }
