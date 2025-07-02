@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Service; // Assuming you have a Service model
+use App\Models\Service; //  Service model
 
 
 class ServiceController extends Controller
@@ -13,41 +13,65 @@ class ServiceController extends Controller
     // GET all
     public function index()
     {
-       $services = Service::all()->map(function ($service){
+        // To only get the services 522
+    //    $services = Service::all()->map(function ($service){
+    //         return [
+    //             'id' => $service->id,
+    //             'name' => $service->name,
+    //             'description' => $service->description,
+    //             'image' => asset('assets/images/' . $service->image), // Assuming image is stored in public/assets/images
+    //         ];
+    //     });
+ 
+    // Get all services with their subservices
+        $services = Service::with('subservices')->get()->map(function ($service) {
             return [
                 'id' => $service->id,
                 'name' => $service->name,
                 'description' => $service->description,
                 'image' => asset('assets/images/' . $service->image), // Assuming image is stored in public/assets/images
+
+                'subservices' => $service->subservices->map(function ($subService) {
+                    return [
+                        'id' => $subService->id,
+                        'name' => $subService->name,
+                        'description' => $subService->description,
+                        'image' => asset('assets/images/subservices/' . $subService->image), // Assuming subservice images are stored in public/assets/images/subservices
+                    ];
+                }),
             ];
         });
-
         return response()->json($services, 200);
     }
 
     // POST
     public function store(Request $request)
     {
+        // Validate request
         $request->validate([
-            'name' => 'required',
-            'description' => 'required',
-            'image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'name' => 'required|string|max:255|unique:services,name',
+            'description' => 'required|string|max:255|',
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        // Save image to public/assets/images
+        // Handle image upload
         $imageName = null;
         if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->image->extension();
-            $request->image->move(public_path('assets/images'), $imageName);
+            $imageName = time() . '.' . $request->file('image')->getClientOriginalExtension();
+            $request->file('image')->move(public_path('assets/images'), $imageName);
         }
 
-        // Save data
-        Service::create([
+        // Create new service record
+        $service = Service::create([
             'name' => $request->name,
             'description' => $request->description,
             'image' => $imageName,
         ]);
 
-        return response()->json('Service added', 200);
+        return response()->json([
+            'message' => 'Service added successfully.',
+            'data' => $service,
+        ], 201);
     }
+
 }
