@@ -35,11 +35,14 @@ const Services = ({ services }) => {
 
     // Form for adding a service
     const { flash } = usePage().props; // Access flash messages
+    const page = usePage()
     const { data, setData, post, errors, reset } = useForm({
         name: "",
         description: "",
         image: null,
     });
+
+    console.log(page)
 
     const subServiceForm = useForm({
         name: "",
@@ -49,6 +52,8 @@ const Services = ({ services }) => {
     });
 
     console.log(subServiceForm);
+
+    
 
     // State for modals
     const [selectedService, setSelectedService] = useState(null);

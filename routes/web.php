@@ -27,6 +27,11 @@ Route::get('/services', [ServiceController::class, 'index'])->name('services');
 
 Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
 Route::post('/subservices', [SubServiceController::class, 'store'])->name('subservices.store');
+
+Route::post('/services/{id}', [ServiceController::class, 'update'])->name('services.update');
+Route::post('/services/{id}', [ServiceController::class, 'destroy'])->name('services.destroy');
+
+
 // Route::get('/services/create', [ServiceController::class, 'create'])->name('services.create');
 
 Route::get('/', function () {
