@@ -73,4 +73,22 @@ class SubServiceController extends Controller
 
         return response()->json($subServices, 200);
     }
+
+    //Delete a subservice
+    public function destroy($id)
+    {
+        $subService = SubService::find($id);
+
+        if (!$subService) {
+            return response()->json(['message' => 'SubService not found.'], 404);
+        }
+
+        // Soft delete the subservice
+        $subService->is_deleted = true; // Assuming you have an 'is_deleted' column for soft deletion
+        $subService->save();
+
+        return response()->json(['message' => 'SubService deleted successfully.'], 200);
+    }
+
+   
 }

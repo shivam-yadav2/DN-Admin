@@ -11,7 +11,8 @@ class SubService extends Model
         'service_id',
         'name',
         'description',
-        'image'
+        'image' ,
+        'is_deleted'  
     ];
     public $timestamps = false;
     protected $table = 'subservices'; // Specify the table name if it differs from the default naming convention
