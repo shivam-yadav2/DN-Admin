@@ -21,7 +21,10 @@ class SubServiceController extends Controller
             ];
         });
 
-        return response()->json($subServices, 200);
+        // return response()->json($subServices, 200);
+        return Inertia::render('Admin/Services/Services', [
+            'sub_services' => $subServices
+        ]);
     }
     // POST
     public function store(Request $request)
@@ -48,10 +51,11 @@ class SubServiceController extends Controller
             'image' => $imageName,
         ]);
 
-        return response()->json([
-            'message' => 'SubService added successfully.',
-            'data' => $subService,
-        ], 201);
+        // return response()->json([
+        //     'message' => 'SubService added successfully.',
+        //     'data' => $subService,
+        // ], 201);
+        return redirect()->route('services')->with('message', 'subService added successfully.');
     }
 
     // Get all subservices by service ID
