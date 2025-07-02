@@ -37,4 +37,46 @@ class EnquiryController extends Controller
             'data' => $enquiry,
         ], 201);
     }
+
+    //Destroy an enquiry
+  public function destroy($id)
+    {
+        $enquiry = Enquiry::find($id);
+
+        if (!$enquiry) {
+        return response()->json(['message' => 'Enquiry not found.'], 404);
+        }
+
+        // Soft delete the enquiry
+        $enquiry->isDeleted = true;
+        $enquiry->save();
+
+        return response()->json(['message' => 'Enquiry deleted successfully.'], 200);
+    }
+
+    //Update an enquiry status
+    public function updateStaus(Request $request, $id)
+    {
+        $enquiry = Enquiry::find($id);
+
+        // Validate request
+        $request->validate([
+            'status' => 'required|string|in:new_lead,contacted,converted,lost', // Assuming status can be one of these values
+        ]);
+
+         if (!$enquiry) {
+            return response()->json(['message' => 'Enquiry not found.'], 404);
+        }
+
+         // Update enquiry status
+        $enquiry->status = $request->status;
+        $enquiry->save();
+
+        return response()->json
+        (['message' => 'Enquiry status updated successfully.', 
+        'data' => $enquiry
+    ], 200);
+    }
+    
+
 }

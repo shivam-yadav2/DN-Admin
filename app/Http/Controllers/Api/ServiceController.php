@@ -74,4 +74,54 @@ class ServiceController extends Controller
         ], 201);
     }
 
+    //Update a service
+    public function update(Request $request, $id)
+    {
+        // Validate request
+        $request->validate([
+            'name' => 'required|string|max:255|unique:services,name,' . $id,
+            'description' => 'required|string|max:255',
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        // Find the service
+        $service = Service::find($id);
+        if (!$service) {
+            return response()->json(['message' => 'Service not found.'], 404);
+        }
+
+        // Handle image upload if provided
+        if ($request->hasFile('image')) {
+            $imageName = time() . '.' . $request->file('image')->getClientOriginalExtension();
+            $request->file('image')->move(public_path('assets/images'), $imageName);
+            $service->image = $imageName;
+        }
+
+        // Update service details
+        $service->name = $request->name;
+        $service->description = $request->description;
+        $service->save();
+
+        return response()->json([
+            'message' => 'Service updated successfully.',
+            'data' => $service,
+        ], 200);
+    }
+
+    //Delete a service
+    public function destroy($id)
+    {
+        $service = Service::find($id);
+
+        if (!$service) {
+            return response()->json(['message' => 'Service not found.'], 404);
+        }
+
+        // Soft delete the service
+        $service->is_deleted = true; // Assuming you have an 'is_deleted' column for soft deletion
+        $service->save();
+
+        return response()->json(['message' => 'Service deleted successfully.'], 200);
+    }
+
 }

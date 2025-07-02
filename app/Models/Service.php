@@ -11,7 +11,8 @@ class Service extends Model
     [
         'name' ,
         'description' ,
-        'image'
+        'image' ,
+        'is_deleted'  
     ];
     public $timestamps = false;
 
