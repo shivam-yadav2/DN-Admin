@@ -315,18 +315,18 @@ const Leads = () => {
                                 className="flex items-center gap-1 py-1"
                             >
                                 <Filter className="h-3 w-3" />
-                                Course Inquiries Only
+                                Digital Nawab Inquiries Only
                             </Badge>
                         )}
                     </div>
-                    <Button
+                    {/* <Button
                         onClick={handleLogout}
                         variant="outline"
                         className="flex items-center gap-2"
                     >
                         <LogOut className="h-4 w-4" />
                         Logout
-                    </Button>
+                    </Button> */}
                 </div>
 
                 {error && (
@@ -339,7 +339,7 @@ const Leads = () => {
                 )}
 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <StatCard
                         icon={<Users />}
                         title="Total Students"
@@ -364,12 +364,11 @@ const Leads = () => {
                         value={dashboardData.upcomingAppointments}
                         color="amber"
                     />
-                </div>
-
+                </div> */}
                 {/* Enquiry Table */}
                 <Card className="shadow-sm">
                     <CardHeader className="bg-gray-50 border-b">
-                        <CardTitle>Course Enrollment Inquiries</CardTitle>
+                        <CardTitle>Digital Nawab Inquiries</CardTitle>
                     </CardHeader>
                     <CardContent className="p-0">
                         {filteredEnquiries.length === 0 ? (
@@ -386,7 +385,7 @@ const Leads = () => {
                                         <TableHead>City</TableHead>
                                         {showCourseCategory && (
                                             <TableHead>
-                                                Course Category
+                                                Service Category
                                             </TableHead>
                                         )}
                                         <TableHead>Services</TableHead>
