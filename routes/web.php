@@ -15,7 +15,7 @@ use Inertia\Inertia;
 //         'phpVersion' => PHP_VERSION,
 //     ]);
 // });
-
+ 
 Route::get('/services', function () {
     return Inertia::render('Admin/Services/Services');
 })->name('services');
@@ -33,10 +33,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/test-image', function () {
-    $service = Service::find(1); // change 1 to any existing ID in your DB
-    return view('test-image', compact('service'));
-});
+// Route::get('/test-image', function () {
+//     $service = Service::find(1); // change 1 to any existing ID in your DB
+//     return view('test-image', compact('service'));
+// });
 
 
 require __DIR__.'/auth.php';
