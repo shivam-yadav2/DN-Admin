@@ -34,3 +34,5 @@ Route::delete('/delete_enquiry/{id}', [EnquiryController::class, 'destroy']);
 Route::put('/update_enquiryStatus/{id}', [EnquiryController::class, 'updateStaus']);
 
 
+
+
