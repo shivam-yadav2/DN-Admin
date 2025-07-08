@@ -7,22 +7,14 @@ use Illuminate\Http\Request;
 use App\Models\Service; //  Service model
 
 
+
 class ServiceController extends Controller
 {
     
     // GET all
     public function index()
     {
-        // To only get the services 522
-    //    $services = Service::all()->map(function ($service){
-    //         return [
-    //             'id' => $service->id,
-    //             'name' => $service->name,
-    //             'description' => $service->description,
-    //             'image' => asset('assets/images/' . $service->image), // Assuming image is stored in public/assets/images
-    //         ];
-    //     });
- 
+       
     // Get all services with their subservices
         $services = Service::with('subservices')->get()->map(function ($service) {
             return [
@@ -41,7 +33,11 @@ class ServiceController extends Controller
                 }),
             ];
         });
-        return response()->json($services, 200);
+        // return response()->json($services, 200);
+        // Render the React component with services data
+        return Inertia::render('Admin/Services/Services', [
+            'services' => $services
+        ]);
     }
 
     // POST
@@ -68,10 +64,13 @@ class ServiceController extends Controller
             'image' => $imageName,
         ]);
 
-        return response()->json([
-            'message' => 'Service added successfully.',
-            'data' => $service,
-        ], 201);
+        // return response()->json([
+        //     'message' => 'Service added successfully.',
+        //     'data' => $service,
+        // ], 201);
+
+        // Redirect back with success message
+    return redirect()->route('services')->with('message', 'Service added successfully.');
     }
 
     //Update a service

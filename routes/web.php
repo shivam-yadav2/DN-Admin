@@ -4,8 +4,10 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
- use App\Http\Controllers\Service\ServiceController;
+
  use App\Models\Service;
+use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\SubServiceController;
 
 // Route::get('/', function () {
 //     return Inertia::render('Welcome', [
@@ -16,11 +18,23 @@ use Inertia\Inertia;
 //     ]);
 // });
  
-Route::get('/services', function () {
-    return Inertia::render('Admin/Services/Services');
-})->name('services');
 
-Route::get('/dashboard', function () {
+// Route::get('/services', function () {
+//     return Inertia::render('Admin/Services/Services');
+// })->name('services');
+
+Route::get('/services', [ServiceController::class, 'index'])->name('services');
+
+Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
+Route::post('/subservices', [SubServiceController::class, 'store'])->name('subservices.store');
+
+Route::post('/services/{id}', [ServiceController::class, 'update'])->name('services.update');
+Route::post('/services/{id}', [ServiceController::class, 'destroy'])->name('services.destroy');
+
+
+// Route::get('/services/create', [ServiceController::class, 'create'])->name('services.create');
+
+Route::get('/', function () {
     return Inertia::render('Admin/Dashboard');
 })->name('dashboard');
 Route::get('/leads', function () {
