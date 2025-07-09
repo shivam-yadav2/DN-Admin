@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\api\vision_missioncontroller;
+use App\Http\Controllers\API\TechnologyController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\ServiceController;
@@ -32,7 +34,13 @@ Route::get('/get_enquiry', [EnquiryController::class, 'index']);
 Route::post('/post_enquiry', [EnquiryController::class, 'store']);
 Route::delete('/delete_enquiry/{id}', [EnquiryController::class, 'destroy']);
 Route::put('/update_enquiryStatus/{id}', [EnquiryController::class, 'updateStaus']);
-
+Route::post('add-vision',[vision_missioncontroller::class,'store']);
+Route::get('show-vision',[vision_missioncontroller::class,'show']);
+Route::put('/updatevision/{id}',[vision_missioncontroller::class,'updatevision']);
+Route::delete('/deletevision/{id}',[vision_missioncontroller::class,'deletevision']);
+Route::post('addtech',[TechnologyController::class,'addtech']);
+Route::delete('deletetech/{id}',[TechnologyController::class,'deletetech']);
+Route::put('updatetech/{id}',[TechnologyController::class,'updatetech']);
 
 
 
