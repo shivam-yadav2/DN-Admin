@@ -19,7 +19,7 @@ class Enquiry extends Model
         'status'
     ];
     public $timestamps = true; // Enable timestamps for created_at and updated_at
-    protected $table = 'enquiries'; // Specify the table name if it differs from the
+    protected $table = 'enquiries'; // Specify the table name if it differs
 
     //Add relationships
     //One to

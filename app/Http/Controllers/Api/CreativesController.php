@@ -31,8 +31,8 @@ class CreativesController extends Controller
             return response()->json(['message' => 'Image file is required.'], 400);
          }
 
-         //Read imag and check orientation
-         $manager = new ImageManager(new GdDriver()); // Ensure you have the GD driver installed
+         //Read image and check orientation
+         $manager = new ImageManager(new GdDriver()); 
          $image = $manager->read($request->file('image'));
 
          $width = $image->width(); // Get image width
@@ -134,5 +134,6 @@ class CreativesController extends Controller
             'data' => $creative,
         ], 200);
     }
-
+    
 }
+

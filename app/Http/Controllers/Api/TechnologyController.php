@@ -5,67 +5,97 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\technology;
+use Intervention\Image\ImageManager;            //Ensure you have intervention image installed
+use Intervention\Image\Drivers\GD\Driver as GdDriver;       //Import GD driver for image proceesing
 
 class TechnologyController extends Controller
 {
-    public function addtech(Request $request)
+
+    //Get all technologies
+    public function index()
+    {
+        $technologies = technology::all();
+        return response()->json($technologies, 200);
+    }
+
+    //Store
+    public function store(Request $request)
     {
         $request->validate([
-            'img' => 'required |image|mimes:webp|max:500',
-            'heading' => 'required',
+            'img' => 'required|image|mimes:jpg,jpeg,png|max:512',
+            'heading' => 'required|string|max:255',
         ]);
 
-        if ($request->hasFile('img')) {
-            $image = $request->file('img');
-            $imgname = $image->getClientOriginalName();
-            $image->move('assets/image/technology', $imgname);
-            // $data->img=$imgname;
+        //Check if image file is present in th request
+        if(!$request->hasFile('img'))
+        {
+            return response()->json(['message' => 'Image file is required'
+            ], 400);
         }
 
-        $data = technology::create([
-            'img' => $imgname,
+        //Create an instance of ImageManager with GdDriver
+        $manager = new ImageManager(new GdDriver());
+        $image = $manager->read($request->file('img'));     //Read and Manipulate the image
+
+        //Read the image to 200 x 200(square) and convert to webp
+        $image->resize(200, 200);
+
+        $webpName = time() . '.webp';
+        $webpPath = public_path('assets/technology/' . $webpName);
+        $image->toWebp(75)->save($webpPath);
+
+        //Save technology to the database
+        $technology = technology::create([
+            'img' => $webpName,
             'heading' => $request->heading,
         ]);
 
         return response()->json([
-            'msg' => 'Data added successfully',
-            'data' => $data,
-        ]);
-    }
+            'message' => 'Technology created successfully',
+            'data' => $technology,
+        ], 201); }
 
 
-    public function deletetech($id)
+        //Delete method
+        public function delete($id)
     {
-        $info = technology::find($id);
-        if (!$info) {
+        $technology = technology::find($id);
+
+        if (!$technology) {
             return response()->json(
                 [
-                    'data' => "data not found"
-                ],
-                404
+                    'data' => "Technology not found"
+                ], 404
             );
         }
-        $info->delete();
+
+        //delete image file
+        if($technology->img && file_exists(public_path('assets/technology/' . $technology->img))){
+            unlink(public_path('assets/technology/' . $technology->img));
+        }
+
+        $technology->delete();
         return response()->json([
-            'data' => "data deleted successfully",
+            'message' => "Technology deleted successfully",
         ], 200);
     }
 
-
-    public function updatetech(Request $request, $id)
+    //Update method
+    public function update(Request $request, $id)
     {
-        $data = technology::find($id);
+        $technology = technology::find($id);
         
-        if (!$data) {
+        if (!$technology) {
             return response()->json([
-                'msg' => 'Data not found',
+                'message' => 'Technology not found',
             ], 404);
         }
     
+        //Validate inputs
         $request->validate([
+             'img' => 'required|image|mimes:jpg,png,jpeg|max:512',
             'heading' => 'required',
-            'img' => 'nullable|image|mimes:webp|max:500',
-        ]);
+         ]);
     
         $updateData = [
             'heading' => $request->heading,
@@ -73,19 +103,29 @@ class TechnologyController extends Controller
     
     
         if ($request->hasFile('img')) {
-            $image = $request->file('img');
-            $imgname = time() . '_' . $image->getClientOriginalName();
-            $image->move(public_path('assets/image/technology'), $imgname);
-            $updateData['img'] = $imgname;
+            // Delete old image if it exists
+            if ($technology->img && file_exists(public_path('assets/technology/' . $technology->img))) {
+                unlink(public_path('assets/technology/' . $technology->img));
+            }
+
+            //Process new image
+        $manager = new ImageManager(new GdDriver());
+        $image = $manager->read($request->file('img'));
+        $image->resize(200, 200);
+
+          $webpName = time() . '.webp';
+          $webpPath = public_path('assets/technology/' . $webpName);
+          $image->toWebp(75)->save($webpPath);
+
+          $updateData['img'] = $webpName;
         }
     
-        $data->update($updateData);
+        $technology->update($updateData);
     
         return response()->json([
-            'msg' => 'Data updated successfully',
-            'data' => $data,
-        ]);
+            'message' => 'Technology updated successfully',
+            'data' => $technology,
+        ], 200);
     }
-    
-    }
+}
 

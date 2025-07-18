@@ -10,6 +10,8 @@ use App\Http\Controllers\API\EnquiryController;
 use App\Http\Controllers\API\HomeAboutController;
 use App\Http\Controllers\API\CreativesController;
 use App\Http\Controllers\API\FAQController;
+use App\Http\Controllers\API\HeroController;
+use App\Http\Controllers\API\CareerController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -43,10 +45,15 @@ Route::post('add-vision',[vision_missioncontroller::class,'store']);
 Route::get('show-vision',[vision_missioncontroller::class,'show']);
 Route::put('/updatevision/{id}',[vision_missioncontroller::class,'updatevision']);
 Route::delete('/deletevision/{id}',[vision_missioncontroller::class,'deletevision']);
-Route::post('addtech',[TechnologyController::class,'addtech']);
-Route::delete('deletetech/{id}',[TechnologyController::class,'deletetech']);
-Route::put('updatetech/{id}',[TechnologyController::class,'updatetech']);
 
+// Technology routes
+// Route::post('/addtech',[TechnologyController::class,'addtech']);
+// Route::delete('/deletetech/{id}',[TechnologyController::class,'deletetech']);
+// Route::post('/updatetech/{id}',[TechnologyController::class,'updatetech']);
+Route::get('/get_technology', [TechnologyController::class, 'index']);
+Route::post('/post_technology', [TechnologyController::class, 'store']);
+Route::post('/update_technology/{id}', [TechnologyController::class, 'update']);
+Route::delete('/delete_technology/{id}', [TechnologyController::class, 'delete']);
 
 // HomeAbout routes
 Route::get('/get_home_about', [HomeAboutController::class, 'index']);
@@ -65,6 +72,16 @@ Route::get('/get_faq', [FAQController::class, 'index']);
 Route::post('/post_faq', [FAQController::class, 'store']);
 Route::put('/update_faq/{id}', [FAQController::class, 'update']);
 Route::delete('/delete_faq/{id}', [FAQController::class, 'destroy']);
+
+//Hero Routes
+Route::get('/get_hero', [HeroContoller::class, 'index']);
+Route::post('/post_hero', [HeroController::class, 'store']);
+
+//Career Routes
+Route::get('/get_career', [CareerController::class, 'index']);
+Route::post('/post_career', [CareerController::class, 'store']);
+Route::put('/update_career/{id}', [CareerController::class, 'update']);
+Route::delete('/delete_career/{id}', [CareerController::class, 'destroy']);
 
 
 
