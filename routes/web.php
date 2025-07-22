@@ -17,7 +17,10 @@ use App\Http\Controllers\Api\SubServiceController;
 //         'phpVersion' => PHP_VERSION,
 //     ]);
 // });
- 
+
+Route::get('/test', function () {
+    return Inertia::render('Test');
+});
 
 // Route::get('/services', function () {
 //     return Inertia::render('Admin/Services/Services');
@@ -38,6 +41,7 @@ Route::get('/', function () {
     return Inertia::render('Admin/Dashboard');
 })->name('dashboard');
 Route::get('/leads', function () {
+    //return ("Hello Leads");
     return Inertia::render('Admin/Enquiry/Leads');
 })->name('leads');
 
