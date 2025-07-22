@@ -30,15 +30,15 @@ class CareerController extends Controller
 
          // Create a new Career record
         $career = Career::create([
-            'desig' => $request->desig,
-            'title' => $request->title,
-            'city' => $request->city,
-            'job_type' => $request->job_type ?? 'part-time',
-            'work_mode' => $request->work_mode ?? 'onsite',
-            'about_role' => $request->about_role,
-            'responsibilities' => $request->responsibilities,
-            'requirements' => $request->requirements,
-            'benefits_perks' => $request->benefits_perks,
+            'desig'             => $request->desig,
+            'title'             => $request->title,
+            'city'              => $request->city,
+            'job_type'          => $request->job_type ?? 'part-time',
+            'work_mode'         => $request->work_mode ?? 'onsite',
+            'about_role'        => $request->about_role,
+            'responsibilities'  => $request->responsibilities,
+            'requirements'      => $request->requirements,
+            'benefits_perks'    => $request->benefits_perks,
         ]);
 
         return response()->json([

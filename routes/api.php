@@ -12,6 +12,7 @@ use App\Http\Controllers\API\CreativesController;
 use App\Http\Controllers\API\FAQController;
 use App\Http\Controllers\API\HeroController;
 use App\Http\Controllers\API\CareerController;
+use App\Http\Controllers\API\BlogController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -74,7 +75,7 @@ Route::put('/update_faq/{id}', [FAQController::class, 'update']);
 Route::delete('/delete_faq/{id}', [FAQController::class, 'destroy']);
 
 //Hero Routes
-Route::get('/get_hero', [HeroContoller::class, 'index']);
+Route::get('/get_hero', [HeroController::class, 'index']);
 Route::post('/post_hero', [HeroController::class, 'store']);
 
 //Career Routes
@@ -82,6 +83,12 @@ Route::get('/get_career', [CareerController::class, 'index']);
 Route::post('/post_career', [CareerController::class, 'store']);
 Route::put('/update_career/{id}', [CareerController::class, 'update']);
 Route::delete('/delete_career/{id}', [CareerController::class, 'destroy']);
+
+//Blog Routes
+Route::get('/get_blog', [BlogController::class, 'index']);
+Route::post('/post_blog', [BlogController::class, 'store']);
+Route::post('/update_blog/{id}', [BlogController::class, 'update']);
+Route::delete('/delete_blog/{id}', [BlogController::class, 'destroy']);
 
 
 
