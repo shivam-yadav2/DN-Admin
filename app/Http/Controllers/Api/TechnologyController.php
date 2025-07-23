@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\technology;
 use Intervention\Image\ImageManager;            //Ensure you have intervention image installed
 use Intervention\Image\Drivers\GD\Driver as GdDriver;       //Import GD driver for image proceesing
+use Illuminate\Support\Facades\Validator;
 
 class TechnologyController extends Controller
 {
@@ -21,10 +22,16 @@ class TechnologyController extends Controller
     //Store
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'img' => 'required|image|mimes:jpg,jpeg,png|max:512',
             'heading' => 'required|string|max:255',
         ]);
+
+        if ($validator->fails()) {
+                return response()->json([
+                'errors' => $validator->errors()->all()
+            ], 422);
+        }
 
         //Check if image file is present in th request
         if(!$request->hasFile('img'))
@@ -92,10 +99,16 @@ class TechnologyController extends Controller
         }
     
         //Validate inputs
-        $request->validate([
+        $validator = Validator::make($request->all(), [
              'img' => 'required|image|mimes:jpg,png,jpeg|max:512',
             'heading' => 'required',
          ]);
+
+         if ($validator->fails()) {
+                return response()->json([
+                'errors' => $validator->errors()->all()
+            ], 422);
+        }
     
         $updateData = [
             'heading' => $request->heading,

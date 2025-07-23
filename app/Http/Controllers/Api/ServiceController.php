@@ -5,11 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Service; //  Service model
+use Inertia\Inertia;
 use App\Models\SubService; // SubService model
 use Illuminate\Support\Facades\Storage;
-use Inertia\Inertia;
-
-
 
 class ServiceController extends Controller
 {
