@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Career;
+use Illuminate\Support\Facades\Validator;
 
 class CareerController extends Controller
 {
@@ -18,7 +19,7 @@ class CareerController extends Controller
     //Store
     public function store(Request $request)
     {
-        $request->validate([
+        $validate = Validator::make($request->all(), [
             'desig' => 'required|string|max:255',
             'title' => 'required|string|max:255',
             'city' => 'required|string|max:255',
@@ -27,6 +28,12 @@ class CareerController extends Controller
             'requirements' => 'required|array',
             'benefits_perks' => 'required|array',
         ]);
+
+         if ($validator->fails()) {
+                return response()->json([
+                'errors' => $validator->errors()->all()
+            ], 422);
+        }
 
          // Create a new Career record
         $career = Career::create([
@@ -51,7 +58,7 @@ class CareerController extends Controller
     //Update
    public function update(Request $request, $id)
 {
-    $request->validate([
+    $validator = Validator::make($request->all(), [
         'desig' => 'required|string|max:255',
         'title' => 'required|string|max:255',
         'city' => 'required|string|max:255',
@@ -60,6 +67,12 @@ class CareerController extends Controller
         'requirements' => 'required|array',
         'benefits_perks' => 'required|array',
     ]);
+
+     if ($validator->fails()) {
+                return response()->json([
+                'errors' => $validator->errors()->all()
+            ], 422);
+        }
 
     $career = Career::findOrFail($id);
 

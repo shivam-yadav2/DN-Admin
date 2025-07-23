@@ -22,7 +22,6 @@ class Enquiry extends Model
     protected $table = 'enquiries'; // Specify the table name if it differs
 
     //Add relationships
-    //One to
     public function service()
     {
         return $this->belongsTo(Service::class);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\FAQ;
+use Illuminate\Support\Facades\Validator;
 
 class FAQController extends Controller
 {
@@ -18,20 +19,16 @@ class FAQController extends Controller
     //Store a new FAQ
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'question' => 'required|string|max:255|unique:faqs,question',
             'answer' => 'required|string|unique:faqs,answer',
-        ],
-    [
-    'question.required' => 'The question field is required.',
-    'question.string' => 'The question must be a valid string.',
-    'question.max' => 'The question cannot exceed 255 characters.',
-    'question.unique' => 'This question already exists.',
+        ]);
 
-    'answer.required' => 'The answer field is required.',
-    'answer.string' => 'The answer must be a valid string.',
-    'answer.unique' => 'This answer already exists.',
-]);
+        if ($validator->fails()) {
+                return response()->json([
+                'errors' => $validator->errors()->all()
+            ], 422);
+        }
 
         // Create a new FAQ
         $faq = FAQ::create($request->all());
@@ -46,20 +43,16 @@ class FAQController extends Controller
     {
         $faq = FAQ::findOrFail($id);
 
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'question' => 'required|string|max:255',
             'answer' => 'required|string',
-        ],
-    [
-    'question.required' => 'The question field is required.',
-    'question.string' => 'The question must be a valid string.',
-    'question.max' => 'The question cannot exceed 255 characters.',
-    'question.unique' => 'This question already exists.',
+        ]);
 
-    'answer.required' => 'The answer field is required.',
-    'answer.string' => 'The answer must be a valid string.',
-    'answer.unique' => 'This answer already exists.',
-]);
+        if ($validator->fails()) {
+                return response()->json([
+                'errors' => $validator->errors()->all()
+            ], 422);
+        }
 
         $faq->update($request->all());
         return response()->json($faq);

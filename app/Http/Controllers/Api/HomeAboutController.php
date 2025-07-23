@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\HomeAbout; // HomeAbout model
 use Inertia\Inertia; // Import Inertia for rendering views
+use Illuminate\Support\Facades\Validator;
 
 class HomeAboutController extends Controller
 {
@@ -20,11 +21,17 @@ class HomeAboutController extends Controller
     public function store(Request $request)
     {
         // Validate request
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'metric' => 'required|string|max:100',
         ]);
+
+        if ($validator->fails()) {
+                return response()->json([
+                'errors' => $validator->errors()->all()
+            ], 422);
+        }
 
         // Create new home about record
         $homeAbout = HomeAbout::create($request->all());
@@ -45,11 +52,17 @@ class HomeAboutController extends Controller
         }
 
         // Validate request
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'metric' => 'required|string|max:100',
         ]);
+
+        if ($validator->fails()) {
+                return response()->json([
+                'errors' => $validator->errors()->all()
+            ], 422);
+        }
 
         // Update home about record
         $homeAbout->update($request->all());

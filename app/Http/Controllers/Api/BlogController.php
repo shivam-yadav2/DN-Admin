@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Blog;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\GD\Driver as GdDriver;
+use Illuminate\Support\Facades\Validator;
 
 class BlogController extends Controller
 {
@@ -20,7 +21,7 @@ class BlogController extends Controller
     // Store new blog
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'meta_key'    => 'required|string|max:255',
             'meta_desc'   => 'required|string|max:255',
             'title'       => 'required|string|max:255',
@@ -32,6 +33,13 @@ class BlogController extends Controller
             'card_img'    => 'required|image|mimes:jpg,jpeg,png,webp|max:512',
             'banner_img'  => 'required|image|mimes:jpg,jpeg,png,webp|max:512',
         ]);
+
+       if ($validator->fails()) {
+                return response()->json([
+             'errors' => $validator->errors()->all()
+            ], 422);
+        }
+
 
         $manager = new ImageManager(new GdDriver());
 
@@ -69,7 +77,7 @@ class BlogController extends Controller
     // Update blog
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'meta_key'    => 'required|string|max:255',
             'meta_desc'   => 'required|string|max:255',
             'title'       => 'required|string|max:255',
@@ -81,6 +89,12 @@ class BlogController extends Controller
             'card_img'    => 'sometimes|image|mimes:jpg,jpeg,png,webp|max:512',
             'banner_img'  => 'sometimes|image|mimes:jpg,jpeg,png,webp|max:512',
         ]);
+
+       if ($validator->fails()) {
+                return response()->json([
+             'errors' => $validator->errors()->all()
+            ], 422);
+        }
 
         $blog = Blog::findOrFail($id);
 

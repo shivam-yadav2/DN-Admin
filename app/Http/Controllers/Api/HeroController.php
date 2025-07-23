@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Hero;
+use Illuminate\Support\Facades\Validator;
 
 class HeroController extends Controller
 {
@@ -19,9 +20,15 @@ class HeroController extends Controller
     public function store(Request $request)
     {
         //Validate
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'video' =>'required|mimes:mp4,mov,avi|max:10240'
         ]);
+
+        if ($validator->fails()) {
+                return response()->json([
+                'errors' => $validator->errors()->all()
+            ], 422);
+        }
 
         //To check if video file is there
         if(!$request->hasFile('video'))
