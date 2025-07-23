@@ -13,11 +13,9 @@ use Inertia\Inertia;
 
 class ServiceController extends Controller
 {
-    
     // GET all
     public function index()
     {
-       
     // Get all services with their subservices
         $services = Service::with('subservices')->get()->map(function ($service) {
             return [
