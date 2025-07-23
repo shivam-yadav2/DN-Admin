@@ -51,8 +51,6 @@ const Services = ({ services }) => {
         service_id: null,
     });
 
-    console.log(subServiceForm);
-
     const updateForm = useForm({
         name: "",
         description: "",

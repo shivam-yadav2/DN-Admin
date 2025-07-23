@@ -5,10 +5,11 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\SubService; // SubService model
+use Inertia\Intertia;
 
 class SubServiceController extends Controller
 {
-    // GET all
+    // GET all 
     public function index()
     {
         $subServices = SubService::with('service')->get()->map(function ($subService) {
