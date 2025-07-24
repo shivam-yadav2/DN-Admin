@@ -240,115 +240,45 @@ const data = {
       ],
     },
     {
-      title: "Clients",
-      url: "#",
-      icon: Users,
+      title: "Home Page",
+      url: "/#",
+      icon: Layers3,
       items: [
         {
-          title: "Active Clients",
-          url: "#",
+          title: "Hero Section",
+          url: "/services",
         },
         {
-          title: "Leads",
-          url: "#",
+          title: "Digital Marketing",
+          url: "/services",
         },
         {
-          title: "Contracts",
-          url: "#",
+          title: "Web Development",
+          url: "/services",
+        },
+        {
+          title: "SEO",
+          url: "/services",
+        },
+        {
+          title: "Content Creation",
+          url: "/services",
         },
       ],
     },
     {
-      title: "Projects",
+      title: "Enquiries",
       url: "#",
-      icon: FolderKanban,
+      icon: Layers3,
       items: [
         {
-          title: "Ongoing",
-          url: "#",
+          title: "All Enquiries",
+          url: "/enquiries",
         },
-        {
-          title: "Completed",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
+        
       ],
     },
-    {
-      title: "Team & Roles",
-      url: "#",
-      icon: ShieldCheck,
-      items: [
-        {
-          title: "Team Members",
-          url: "#",
-        },
-        {
-          title: "Roles & Permissions",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Billing",
-      url: "#",
-      icon: CreditCard,
-      items: [
-        {
-          title: "Invoices",
-          url: "#",
-        },
-        {
-          title: "Plans",
-          url: "#",
-        },
-        {
-          title: "Payment Methods",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "Profile",
-          url: "#",
-        },
-        {
-          title: "Notifications",
-          url: "#",
-        },
-        {
-          title: "Security",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Support",
-      url: "#",
-      icon: LifeBuoy,
-      items: [
-        {
-          title: "Help Center",
-          url: "#",
-        },
-        {
-          title: "Contact Support",
-          url: "#",
-        },
-        {
-          title: "System Status",
-          url: "#",
-        },
-      ],
-    },
+   
   ],
   projects: [
     {
@@ -380,10 +310,10 @@ export function AppSidebar({
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        {/* <NavProjects projects={data.projects} /> */}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {/* <NavUser user={data.user} /> */}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

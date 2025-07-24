@@ -53,7 +53,6 @@ class HeroController extends Controller
         'data' => $hero,
         ], 201);
     }
-
     //Update
     public function update(Request $request, $id)
     {
