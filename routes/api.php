@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\api\our_teamcontroller;
+use App\Http\Controllers\api\packagecontroller;
 use App\Http\Controllers\api\vision_missioncontroller;
 use App\Http\Controllers\API\TechnologyController;
 use Illuminate\Http\Request;
@@ -46,7 +48,7 @@ Route::put('/update_enquiryStatus/{id}', [EnquiryController::class, 'updateStaus
 // Vision and Mission routes
 Route::post('add-vision',[vision_missioncontroller::class,'store']);
 Route::get('show-vision',[vision_missioncontroller::class,'show']);
-Route::put('/updatevision/{id}',[vision_missioncontroller::class,'updatevision']);
+Route::post('/updatevision/{id}',[vision_missioncontroller::class,'updatevision']);
 Route::delete('/deletevision/{id}',[vision_missioncontroller::class,'deletevision']);
 
 // Technology routes
@@ -85,6 +87,14 @@ Route::get('/get_career', [CareerController::class, 'index']);
 Route::post('/post_career', [CareerController::class, 'store']);
 Route::put('/update_career/{id}', [CareerController::class, 'update']);
 Route::delete('/delete_career/{id}', [CareerController::class, 'destroy']);
+Route::post('insert',[our_teamcontroller::class,'insert']);
+Route::delete('delete_ourteam/{id}',[our_teamcontroller::class,'delete_ourteam']);
+Route::post('update_ourteam/{id}',[our_teamcontroller::class,'update_ourteam']);
+Route::get('show_ourteam',[our_teamcontroller::class,'show_ourteam']);
+Route::post('insert_package',[packagecontroller::class,'insert_package']);
+Route::post('update_package/{id}',[packagecontroller::class,'update_package']);
+Route::get('show_package',[packagecontroller::class,'show_package']);
+Route::delete('delete_package/{id}',[packagecontroller::class,'delete_package']);
 
 //Blog Routes
 Route::get('/get_blog', [BlogController::class, 'index']);

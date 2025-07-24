@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('vision_mission', function (Blueprint $table) {
+        Schema::create('package', function (Blueprint $table) {
             $table->id();
+            $table->string('img');
             $table->string('heading');
-            $table->string(column: 'para');
-            $table->string('vision_heading');
-            $table->string('vision_description');
-            $table->string('mission_heading');
-            $table->string('mission_description');
+            $table->string('price');
+            $table->string('description');
+            $table->string('target_audience');
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('vision_mission');
+        Schema::dropIfExists('package');
     }
 };
