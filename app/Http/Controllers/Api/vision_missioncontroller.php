@@ -13,14 +13,18 @@ class vision_missioncontroller extends Controller
         $request->validate([
             'heading' => 'required|max:255',
             'para' => 'required|unique:vision_mission,para|max:255',
-            'subheading' => 'required |unique:vision_mission,subheading|max:255',
-            'subpara' => 'required |unique:vision_mission,subpara|max:255',
+            'vision_heading' => 'required |unique:vision_mission,vision_heading|max:255',
+            'vision_description' => 'required |unique:vision_mission,vision_description|max:255',
+            'mission_heading' => 'required |unique:vision_mission,mission_heading|max:255',
+            'mission_description' => 'required |unique:vision_mission,mission_description|max:255',
         ]);
         $data = vision_mission::create([
             'heading' => $request->heading,
             'para' => $request->para,
-            'subheading' => $request->subheading,
-            'subpara' => $request->subpara,
+            'vision_heading' => $request->vision_heading,
+            'vision_description' => $request->vision_description,
+            'mission_heading' => $request->mission_heading,
+            'mission_description' => $request->mission_description,
 
         ]);
         return response()->json([
@@ -51,16 +55,20 @@ class vision_missioncontroller extends Controller
         $request->validate([
             'heading' => 'required',
             'para' => 'required',
-            'subheading' => 'required',
-            'subpara' => 'required',
+            'vision_heading' => 'required',
+            'vision_description' => 'required',
+            'mission_heading' => 'required',
+            'mission_description' => 'required',
         ]);
 
 
         $data->update([
             'heading' => $request->heading,
             'para' => $request->para,
-            'subheading' => $request->subheading,
-            'subpara' => $request->subpara,
+            'vision_heading' => $request->vision_heading,
+            'vision_description' => $request->vision_description,
+            'mission_heading' => $request->mission_heading,
+            'mission_description' => $request->mission_description,
         ]);
 
   
