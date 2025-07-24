@@ -8,6 +8,8 @@ use Inertia\Inertia;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\EnquiryController;
 use App\Http\Controllers\Api\SubServiceController;
+use App\Http\Controllers\Api\TechnologyController;
+use App\Http\Controllers\API\FAQController;
 
 Route::get('/test', function () {
     return Inertia::render('Test');
@@ -37,5 +39,29 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Home Page Routes 
+
+// Route::get('/hero-videos', [HeroController::class, 'index'])->name('hero-videos.index');
+// Route::post('/hero-videos', [HeroController::class, 'store'])->name('hero-videos.store');
+
+Route::get('/home_hero', function () {
+    return Inertia::render('Admin/HomePage/Hero');
+});
+
+// Route::get('/home_toolsandtechnologies', function () {
+//     return Inertia::render('Admin/HomePage/ToolsPage');
+// });
+
+Route::get('/technologies', [TechnologyController::class, 'index'])->name('technologies.index');
+Route::post('/technologies', [TechnologyController::class, 'store'])->name('technologies.store');
+Route::delete('/technologies/{id}', [TechnologyController::class, 'delete'])->name('technologies.delete');
+Route::put('/technologies/{id}', [TechnologyController::class, 'update'])->name('technologies.update');
+
+Route::get('/faqs', [FAQController::class, 'index'])->name('faqs.index');
+Route::post('/faqs', [FAQController::class, 'store'])->name('faqs.store');
+Route::put('/faqs/{id}', [FAQController::class, 'update'])->name('faqs.update');
+Route::delete('/faqs/{id}', [FAQController::class, 'destroy'])->name('faqs.destroy');
+
 
 require __DIR__.'/auth.php';

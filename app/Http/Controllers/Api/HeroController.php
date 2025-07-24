@@ -52,6 +52,5 @@ class HeroController extends Controller
         'data' => $record,
         ], 201);
     }
-
     //Update
 }

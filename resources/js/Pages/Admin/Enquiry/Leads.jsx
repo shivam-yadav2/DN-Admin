@@ -157,24 +157,24 @@ const Leads = ({ dashboardData }) => {
 
     const handleStatusChange = (enrollmentId, newStatus) => {
         console.log("Status Change 1", enrollmentId, newStatus);
-        
+
         // Prevent multiple simultaneous operations
         if (isProcessing) {
             console.log("Already processing, ignoring request");
             return;
         }
-        
+
         // Reset form first, then set new data
         statusForm.reset();
-        
+
         setSelectedEnrollment(enrollmentId);
         setPendingStatus(newStatus);
-        
+
         // Set the new status after reset
         setTimeout(() => {
             statusForm.setData("status", newStatus);
         }, 0);
-        
+
         setIsDialogOpen(true);
     };
 
@@ -184,31 +184,38 @@ const Leads = ({ dashboardData }) => {
             selectedEnrollment,
             pendingStatus,
             isProcessing,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
         });
-        
+
         // Prevent any event bubbling or default behavior
         if (e) {
             e.preventDefault();
             e.stopPropagation();
         }
-        
+
         if (!selectedEnrollment || !pendingStatus || isProcessing) {
-            console.log("❌ Blocked execution:", { selectedEnrollment, pendingStatus, isProcessing });
+            console.log("❌ Blocked execution:", {
+                selectedEnrollment,
+                pendingStatus,
+                isProcessing,
+            });
             return;
         }
 
         console.log("✅ Status Change 2 - Pending Status:", pendingStatus);
         setIsProcessing(true);
-        
+
         // Make a direct Inertia request without using the form helper
-        router.post(route("enquiries.updateStatus", selectedEnrollment), 
+        router.post(
+            route("enquiries.updateStatus", selectedEnrollment),
             { status: pendingStatus },
             {
                 onSuccess: () => {
                     console.log("✅ Success callback");
                     toast.success(
-                        `Status updated to ${getStatusDisplayName(pendingStatus)}`
+                        `Status updated to ${getStatusDisplayName(
+                            pendingStatus
+                        )}`
                     );
                     handleDialogClose();
                 },
@@ -379,9 +386,11 @@ const Leads = ({ dashboardData }) => {
                                                 </TableCell>
                                                 <TableCell>
                                                     <DropdownMenu>
-                                                        <DropdownMenuTrigger asChild>
+                                                        <DropdownMenuTrigger
+                                                            asChild
+                                                        >
                                                             <Button
-                                                                variant="ghost" 
+                                                                variant="ghost"
                                                                 size="sm"
                                                                 className="h-8 w-8 p-0"
                                                             >
@@ -454,11 +463,14 @@ const Leads = ({ dashboardData }) => {
                             </AlertDialogTitle>
                             <AlertDialogDescription>
                                 Are you sure you want to mark this lead as{" "}
-                                <strong>{getStatusDisplayName(pendingStatus)}</strong>?
+                                <strong>
+                                    {getStatusDisplayName(pendingStatus)}
+                                </strong>
+                                ?
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                            <AlertDialogCancel 
+                            <AlertDialogCancel
                                 disabled={isProcessing}
                                 onClick={(e) => {
                                     e.preventDefault();
