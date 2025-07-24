@@ -33,7 +33,7 @@ class TechnologyController extends Controller
             ], 422);
         }
 
-        //Check if image file is present in th request
+        //Check if image file is present in the request
         if(!$request->hasFile('img'))
         {
             return response()->json(['message' => 'Image file is required'

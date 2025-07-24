@@ -79,6 +79,8 @@ Route::delete('/delete_faq/{id}', [FAQController::class, 'destroy']);
 //Hero Routes
 Route::get('/get_hero', [HeroController::class, 'index']);
 Route::post('/post_hero', [HeroController::class, 'store']);
+Route::put('/update_hero/{id}', [HeroController::class, 'update']);
+Route::delete('/delete_hero/{id}', [HeroController::class, 'destroy']);
 
 //Career Routes
 Route::get('/get_career', [CareerController::class, 'index']);
