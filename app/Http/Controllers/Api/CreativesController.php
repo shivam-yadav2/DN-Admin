@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\OurCreative; 
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
 use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver for image processing
+use Illuminate\Support\Facades\Validator;
 
 class CreativesController extends Controller
 {

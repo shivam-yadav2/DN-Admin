@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useForm, usePage } from "@inertiajs/react"; // Add useForm and usePage
+import { Link, useForm, usePage } from "@inertiajs/react";
 import { Button } from "@/components/ui/button";
 import {
     Table,
@@ -35,15 +35,13 @@ const Services = ({ services }) => {
 
     // Form for adding a service
     const { flash } = usePage().props; // Access flash messages
-    const page = usePage();
     const { data, setData, post, errors, reset } = useForm({
         name: "",
         description: "",
         image: null,
     });
 
-    console.log(page);
-
+    // Form for adding a sub-service
     const subServiceForm = useForm({
         name: "",
         description: "",
@@ -51,15 +49,18 @@ const Services = ({ services }) => {
         service_id: null,
     });
 
-    console.log(subServiceForm);
-
+    // Form for updating a service
     const updateForm = useForm({
         name: "",
         description: "",
-        images: null,
+        image: null,
     });
 
+    // Form for deleting a service
     const deleteForm = useForm({});
+
+    // Form for deleting a sub-service
+    const deleteSubServiceForm = useForm({});
 
     // State for modals
     const [selectedService, setSelectedService] = useState(null);
@@ -74,12 +75,6 @@ const Services = ({ services }) => {
     const [selectedImage, setSelectedImage] = useState("");
     const [serviceToDelete, setServiceToDelete] = useState(null);
     const [subServiceToDelete, setSubServiceToDelete] = useState(null);
-
-    const [serviceFormData, setServiceFormData] = useState({
-        title: "",
-        description: "",
-    });
-
     const [currentServiceId, setCurrentServiceId] = useState(null);
     const [expandedServiceId, setExpandedServiceId] = useState(null);
 
@@ -91,26 +86,31 @@ const Services = ({ services }) => {
                 setIsAddModalOpen(false);
                 reset(); // Clear form
             },
-            preserveState: true, // Preserve form state on validation errors
+            preserveState: true,
         });
     };
 
     // Handle update modal
     const openUpdateModal = (service) => {
         setSelectedService(service);
-        setServiceFormData({
-            title: service.name, // Changed to match controller
+        updateForm.setData({
+            name: service.name,
             description: service.description,
-            images: service.image,
+            image: null, // Reset image to null for updates (user can re-upload)
         });
         setIsUpdateModalOpen(true);
     };
 
-    const handleUpdate = () => {
-        // Update logic (not implemented yet, requires a controller method)
-        setIsUpdateModalOpen(false);
-        setSelectedService(null);
-        setServiceFormData({ title: "", description: "", images: null });
+    const handleUpdate = (e) => {
+        e.preventDefault();
+        updateForm.post(route("services.update", selectedService.id), {
+            onSuccess: () => {
+                setIsUpdateModalOpen(false);
+                setSelectedService(null);
+                updateForm.reset();
+            },
+            preserveState: true,
+        });
     };
 
     // Handle add sub-service
@@ -123,7 +123,6 @@ const Services = ({ services }) => {
             service_id: serviceId,
         });
         setIsAddSubServiceModalOpen(true);
-        console.log(subServiceForm);
     };
 
     const handleAddSubService = (e) => {
@@ -145,9 +144,13 @@ const Services = ({ services }) => {
     };
 
     const handleDelete = () => {
-        // Delete logic (not implemented yet, requires a controller method)
-        setIsDeleteModalOpen(false);
-        setServiceToDelete(null);
+        deleteForm.delete(route("services.destroy", serviceToDelete.id), {
+            onSuccess: () => {
+                setIsDeleteModalOpen(false);
+                setServiceToDelete(null);
+            },
+            preserveState: true,
+        });
     };
 
     // Handle delete sub-service
@@ -158,10 +161,17 @@ const Services = ({ services }) => {
     };
 
     const handleDeleteSubService = () => {
-        // Delete sub-service logic (not implemented yet, requires a controller method)
-        setIsDeleteSubServiceModalOpen(false);
-        setSubServiceToDelete(null);
-        setCurrentServiceId(null);
+        deleteSubServiceForm.delete(
+            route("subservices.destroy", subServiceToDelete.id),
+            {
+                onSuccess: () => {
+                    setIsDeleteSubServiceModalOpen(false);
+                    setSubServiceToDelete(null);
+                    setCurrentServiceId(null);
+                },
+                preserveState: true,
+            }
+        );
     };
 
     // Handle image popup
@@ -222,10 +232,7 @@ const Services = ({ services }) => {
 
                     {/* Success Message */}
                     {flash?.message && (
-                        <div
-                            className="mb-6 p-4██████
-System: 4 bg-green-100 text-green-800 rounded-lg"
-                        >
+                        <div className="mb-6 p-4 bg-green-100 text-green-800 rounded-lg">
                             {flash.message}
                         </div>
                     )}
@@ -619,7 +626,7 @@ System: 4 bg-green-100 text-green-800 rounded-lg"
                         </DialogContent>
                     </Dialog>
 
-                    {/* Update Modal */}
+                    {/* Update Service Modal */}
                     <Dialog
                         open={isUpdateModalOpen}
                         onOpenChange={setIsUpdateModalOpen}
@@ -631,86 +638,134 @@ System: 4 bg-green-100 text-green-800 rounded-lg"
                                     Update Service
                                 </DialogTitle>
                             </DialogHeader>
-                            <div className="space-y-6 py-4">
-                                <div className="space-y-2">
-                                    <Label
-                                        htmlFor="title"
-                                        className="text-sm font-semibold text-gray-700"
-                                    >
-                                        Service Title
-                                    </Label>
-                                    <Input
-                                        id="title"
-                                        value={serviceFormData?.title}
-                                        onChange={(e) =>
-                                            setServiceFormData({
-                                                ...serviceFormData,
-                                                title: e.target.value,
-                                            })
-                                        }
-                                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                                        placeholder="Enter service title"
-                                    />
+                            <form
+                                onSubmit={handleUpdate}
+                                encType="multipart/form-data"
+                            >
+                                <div className="space-y-6 py-4">
+                                    <div className="space-y-2">
+                                        <Label
+                                            htmlFor="name"
+                                            className="text-sm font-semibold text-gray-700"
+                                        >
+                                            Service Name
+                                        </Label>
+                                        <Input
+                                            id="name"
+                                            value={updateForm.data.name}
+                                            onChange={(e) =>
+                                                updateForm.setData(
+                                                    "name",
+                                                    e.target.value
+                                                )
+                                            }
+                                            className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${
+                                                updateForm.errors.name
+                                                    ? "border-red-500"
+                                                    : ""
+                                            }`}
+                                            placeholder="Enter service name"
+                                        />
+                                        {updateForm.errors.name && (
+                                            <p className="text-red-500 text-sm">
+                                                {updateForm.errors.name}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label
+                                            htmlFor="description"
+                                            className="text-sm font-semibold text-gray-700"
+                                        >
+                                            Description
+                                        </Label>
+                                        <Input
+                                            id="description"
+                                            value={updateForm.data.description}
+                                            onChange={(e) =>
+                                                updateForm.setData(
+                                                    "description",
+                                                    e.target.value
+                                                )
+                                            }
+                                            className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${
+                                                updateForm.errors.description
+                                                    ? "border-red-500"
+                                                    : ""
+                                            }`}
+                                            placeholder="Enter service description"
+                                        />
+                                        {updateForm.errors.description && (
+                                            <p className="text-red-500 text-sm">
+                                                {updateForm.errors.description}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label
+                                            htmlFor="image"
+                                            className="text-sm font-semibold text-gray-700"
+                                        >
+                                            Service Image (Optional)
+                                        </Label>
+                                        <Input
+                                            id="image"
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) =>
+                                                updateForm.setData(
+                                                    "image",
+                                                    e.target.files[0]
+                                                )
+                                            }
+                                            className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${
+                                                updateForm.errors.image
+                                                    ? "border-red-500"
+                                                    : ""
+                                            }`}
+                                        />
+                                        {updateForm.errors.image && (
+                                            <p className="text-red-500 text-sm">
+                                                {updateForm.errors.image}
+                                            </p>
+                                        )}
+                                        {selectedService?.image && (
+                                            <div className="mt-2">
+                                                <p className="text-sm text-gray-600">
+                                                    Current Image:
+                                                </p>
+                                                <img
+                                                    src={selectedService.image}
+                                                    alt="Current service"
+                                                    className="h-16 w-16 object-cover rounded-md mt-1"
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <Label
-                                        htmlFor="description"
-                                        className="text-sm font-semibold text-gray-700"
-                                    >
-                                        Description
-                                    </Label>
-                                    <Input
-                                        id="description"
-                                        value={serviceFormData?.description}
-                                        onChange={(e) =>
-                                            setServiceFormData({
-                                                ...serviceFormData,
-                                                description: e.target.value,
-                                            })
+                                <DialogFooter className="gap-2">
+                                    <Button
+                                        variant="outline"
+                                        type="button"
+                                        onClick={() =>
+                                            setIsUpdateModalOpen(false)
                                         }
-                                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                                        placeholder="Enter service description"
-                                    />
-                                </div>
-                                <div className="space-y-2 overflow-hidden">
-                                    <Label
-                                        htmlFor="images"
-                                        className="text-sm font-semibold text-gray-700"
+                                        className="border-gray-300 hover:bg-gray-50"
                                     >
-                                        Service Image
-                                    </Label>
-                                    <Input
-                                        id="images"
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) =>
-                                            setServiceFormData({
-                                                ...serviceFormData,
-                                                images: e.target.files[0],
-                                            })
-                                        }
-                                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                                    />
-                                </div>
-                            </div>
-                            <DialogFooter className="gap-2">
-                                <Button
-                                    variant="outline"
-                                    onClick={() => setIsUpdateModalOpen(false)}
-                                    className="border-gray-300 hover:bg-gray-50"
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    onClick={handleUpdate}
-                                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                                >
-                                    Save Changes
-                                </Button>
-                            </DialogFooter>
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        type="submit"
+                                        className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                                    >
+                                        Save Changes
+                                    </Button>
+                                </DialogFooter>
+                            </form>
                         </DialogContent>
                     </Dialog>
 
+                    {/* Add Sub-Service Modal */}
                     <Dialog
                         open={isAddSubServiceModalOpen}
                         onOpenChange={setIsAddSubServiceModalOpen}
@@ -892,14 +947,14 @@ System: 4 bg-green-100 text-green-800 rounded-lg"
                             <DialogHeader>
                                 <DialogTitle className="text-2xl font-semibold text-red-600 flex items-center gap-2">
                                     <Trash2 className="w-6 h-6" />
-                                    Confirm Sub-Service Deletion indicator
+                                    Confirm Sub-Service Deletion
                                 </DialogTitle>
                             </DialogHeader>
                             <div className="py-4">
                                 <p className="text-gray-600">
                                     Are you sure you want to delete{" "}
                                     <span className="font-semibold text-gray-800">
-                                        "{subServiceToDelete?.title}"
+                                        "{subServiceToDelete?.name}"
                                     </span>
                                     ? This action cannot be undone.
                                 </p>

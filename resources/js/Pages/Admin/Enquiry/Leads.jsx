@@ -29,77 +29,20 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
     MoreVertical,
-    Users,
-    BookOpen,
-    Calendar,
-    DollarSign,
-    CheckCircle,
     Clock,
-    LogOut,
-    AlertTriangle,
+    Users,
+    CheckCircle,
     XCircle,
     Filter,
+    LogOut,
 } from "lucide-react";
+import { Link, useForm, usePage, router } from "@inertiajs/react";
 import Layout from "@/Layouts/Layout";
-// import { useNavigate } from "react-router-dom";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-// Static data to replace API calls
-const staticDashboardData = {
-    totalStudents: 120,
-    activeCourses: 8,
-    revenue: 15400,
-    upcomingAppointments: 15,
-    enquiries: [
-        {
-            _id: "1",
-            name: "John Doe",
-            phone: "+1234567890",
-            email: "john.doe@example.com",
-            city: "New York",
-            addedFor: "Course: Fashion Design",
-            enquiryFor: { title: "Advanced Fashion Design" },
-            createdAt: "2025-06-01T10:00:00Z",
-            leadStatus: "new",
-        },
-        {
-            _id: "2",
-            name: "Jane Smith",
-            phone: "+1987654321",
-            email: "jane.smith@example.com",
-            city: "Los Angeles",
-            addedFor: "Course: Textile Design",
-            enquiryFor: { title: "Textile Design Basics" },
-            createdAt: "2025-06-02T14:30:00Z",
-            leadStatus: "contacted",
-        },
-        {
-            _id: "3",
-            name: "Alice Johnson",
-            phone: "+1123456789",
-            email: "alice.j@example.com",
-            city: "Chicago",
-            addedFor: "Course: Fashion Marketing",
-            enquiryFor: { title: "Fashion Marketing 101" },
-            createdAt: "2025-06-03T09:15:00Z",
-            leadStatus: "converted",
-        },
-        {
-            _id: "4",
-            name: "Bob Wilson",
-            phone: "+1098765432",
-            email: "bob.w@example.com",
-            city: "Miami",
-            addedFor: "Course: Pattern Making",
-            enquiryFor: { title: "Pattern Making Fundamentals" },
-            createdAt: "2025-06-04T11:45:00Z",
-            leadStatus: "lost",
-        },
-    ],
-};
-
-// Status mapping as constants
 const STATUS_MAP = {
-    new: {
+    new_lead: {
         displayName: "New Lead",
         badge: {
             variant: "secondary",
@@ -133,98 +76,60 @@ const STATUS_MAP = {
     },
 };
 
-// Stats card component for DRY code
-const StatCard = ({ icon, title, value, color }) => (
-    <Card className="shadow-sm hover:shadow-md transition-shadow">
-        <CardContent className="p-6">
-            <div className="flex items-center space-x-4">
-                <div className={`p-2 bg-${color}-100 rounded-full`}>
-                    {React.cloneElement(icon, {
-                        className: `h-6 w-6 text-${color}-600`,
-                    })}
-                </div>
-                <div>
-                    <p className="text-sm font-medium text-gray-500">{title}</p>
-                    <h3 className="text-2xl font-bold">{value}</h3>
-                </div>
-            </div>
-        </CardContent>
-    </Card>
-);
+const Leads = ({ dashboardData }) => {
+    const { props } = usePage();
+    const { flash } = props;
 
-const Leads = () => {
-    //   const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [dashboardData, setDashboardData] = useState({
-        totalStudents: 0,
-        activeCourses: 0,
-        revenue: 0,
-        upcomingAppointments: 0,
-        enquiries: [],
-    });
     const [filteredEnquiries, setFilteredEnquiries] = useState([]);
     const [showCourseCategory, setShowCourseCategory] = useState(false);
     const [filterApplied, setFilterApplied] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [selectedAction, setSelectedAction] = useState(null);
     const [selectedEnrollment, setSelectedEnrollment] = useState(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    // Add a separate state to track the pending status change
+    const [pendingStatus, setPendingStatus] = useState("");
+    const [isProcessing, setIsProcessing] = useState(false);
+
+    // Form for status update
+    const statusForm = useForm({
+        status: "",
+    });
+
+    // Form for creating new enquiry
+    const enquiryForm = useForm({
+        name: "",
+        email: "",
+        number: "",
+        city: "",
+        service_id: "",
+        subservice_id: "",
+        message: "",
+    });
 
     useEffect(() => {
-        fetchDashboardData();
-    }, []);
+        if (flash?.message) {
+            toast.success(flash.message);
+        }
+        if (flash?.errors?.message) {
+            toast.error(flash.errors.message);
+        }
+    }, [flash]);
 
-    // Filter data once dashboardData is loaded
     useEffect(() => {
-        if (dashboardData.enquiries.length > 0) {
+        if (dashboardData?.enquiries?.length > 0) {
             filterCourseCategoryData();
         }
-    }, [dashboardData.enquiries]);
+    }, [dashboardData?.enquiries]);
 
     const filterCourseCategoryData = () => {
-        // Filter enquiries that have addedFor value related to course categories
         const courseEnquiries = dashboardData.enquiries.filter(
             (enquiry) =>
                 enquiry.addedFor &&
                 enquiry.addedFor.toLowerCase().includes("course")
         );
-
         const reversedData = courseEnquiries.slice().reverse();
         setFilteredEnquiries(reversedData);
         setShowCourseCategory(reversedData.length > 0);
         setFilterApplied(true);
-    };
-
-    const fetchDashboardData = () => {
-        setIsLoading(true);
-        try {
-            // Use static data instead of API call
-            setDashboardData(staticDashboardData);
-            setError(null);
-        } catch (err) {
-            console.error("Error loading static data:", err);
-            setError("Unable to load dashboard data. Please try again later.");
-            toast.error("Failed to load dashboard data");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleLogout = () => {
-        try {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            //   navigate("/");
-        } catch (error) {
-            console.error("Logout error:", error);
-        }
-    };
-
-    const handleStatusChange = (enrollmentId, newStatus) => {
-        setSelectedEnrollment(enrollmentId);
-        setSelectedAction(newStatus);
-        setIsDialogOpen(true);
     };
 
     const getStatusDisplayName = (status) => {
@@ -233,61 +138,117 @@ const Leads = () => {
 
     const getApiStatusValue = (action) => {
         const actionMap = {
-            "lead-converted": "converted",
-            "lead-lost": "lost",
-            "lead-interested": "interested",
-            "lead-contacted": "contacted",
+            contacted: "contacted",
+            converted: "converted",
+            lost: "lost",
         };
-        return actionMap[action] || "new";
+        return actionMap[action] || "new_lead";
     };
 
-    const confirmStatusChange = () => {
-        setIsSubmitting(true);
-        const newApiStatus = getApiStatusValue(selectedAction);
+    // Add a helper function to handle dialog close
+    const handleDialogClose = () => {
+        setIsDialogOpen(false);
+        setSelectedEnrollment(null);
+        setPendingStatus("");
+        setIsProcessing(false);
+        statusForm.clearErrors();
+        statusForm.reset();
+    };
 
-        try {
-            // Simulate status update with static data
-            const updatedEnquiries = dashboardData.enquiries.map((enquiry) =>
-                enquiry._id === selectedEnrollment
-                    ? { ...enquiry, leadStatus: newApiStatus }
-                    : enquiry
-            );
-
-            setDashboardData({
-                ...dashboardData,
-                enquiries: updatedEnquiries,
-            });
-
-            toast.success(
-                `Status updated to ${getStatusDisplayName(newApiStatus)}`
-            );
-        } catch (error) {
-            console.error("Error updating enrollment status:", error);
-            toast.error("Failed to update status");
-        } finally {
-            setIsSubmitting(false);
-            setIsDialogOpen(false);
-            setSelectedEnrollment(null);
-            setSelectedAction(null);
+    const handleStatusChange = (enrollmentId, newStatus) => {
+        console.log("Status Change 1", enrollmentId, newStatus);
+        
+        // Prevent multiple simultaneous operations
+        if (isProcessing) {
+            console.log("Already processing, ignoring request");
+            return;
         }
+        
+        // Reset form first, then set new data
+        statusForm.reset();
+        
+        setSelectedEnrollment(enrollmentId);
+        setPendingStatus(newStatus);
+        
+        // Set the new status after reset
+        setTimeout(() => {
+            statusForm.setData("status", newStatus);
+        }, 0);
+        
+        setIsDialogOpen(true);
+    };
+
+    const confirmStatusChange = (e) => {
+        console.log("🔴 confirmStatusChange called", {
+            event: e?.type,
+            selectedEnrollment,
+            pendingStatus,
+            isProcessing,
+            timestamp: new Date().toISOString()
+        });
+        
+        // Prevent any event bubbling or default behavior
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        if (!selectedEnrollment || !pendingStatus || isProcessing) {
+            console.log("❌ Blocked execution:", { selectedEnrollment, pendingStatus, isProcessing });
+            return;
+        }
+
+        console.log("✅ Status Change 2 - Pending Status:", pendingStatus);
+        setIsProcessing(true);
+        
+        // Make a direct Inertia request without using the form helper
+        router.post(route("enquiries.updateStatus", selectedEnrollment), 
+            { status: pendingStatus },
+            {
+                onSuccess: () => {
+                    console.log("✅ Success callback");
+                    toast.success(
+                        `Status updated to ${getStatusDisplayName(pendingStatus)}`
+                    );
+                    handleDialogClose();
+                },
+                onError: (errors) => {
+                    console.error("❌ Update error:", errors);
+                    toast.error(errors?.status || "Failed to update status");
+                    handleDialogClose();
+                },
+                onFinish: () => {
+                    console.log("🏁 Request finished");
+                    setIsProcessing(false);
+                },
+                preserveState: true,
+                preserveScroll: true,
+            }
+        );
+    };
+
+    const handleCreateEnquiry = (e) => {
+        e.preventDefault();
+        enquiryForm.post(route("enquiries.store"), {
+            onSuccess: () => {
+                enquiryForm.reset();
+                toast.success("Enquiry created successfully");
+            },
+            onError: (errors) => {
+                console.error("Error creating enquiry:", errors);
+                toast.error("Failed to create enquiry");
+            },
+        });
     };
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString("en-US", {
             year: "numeric",
-            month: "short",
+            month: "numeric",
             day: "numeric",
         });
     };
-
-    if (isLoading) {
-        return (
-            <div className="flex items-center justify-center h-screen bg-gray-50">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-            </div>
-        );
-    }
 
     return (
         <Layout>
@@ -319,53 +280,17 @@ const Leads = () => {
                             </Badge>
                         )}
                     </div>
-                    {/* <Button
-                        onClick={handleLogout}
-                        variant="outline"
-                        className="flex items-center gap-2"
+                    <Link
+                        href="/logout"
+                        method="post"
+                        as="button"
+                        className="flex items-center gap-2 text-gray-600 hover:text-gray-800"
                     >
                         <LogOut className="h-4 w-4" />
                         Logout
-                    </Button> */}
+                    </Link>
                 </div>
 
-                {error && (
-                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-                        <div className="flex items-center">
-                            <AlertTriangle className="h-4 w-4 mr-2" />
-                            {error}
-                        </div>
-                    </div>
-                )}
-
-                {/* Stats Cards */}
-                {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <StatCard
-                        icon={<Users />}
-                        title="Total Students"
-                        value={dashboardData.totalStudents}
-                        color="blue"
-                    />
-                    <StatCard
-                        icon={<BookOpen />}
-                        title="Active Courses"
-                        value={dashboardData.activeCourses}
-                        color="purple"
-                    />
-                    <StatCard
-                        icon={<DollarSign />}
-                        title="Revenue"
-                        value={`$${dashboardData.revenue.toLocaleString()}`}
-                        color="green"
-                    />
-                    <StatCard
-                        icon={<Calendar />}
-                        title="Upcoming Appointments"
-                        value={dashboardData.upcomingAppointments}
-                        color="amber"
-                    />
-                </div> */}
-                {/* Enquiry Table */}
                 <Card className="shadow-sm">
                     <CardHeader className="bg-gray-50 border-b">
                         <CardTitle>Digital Nawab Inquiries</CardTitle>
@@ -398,7 +323,7 @@ const Leads = () => {
                                     {filteredEnquiries.map((enquiry) => {
                                         const statusInfo =
                                             STATUS_MAP[enquiry.leadStatus] ||
-                                            STATUS_MAP.new;
+                                            STATUS_MAP.new_lead;
                                         return (
                                             <TableRow key={enquiry._id}>
                                                 <TableCell>
@@ -454,22 +379,23 @@ const Leads = () => {
                                                 </TableCell>
                                                 <TableCell>
                                                     <DropdownMenu>
-                                                        <DropdownMenuTrigger
-                                                            asChild
-                                                        >
+                                                        <DropdownMenuTrigger asChild>
                                                             <Button
-                                                                variant="ghost"
-                                                                size="icon"
+                                                                variant="ghost" 
+                                                                size="sm"
+                                                                className="h-8 w-8 p-0"
                                                             >
                                                                 <MoreVertical className="h-4 w-4" />
                                                             </Button>
                                                         </DropdownMenuTrigger>
+
                                                         <DropdownMenuContent align="end">
                                                             <DropdownMenuItem
+                                                                className="cursor-pointer"
                                                                 onClick={() =>
                                                                     handleStatusChange(
                                                                         enquiry._id,
-                                                                        "lead-contacted"
+                                                                        "contacted"
                                                                     )
                                                                 }
                                                             >
@@ -477,10 +403,11 @@ const Leads = () => {
                                                                 Contacted
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem
+                                                                className="cursor-pointer"
                                                                 onClick={() =>
                                                                     handleStatusChange(
                                                                         enquiry._id,
-                                                                        "lead-converted"
+                                                                        "converted"
                                                                     )
                                                                 }
                                                             >
@@ -488,10 +415,11 @@ const Leads = () => {
                                                                 Converted
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem
+                                                                className="cursor-pointer"
                                                                 onClick={() =>
                                                                     handleStatusChange(
                                                                         enquiry._id,
-                                                                        "lead-lost"
+                                                                        "lost"
                                                                     )
                                                                 }
                                                             >
@@ -509,8 +437,16 @@ const Leads = () => {
                     </CardContent>
                 </Card>
 
-                {/* Alert Dialog */}
-                <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <AlertDialog
+                    open={isDialogOpen}
+                    onOpenChange={(open) => {
+                        if (!open) {
+                            handleDialogClose();
+                        } else {
+                            setIsDialogOpen(open);
+                        }
+                    }}
+                >
                     <AlertDialogContent>
                         <AlertDialogHeader>
                             <AlertDialogTitle>
@@ -518,23 +454,26 @@ const Leads = () => {
                             </AlertDialogTitle>
                             <AlertDialogDescription>
                                 Are you sure you want to mark this lead as{" "}
-                                <strong>
-                                    {getStatusDisplayName(
-                                        getApiStatusValue(selectedAction)
-                                    )}
-                                </strong>
-                                ?
+                                <strong>{getStatusDisplayName(pendingStatus)}</strong>?
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                            <AlertDialogCancel disabled={isSubmitting}>
+                            <AlertDialogCancel 
+                                disabled={isProcessing}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleDialogClose();
+                                }}
+                            >
                                 Cancel
                             </AlertDialogCancel>
                             <AlertDialogAction
                                 onClick={confirmStatusChange}
-                                disabled={isSubmitting}
+                                disabled={isProcessing}
+                                type="button"
                             >
-                                {isSubmitting ? "Updating..." : "Yes, Confirm"}
+                                {isProcessing ? "Updating..." : "Yes, Confirm"}
                             </AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>

@@ -5,16 +5,15 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Service; //  Service model
-
-
+use Inertia\Inertia;
+use App\Models\SubService; // SubService model
+use Illuminate\Support\Facades\Storage;
 
 class ServiceController extends Controller
 {
-    
     // GET all
     public function index()
     {
-       
     // Get all services with their subservices
         $services = Service::with('subservices')->get()->map(function ($service) {
             return [

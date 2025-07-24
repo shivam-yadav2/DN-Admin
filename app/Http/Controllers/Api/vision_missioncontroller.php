@@ -5,12 +5,13 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\vision_mission;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class vision_missioncontroller extends Controller
 {
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'heading' => 'required|max:255',
             'para' => 'required|unique:vision_mission,para|max:255',
             'vision_heading' => 'required |unique:vision_mission,vision_heading|max:255',
@@ -18,6 +19,13 @@ class vision_missioncontroller extends Controller
             'mission_heading' => 'required |unique:vision_mission,mission_heading|max:255',
             'mission_description' => 'required |unique:vision_mission,mission_description|max:255',
         ]);
+
+        if ($validator->fails()) {
+                return response()->json([
+                'errors' => $validator->errors()->all()
+            ], 422);
+        }
+
         $data = vision_mission::create([
             'heading' => $request->heading,
             'para' => $request->para,
@@ -27,6 +35,7 @@ class vision_missioncontroller extends Controller
             'mission_description' => $request->mission_description,
 
         ]);
+
         return response()->json([
             'message' => 'Product added successfully.',
             'data' => $data
@@ -37,9 +46,10 @@ class vision_missioncontroller extends Controller
     public function show()
     {
         $info = vision_mission::all();
-        if ($info) {
-            return response()->json(['info' => $info], 200);
-        }
+        if ($info) 
+            {
+                return response()->json(['info' => $info], 200);
+            }
         return response()->json(['msg' => 'data not found'], 404);
     }
 
@@ -52,7 +62,7 @@ class vision_missioncontroller extends Controller
         }
 
 
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'heading' => 'required',
             'para' => 'required',
             'vision_heading' => 'required',
@@ -61,6 +71,11 @@ class vision_missioncontroller extends Controller
             'mission_description' => 'required',
         ]);
 
+        if ($validator->fails()) {
+                return response()->json([
+                'errors' => $validator->errors()->all()
+            ], 422);
+        }
 
         $data->update([
             'heading' => $request->heading,

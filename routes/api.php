@@ -14,6 +14,9 @@ use App\Http\Controllers\API\CreativesController;
 use App\Http\Controllers\API\FAQController;
 use App\Http\Controllers\API\HeroController;
 use App\Http\Controllers\API\CareerController;
+use App\Http\Controllers\API\BlogController;
+use App\Http\Controllers\API\ContactDetailController;
+
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -93,6 +96,16 @@ Route::post('update_package/{id}',[packagecontroller::class,'update_package']);
 Route::get('show_package',[packagecontroller::class,'show_package']);
 Route::delete('delete_package/{id}',[packagecontroller::class,'delete_package']);
 
+//Blog Routes
+Route::get('/get_blog', [BlogController::class, 'index']);
+Route::post('/post_blog', [BlogController::class, 'store']);
+Route::post('/update_blog/{id}', [BlogController::class, 'update']);
+Route::delete('/delete_blog/{id}', [BlogController::class, 'destroy']);
 
+//Contact Detail Routes
+Route::get('/get_contact', [ContactDetailController::class, 'index']);
+Route::post('/post_contact', [ContactDetailController::class, 'store']);
+Route::post('/update_contact/{id}', [ContactDetailController::class, 'update']);
+Route::delete('/delete_contact/{id}', [ContactDetailController::class, 'destroy']);
 
 
