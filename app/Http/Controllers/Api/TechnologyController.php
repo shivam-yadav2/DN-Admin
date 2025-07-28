@@ -9,6 +9,7 @@ use Intervention\Image\ImageManager;            //Ensure you have intervention i
 use Intervention\Image\Drivers\GD\Driver as GdDriver;       //Import GD driver for image proceesing
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
+
 class TechnologyController extends Controller
 {
     //Get all technologies
