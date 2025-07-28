@@ -7,7 +7,10 @@ use Illuminate\Http\Request;
 use App\Models\Service; //  Service model
 use Inertia\Inertia;
 use App\Models\SubService; // SubService model
-use Illuminate\Support\Facades\Storage;
+// use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\GD\Driver as GdDriver;
+use Illuminate\Support\Facades\Validator;
 
 class ServiceController extends Controller
 {
@@ -27,7 +30,7 @@ class ServiceController extends Controller
                         'id' => $subService->id,
                         'name' => $subService->name,
                         'description' => $subService->description,
-                        'image' => asset('assets/images/subservices/' . $subService->image), // Assuming subservice images are stored in public/assets/images/subservices
+                        'image' => asset('assets/images/subservices/' . $subService->image), 
                     ];
                 }),
             ];
@@ -43,18 +46,56 @@ class ServiceController extends Controller
     public function store(Request $request)
     {
         // Validate request
-        $request->validate([
+        $validator = Validator($request->all(),[
             'name' => 'required|string|max:255|unique:services,name',
             'description' => 'required|string|max:255|',
             'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        // Handle image upload
-        $imageName = null;
-        if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->file('image')->getClientOriginalExtension();
-            $request->file('image')->move(public_path('assets/images'), $imageName);
+        if ($validator->fails()) {
+                return response()->json([
+             'errors' => $validator->errors()->all()
+            ], 422);
         }
+
+        // Handle image upload
+        // $imageName = null;
+        // if ($request->hasFile('image')) {
+        //     $imageName = time() . '.' . $request->file('image')->getClientOriginalExtension();
+        //     $request->file('image')->move(public_path('assets/images'), $imageName);
+        // }
+        // Check if image file is missing
+if (!$request->hasFile('image')) {
+    return response()->json(['message' => 'Image file is required'], 400);
+}
+
+// Initialize variable to hold the final image name
+$imageName = null; 
+
+// Process the uploaded file
+$image = $request->file('image'); // Get the uploaded file
+$originalExtension = strtolower($image->getClientOriginalExtension()); // Get and lowercase the original extension
+
+$manager = new ImageManager(new Driver()); // Create Intervention Image manager instance
+
+$timestampName = time() . '.webp'; // Generate a unique filename
+
+$destinationPath = public_path('assets/images/services'); // Define storage path
+
+if (in_array($originalExtension, ['jpg', 'jpeg', 'png'])) {
+    // Convert JPG/PNG to WebP
+    $img = $manager->read($image->getRealPath())->toWebp(80); 
+    $img->save($destinationPath . '/' . $timestampName);
+    $imageName = $timestampName;
+} elseif ($originalExtension === 'webp') {
+    // Save WebP as-is
+    $image->move($destinationPath, $timestampName);
+    $imageName = $timestampName;
+} else {
+    // Return if unsupported format
+    return response()->json(['message' => 'Only JPG, JPEG, PNG, or WEBP formats allowed.'], 400);
+}
+
 
         // Create new service record
         $service = Service::create([
@@ -89,11 +130,37 @@ class ServiceController extends Controller
         }
 
         // Handle image upload if provided
-        if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->file('image')->getClientOriginalExtension();
-            $request->file('image')->move(public_path('assets/images'), $imageName);
-            $service->image = $imageName;
-        }
+        // if ($request->hasFile('image')) {
+        //     $imageName = time() . '.' . $request->file('image')->getClientOriginalExtension();
+        //     $request->file('image')->move(public_path('assets/images'), $imageName);
+        //     $service->image = $imageName;
+        // }
+
+        // Process the uploaded file
+$image = $request->file('image'); // Get the uploaded file
+$originalExtension = strtolower($image->getClientOriginalExtension()); // Get and lowercase the original extension
+
+$manager = new ImageManager(new Driver()); // Create Intervention Image manager instance
+
+$timestampName = time() . '.webp'; // Generate a unique filename
+
+$destinationPath = public_path('assets/images/services'); // Define storage path
+
+if (in_array($originalExtension, ['jpg', 'jpeg', 'png'])) {
+    // Convert JPG/PNG to WebP
+    $img = $manager->read($image->getRealPath())->toWebp(80); 
+    $img->save($destinationPath . '/' . $timestampName);
+    $imageName = $timestampName;
+} elseif ($originalExtension === 'webp') {
+    // Save WebP as-is
+    $image->move($destinationPath, $timestampName);
+    $imageName = $timestampName;
+} else {
+    // Return if unsupported format
+    return response()->json(['message' => 'Only JPG, JPEG, PNG, or WEBP formats allowed.'], 400);
+}
+
+
 
         // Update service details
         $service->name = $request->name;

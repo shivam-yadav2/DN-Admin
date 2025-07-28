@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('home_heros', function (Blueprint $table) {
             $table->id();
+            $table->enum('video_type', ['mobile', 'desktop']);
             $table->string('video');
             $table->timestamps();
         });
