@@ -76,7 +76,7 @@ class packagecontroller extends Controller
             ], 422);
         }
 
-        $info=packages::find($id);
+        $info = packages::find($id);
 
         $imagename = null;
 

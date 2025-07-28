@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Service; //  Service model
-use Inertia\Inertia;
+// use Inertia\Inertia;
 use App\Models\SubService; // SubService model
 // use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
@@ -35,11 +35,11 @@ class ServiceController extends Controller
                 }),
             ];
         });
-        // return response()->json($services, 200);
+        return response()->json($services, 200);
         // Render the React component with services data
-        return Inertia::render('Admin/Services/Services', [
-            'services' => $services
-        ]);
+        // return Inertia::render('Admin/Services/Services', [
+        //     'services' => $services
+        // ]);
     }
 
     // POST
@@ -82,6 +82,11 @@ $timestampName = time() . '.webp'; // Generate a unique filename
 
 $destinationPath = public_path('assets/images/services'); // Define storage path
 
+// Create directory if it doesn't exist
+if (!file_exists($destinationPath)) {
+    mkdir($destinationPath, 0755, true);
+}
+
 if (in_array($originalExtension, ['jpg', 'jpeg', 'png'])) {
     // Convert JPG/PNG to WebP
     $img = $manager->read($image->getRealPath())->toWebp(80); 
@@ -104,10 +109,10 @@ if (in_array($originalExtension, ['jpg', 'jpeg', 'png'])) {
             'image' => $imageName,
         ]);
 
-        // return response()->json([
-        //     'message' => 'Service added successfully.',
-        //     'data' => $service,
-        // ], 201);
+        return response()->json([
+            'message' => 'Service added successfully.',
+            'data' => $service,
+        ], 201);
 
         // Redirect back with success message
     return redirect()->route('services')->with('message', 'Service added successfully.');
@@ -145,6 +150,11 @@ $manager = new ImageManager(new GdDriver()); // Create Intervention Image manage
 $timestampName = time() . '.webp'; // Generate a unique filename
 
 $destinationPath = public_path('assets/images/services'); // Define storage path
+
+// Create directory if it doesn't exist
+if (!file_exists($destinationPath)) {
+    mkdir($destinationPath, 0755, true);
+}
 
 if (in_array($originalExtension, ['jpg', 'jpeg', 'png'])) {
     // Convert JPG/PNG to WebP

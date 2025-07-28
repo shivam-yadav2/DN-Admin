@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\OurCreative; 
+use App\Models\Creative; 
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
 use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver for image processing
 use Illuminate\Support\Facades\Validator;
@@ -21,71 +21,52 @@ class CreativesController extends Controller
     //Store a new creative
     public function store(Request $request)
     {
-        // Validate request
         $request->validate([
-            'image' => 'required|image|mimes:jpg,png,jpeg|max:512', // Validate image file
+            'images' => 'required|array',
+            'images.*' => 'required|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        // Handle file upload
-        if (!$request->hasFile('image'))
-         {
+        if (!$request->hasFile('images')) {
             return response()->json(['message' => 'Image file is required.'], 400);
-         }
+        }
 
-         //Read image and check orientation
-         $manager = new ImageManager(new GdDriver()); 
-         $image = $manager->read($request->file('image'));
+        $manager = new ImageManager(new GdDriver());
+        $uploaded = [];
 
-         $width = $image->width(); // Get image width
-         $height = $image->height(); // Get image height
+        foreach ($request->file('images') as $imageFile) {
+            $image = $manager->read($imageFile);
+            $width = $image->width();
+            $height = $image->height();
 
-            // Check if the image is in landscape orientation
             if ($width <= $height) {
-                return response()->json(['message' => 'Image must be in landscape orientation.'
-            ], 422);
-         }
+                continue; // Skip portrait images
+            }
 
-        // Convert and save image to webp format
-            $webpName = time() . '.webp';                   // Name for the webp file
-            $webpPath = public_path('assets/creatives/' . $webpName); 
+            $webpName = time() . '_' . uniqid() . '.webp';
+            $webpPath = public_path('assets/creatives/' . $webpName);
 
-            $image->toWebp(75)->save($webpPath); // Convert to webp format with quality 75
+            $image->toWebp(80)->save($webpPath);
 
-            // //Create a new instance of Manager
-            // $manager = new ImageManager(new GdDriver()); // or 'imagick'
-            // $image = $manager->read($request->file('image'))->toWebp(75); // Adjust quality as needed
-            // $image->save($webpPath);
-
-             $imagePath =  $webpName; // Store the path to the webp image in db
-
-            //Store the creative in the database
             $creative = OurCreative::create([
-                'image' => $imagePath, // Save the image path
+                'image' => $webpName,
             ]);
 
-            return response()->json([
-                'message' => 'Creative created successfully.', 
-                'data' => $creative,
-            ], 201);
-     }
+            $uploaded[] = $creative;
+        }
 
-    //Delete a creative
-    // public function destroy($id)
-    // {
-    //     $creative = OurCreative::find($id);
+        // ✅ Return error if no valid images uploaded
+        if (count($uploaded) === 0) {
+            return response()->json(['message' => 'No valid landscape images uploaded.'], 422);
+        }
 
-    //     if (!$creative) {
-    //         return response()->json(['message' => 'Creative not found.'], 404);
-    //     }
-
-    //     // Delete the creative
-    //     $creative->delete();
-
-    //     return response()->json(['message' => 'Creative deleted successfully.'], 200);
-    // }
-
+        return response()->json([
+            'message' => 'Creatives uploaded successfully.',
+            'data' => $uploaded,
+        ], 201);
+    }
+   
     //Update a creative
-    public function update(Request $request, $id)
+     public function update(Request $request, $id)
     {
         $creative = OurCreative::find($id);
 
@@ -93,41 +74,28 @@ class CreativesController extends Controller
             return response()->json(['message' => 'Creative not found.'], 404);
         }
 
-        // Validate request
         $request->validate([
-            'image' => 'nullable|image|mimes:jpg,png,jpeg|max:512', // Validate image file
+            'image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        // Handle file upload if provided
-        if ($request->hasFile('image'))
-         {
-            $manager = new ImageManager(new GdDriver()); // Ensure you have the GD driver installed
-            $image = $manager->read($request->file('image'))->toWebp(75); // Adjust quality as needed
+        if ($request->hasFile('image')) {
+            $manager = new ImageManager(new GdDriver());
+            $image = $manager->read($request->file('image'));
+            $width = $image->width();
+            $height = $image->height();
 
-            $width = $image->width(); // Get image width
-            $height = $image->height(); // Get image height
-
-            // Check if the image is in landscape orientation
-            if ($width <= $height)
-             {
-                return response()->json(['message' => 'Image must be in landscape orientation.'
-                ], 422);
+            if ($width <= $height) {
+                return response()->json(['message' => 'Image must be in landscape orientation.'], 422);
             }
 
-            //Convert to webp format
-            $webpName = time() . '.webp'; // Name for the webp file
-           $webpPath = public_path('assets/creatives/' . $webpName);
+            $webpName = time() . '_' . uniqid() . '.webp';
+            $webpPath = public_path('assets/creatives/' . $webpName);
+            $image->toWebp(85)->save($webpPath);
 
-           // Convert and save image to webp format
-            // $manager = new ImageManager(new GdDriver()); // Ensure you have the GD driver installed
-            // $image = $manager->read($request->file('image'))->toWebp(75); // Adjust quality as needed
-            // $image->save($webpPath);
+            // Optional: delete old image file here if needed
+            $creative->image = $webpName;
+        }
 
-            //Update DB path
-            $creative->image = $webpName; // Update the image path
-         }
-
-         //Save the updated creative
         $creative->save();
 
         return response()->json([
@@ -136,5 +104,25 @@ class CreativesController extends Controller
         ], 200);
     }
     
+     //Delete a creative
+    public function destroy($id)
+    {
+        $creative = Creative::findOrFail($id);
+
+        // Delete each image from storage
+        foreach ($creative->images as $filename) 
+        {
+            $filePath = public_path('assets/creatives/' . $filename);
+            if (file_exists($filePath)) 
+            {
+                unlink($filePath);
+            }
+        }
+
+        // Delete the DB record
+        $creative->delete();
+
+        return response()->json(['message' => 'Creative and associated images deleted successfully.']);
+    }
 }
 
