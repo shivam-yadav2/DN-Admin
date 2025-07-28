@@ -6,14 +6,27 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Hero;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Storage;
 
 class HeroController extends Controller
 {
     //Get the video
     public function index()
     {
-        $heros = Hero::all();
-        return response()->json($heros, 200);
+        $heroes = Hero::all();
+        // return response()->json($heros, 200);
+
+         return Inertia::render('Admin/HomePage/Hero', [
+            'videos' => $heroes->map(function ($hero) {
+                return [
+                    'id' => $hero->id,
+                    'video_type' => $hero->video_type,
+                    'video_path' => $hero->video,
+                    'created_at' => $hero->created_at,
+                ];
+            }),
+        ]);
     }
 
     //Store the data
@@ -48,11 +61,13 @@ class HeroController extends Controller
         'video' => $videoName, // Store only filename or relative path
     ]);
 
-    return response()->json([
-        'message' => 'Video uploaded successfully',
-        'data' => $hero,
-        ], 201);
-    }
+    // return response()->json([
+    //     'message' => 'Video uploaded successfully',
+    //     'data' => $hero,
+    //     ], 201);
+    // }
+    return redirect()->route('hero.index')->with('message', 'Video uploaded successfully');
+}
     //Update
     public function update(Request $request, $id)
     {
@@ -110,6 +125,7 @@ class HeroController extends Controller
         // Delete record from DB
         $hero->delete();
 
-        return response()->json(['message' => 'Hero deleted successfully']);
+        // return response()->json(['message' => 'Hero deleted successfully']);
+         return redirect()->route('hero.index')->with('message', 'Video deleted successfully');
     }
 }

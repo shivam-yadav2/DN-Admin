@@ -144,7 +144,7 @@ const data = {
     Enquiry: [
         {
             title: "Hero Section",
-            url: "/home_hero",
+            url: "/hero-videos",
             icon: BookOpen,
         },
         {
@@ -155,6 +155,11 @@ const data = {
         {
             title: "FAQs",
             url: "/faqs",
+            icon: BookOpen,
+        },
+        {
+            title: "Vision-Mission",
+            url: "/vision-mission",
             icon: BookOpen,
         },
         

@@ -76,7 +76,7 @@ $imageName = null;
 $image = $request->file('image'); // Get the uploaded file
 $originalExtension = strtolower($image->getClientOriginalExtension()); // Get and lowercase the original extension
 
-$manager = new ImageManager(new Driver()); // Create Intervention Image manager instance
+$manager = new ImageManager(new GdDriver()); // Create Intervention Image manager instance
 
 $timestampName = time() . '.webp'; // Generate a unique filename
 
@@ -140,7 +140,7 @@ if (in_array($originalExtension, ['jpg', 'jpeg', 'png'])) {
 $image = $request->file('image'); // Get the uploaded file
 $originalExtension = strtolower($image->getClientOriginalExtension()); // Get and lowercase the original extension
 
-$manager = new ImageManager(new Driver()); // Create Intervention Image manager instance
+$manager = new ImageManager(new GdDriver()); // Create Intervention Image manager instance
 
 $timestampName = time() . '.webp'; // Generate a unique filename
 

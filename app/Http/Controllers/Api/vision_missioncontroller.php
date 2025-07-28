@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\vision_mission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class vision_missioncontroller extends Controller
 {
@@ -36,21 +37,42 @@ class vision_missioncontroller extends Controller
 
         ]);
 
-        return response()->json([
-            'message' => 'Product added successfully.',
-            'data' => $data
-        ]);
+        // return response()->json([
+        //     'message' => 'Product added successfully.',
+        //     'data' => $data
+        // ]);
+        return redirect()->route('vision-mission.index')->with('message', 'Vision/Mission added successfully');
     }
 
 
-    public function show()
+    // public function show()
+    // {
+    //     $info = vision_mission::all();
+    //     if ($info) 
+    //         {
+    //             return response()->json(['info' => $info], 200);
+    //         }
+    //     return response()->json(['msg' => 'data not found'], 404);
+    // }
+
+    // Display the vision/mission page with existing entries
+    public function index()
     {
-        $info = vision_mission::all();
-        if ($info) 
-            {
-                return response()->json(['info' => $info], 200);
-            }
-        return response()->json(['msg' => 'data not found'], 404);
+        $visions = vision_mission::all();
+        return Inertia::render('Admin/HomePage/VisionMissionPage', [
+            'visions' => $visions->map(function ($vision) {
+                return [
+                    'id' => $vision->id,
+                    'heading' => $vision->heading,
+                    'para' => $vision->para,
+                    'vision_heading' => $vision->vision_heading,
+                    'vision_description' => $vision->vision_description,
+                    'mission_heading' => $vision->mission_heading,
+                    'mission_description' => $vision->mission_description,
+                    'created_at' => $vision->created_at,
+                ];
+            }),
+        ]);
     }
 
     public function updatevision(Request $request, $id)
