@@ -4,33 +4,30 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\HomeAbout; // HomeAbout model
-// use Inertia\Inertia; // Import Inertia for rendering views
+use App\Models\Tag;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
 use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver for image processing
 use Illuminate\Support\Facades\Validator;
 
-class HomeAboutController extends Controller
+class TagController extends Controller
 {
-   //Get all data
+    ////Get all data
     public function index()
     {
-        $homeAbouts = HomeAbout::all();
-        return response()->json($homeAbouts, 200);
+        $tags = Tag::all();
+        return response()->json($tags, 200);
     }
 
-    // POST a new home about
+    // POST a new tag
     public function store(Request $request)
     {
         // Validate request
         $validator = Validator::make($request->all(), [
-            'tag'           => 'required|string|max:255',
-            'heading'       => 'required|string|max:255',
-            'sub_heading'   => 'required|string|max:255',
-            'image'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:512',
-            'content'       => 'required|string|max:1000',
-            'button_text'   => 'required|string|max:100',
-            'button_url'    => 'required|url|unique|max:100',
+            'title'          => 'required|string|max:255',
+            'description'    => 'nullable|string|max:255',
+            'keyword'        => 'nullable|string|max:255',
+            'page_url'       => 'required|url|max:255|unique:tags,page_url',
+            'image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:512',
         ]);
 
         if ($validator->fails()) {
@@ -55,7 +52,7 @@ class HomeAboutController extends Controller
 
         $timestampName = time(). '.webp';       //Generate a unique file name
         $imageName = $timestampName;
-        $destinationPath = public_path('assets/images/homeAbout');
+        $destinationPath = public_path('assets/images/tags');
 
         //Create directory
         if (!file_exists($destinationPath)) {
@@ -81,43 +78,40 @@ class HomeAboutController extends Controller
             return response()->json(['message' => 'Only JPG, JPEG, PNG, or WEBP formats allowed.'], 400);
         }
 
-        // Create new home about record
-        $homeAbout = HomeAbout::create([
-             'tag'          => $request->tag,
-            'heading'       => $request->heading,
-            'sub_heading'   => $request->sub_heading,
-            'image'         => $imageName,
-            'content'       => $request->content,
-            'button_text'   => $request->button_text,
-            'button_url'    => $request->button_url
+        // Create new tag record
+        $tag = Tag::create([
+             'title'          => $request->title,
+            'description'     => $request->description,
+            'keyword'         => $request->keyword,
+            'page_url'        => $request->page_url,
+            'image'           => $imageName,
+            
         ]);
 
         return response()->json([
-            'message' => 'Home About created successfully.',
-            'data' => $homeAbout,
+            'message' => 'Record created successfully.',
+            'data' => $tag,
         ], 201);
     }
 
-    // Update an existing home about
+    // Update an existing tag 
     public function update(Request $request, $id)
     {
-        $homeAbout = HomeAbout::find($id);
+        $tag = Tag::find($id);
 
-        if (!$homeAbout) 
+        if (!$tag) 
             {
-                 return response()->json(['message' => 'Home About not found.'], 404);
+                 return response()->json(['message' => 'Record not found.'], 404);
             }
 
         // Validate request
         $validator = Validator::make($request->all(), [
             
-            'tag'           => 'required|string|max:255',
-            'heading'       => 'required|string|max:255',
-            'sub_heading'   => 'required|string|max:255',
-            'image'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:512',
-            'content'       => 'required|string|max:1000',
-            'button_text'   => 'required|string|max:100',
-            'button_url'    => 'required|url|unique|max:100',
+            'title'         => 'required|string|max:255',
+            'description'    => 'nullable|string|max:255',
+            'keyword'        => 'nullable|string|max:255',
+            'page_url'       => 'required|url|max:255|unique:tags,page_url,' . $id,
+            'image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:512',
         ]);
 
         if ($validator->fails()) {
@@ -126,13 +120,13 @@ class HomeAboutController extends Controller
             ], 422);
         }
 
-        // Default to old image
-                $imageName = $homeAbout->image;
+                // Default to old image
+                $imageName = $tag->image;
 
                 // Process the uploaded file
          if ($request->hasFile('image')) 
             {
-                $oldImagePath = public_path('assets/images/homeAbout/' . $homeAbout->image);
+                $oldImagePath = public_path('assets/images/tags/' . $tag->image);
                 if (file_exists($oldImagePath)) 
                     {
                         unlink($oldImagePath);
@@ -145,7 +139,7 @@ class HomeAboutController extends Controller
 
                 $timestampName = time() . '.webp'; // Generate a unique filename
 
-                $destinationPath = public_path('assets/images/homeAbout'); // Define storage path
+                $destinationPath = public_path('assets/images/tags'); // Define storage path
 
                 // Create directory if it doesn't exist
                 if (!file_exists($destinationPath)) 
@@ -174,38 +168,37 @@ class HomeAboutController extends Controller
                 }
             }
 
-        // Update home about record
-        $homeAbout->update([
-             'tag'          => $request->tag,
-            'heading'       => $request->heading,
-            'sub_heading'   => $request->sub_heading,
-            'image'         => $imageName,
-            'content'       => $request->content,
-            'button_text'   => $request->button_text,
-            'button_url'    => $request->button_url
+        // Update tag record
+        $tag->update([
+              'title'          => $request->title,
+              'description'    => $request->description,
+              'keyword'        => $request->keyword,
+              'page_url'       => $request->page_url,
+              'image'          => $imageName,
+            
         ]);
 
         return response()->json([
-            'message' => 'Home About updated successfully.',
-            'data'    => $homeAbout,
+            'message' => 'Record updated successfully.',
+            'data'    => $tag,
         ], 200);
     }
 
-    // Delete a home about (soft delete)
+    // Delete a tag 
     public function destroy($id)
     {
-        $homeAbout = HomeAbout::findOrFail($id);
+        $tag = Tag::findOrFail($id);
 
         // Delete each image from storage
         // Delete image file
-        $filePath = public_path('assets/images/homeAbout/' . $homeAbout->image);
+        $filePath = public_path('assets/images/tags/' . $tag->image);
          if (file_exists($filePath))
          {
             unlink($filePath);
         }
 
         // Delete the DB record
-        $homeAbout->delete();
+        $tag->delete();
 
         return response()->json(['message' => 'Record deleted successfully.']);
     }

@@ -16,6 +16,7 @@ use App\Http\Controllers\api\our_teamcontroller;
 use App\Http\Controllers\api\packagecontroller;
 use App\Http\Controllers\api\vision_missioncontroller;
 use App\Http\Controllers\API\TechnologyController;
+use App\Http\Controllers\API\TagController;
 
 
 Route::get('/user', function (Request $request) {
@@ -60,13 +61,12 @@ Route::delete('/delete_technology/{id}', [TechnologyController::class, 'delete']
 // HomeAbout routes
 Route::get('/get_home_about', [HomeAboutController::class, 'index']);
 Route::post('/post_home_about', [HomeAboutController::class, 'store']);
-Route::put('/update_home_about/{id}', [HomeAboutController::class, 'update']);
+Route::post('/update_home_about/{id}', [HomeAboutController::class, 'update']);
 Route::delete('/delete_home_about/{id}', [HomeAboutController::class, 'destroy']);
 
 // Creatives routes
 Route::get('/get_creatives', [CreativesController::class, 'index']);
 Route::post('/post_creatives', [CreativesController::class, 'store']);
-Route::put('/update_creatives/{id}', [CreativesController::class, 'update']);
 Route::delete('/delete_creatives/{id}', [CreativesController::class, 'destroy']);
 
 // FAQ routes
@@ -110,5 +110,11 @@ Route::get('/get_contact', [ContactDetailController::class, 'index']);
 Route::post('/post_contact', [ContactDetailController::class, 'store']);
 Route::post('/update_contact/{id}', [ContactDetailController::class, 'update']);
 Route::delete('/delete_contact/{id}', [ContactDetailController::class, 'destroy']);
+
+//Tag Routes
+Route::get('/get_tag', [TagController::class, 'index']);
+Route::post('/post_tag', [TagController::class, 'store']);
+Route::post('/update_tag/{id}', [TagController::class, 'update']);
+Route::delete('/delete_tag/{id}', [TagController::class, 'destroy']);
 
 

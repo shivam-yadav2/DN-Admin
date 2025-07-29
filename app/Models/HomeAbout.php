@@ -7,13 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class HomeAbout extends Model
 {
     //
-    protected $fillable = [
-        'title',
-        'description',
-        'metric',
-        'is_deleted'
+    protected $fillable =[
+        'tag',
+        'heading',
+        'sub_heading',
+        'image',
+        'content',
+        'button_text',
+        'button_url'
     ];
-    public $timestamps = true;
-    protected $table = 'home_abouts'; // Specify the table name if it differs from the default naming convention
-    
+
+      public $timestamps = true;
+     protected $table = 'home_abouts' ;
 }
