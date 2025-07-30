@@ -1,19 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\HomeAbout;
-use Inertia\Inertia;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\GD\Driver as GdDriver;
+use App\Models\HomeAbout; // HomeAbout model
+// use Inertia\Inertia; // Import Inertia for rendering views
+use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
+use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver for image processing
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 use Illuminate\Validation\ValidationException;
 
 class HomeAboutController extends Controller
 {
-    /**
+   /**
      * Display a listing of the resource.
      */
     public function index()
@@ -163,13 +164,13 @@ class HomeAboutController extends Controller
 
             // Update home about record
             $homeAbout->update([
-                'tag'          => $request->tag,
-                'heading'       => $request->heading,
-                'sub_heading'   => $request->sub_heading,
-                'image'         => $imageName,
-                'content'       => $request->content,
-                'button_text'   => $request->button_text,
-                'button_url'    => $request->button_url
+                'tag'          => $request->tag ?? $homeAbout->tag,
+                'heading'       => $request->heading ?? $homeAbout->heading,
+                'sub_heading'   => $request->sub_heading ?? $homeAbout->sub_heading,
+                'image'         => $imageName ?? $homeAbout->image ,
+                'content'       => $request->content ?? $homeAbout->content,
+                'button_text'   => $request->button_text ?? $homeAbout->button_text,
+                'button_url'    => $request->button_url ?? $homeAbout->button_url
             ]);
 
             return redirect()->route('home-about.index')
