@@ -1,391 +1,224 @@
-import * as React from "react"
+import * as React from "react";
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  MonitorSmartphone ,
-  Settings2,
-  SquareTerminal,
-  Globe2 ,
-  Code ,
-  LayoutDashboard ,
-  Layers3 ,
-  Users ,
-  FolderKanban ,
-  ShieldCheck ,
-  CreditCard ,
-  LifeBuoy ,
-  ShoppingCart ,
-  Megaphone ,
-  Brush ,
+    AudioWaveform,
+    BookOpen,
+    Bot,
+    Command,
+    Frame,
+    GalleryVerticalEnd,
+    Map,
+    PieChart,
+    MonitorSmartphone,
+    Settings2,
+    SquareTerminal,
+    Globe2,
+    Code,
+    LayoutDashboard,
+    Layers3,
+    Users,
+    FolderKanban,
+    ShieldCheck,
+    CreditCard,
+    LifeBuoy,
+    ShoppingCart,
+    Megaphone,
+    Brush,
+    User,
+    BookUser,
+    HousePlus,
+} from "lucide-react";
 
-} from "lucide-react"
-
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
-import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
+import { NavMain } from "@/components/nav-main";
+import { NavProjects } from "@/components/nav-projects";
+import { NavUser } from "@/components/nav-user";
+import { TeamSwitcher } from "@/components/team-switcher";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
-} from "@/components/ui/sidebar"
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarHeader,
+    SidebarRail,
+} from "@/components/ui/sidebar";
 
-// This is sample data.
-const data1 = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
-}
-
+// Sample data
 const data = {
-  user: {
-    name: "Admin User",
-    email: "admin@digitalhub.com",
-    avatar: "/avatars/admin.jpg",
-  },
-  teams: [
-    {
-      name: "Digital Nawab",
-      logo: MonitorSmartphone,
-      plan: "Pro",
+    user: {
+        name: "shadcn",
+        email: "m@example.com",
+        avatar: "/avatars/shadcn.jpg",
     },
-    {
-      name: "WebVerse",
-      logo: Globe2,
-      plan: "Enterprise",
-    },
-    {
-      name: "CodeCraft",
-      logo: Code,
-      plan: "Startup",
-    },
-  ],
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: LayoutDashboard,
-      isActive: true,
-      items: [
+    teams: [
         {
-          title: "Overview",
-          url: "/dashboard",
+            name: "Acme Inc",
+            logo: GalleryVerticalEnd,
+            plan: "Enterprise",
         },
         {
-          title: "Analytics",
-          url: "/dashboard",
+            name: "Acme Corp.",
+            logo: AudioWaveform,
+            plan: "Startup",
         },
         {
-          title: "Reports",
-          url: "/dashboard",
+            name: "Evil Corp.",
+            logo: Command,
+            plan: "Free",
         },
-      ],
-    },
-    {
-      title: "Services",
-      url: "/services",
-      icon: Layers3,
-      items: [
+    ],
+    navMain: [
         {
-          title: "All Services",
-          url: "/services",
-        },
-        {
-          title: "Digital Marketing",
-          url: "/services",
-        },
-        {
-          title: "Web Development",
-          url: "/services",
-        },
-        {
-          title: "SEO",
-          url: "/services",
+            title: "Dashboards",
+            url: "#",
+            icon: SquareTerminal,
+            isActive: true,
+            items: [
+                {
+                    title: "Fashion Academy Dashboard",
+                    url: "/dashboard",
+                },
+                {
+                    title: "Salon Dashboard",
+                    url: "/dashboard/salon_dashboard",
+                },
+            ],
         },
         {
-          title: "Content Creation",
-          url: "/services",
-        },
-      ],
-    },
-    {
-      title: "Clients",
-      url: "#",
-      icon: Users,
-      items: [
-        {
-          title: "Active Clients",
-          url: "#",
-        },
-        {
-          title: "Leads",
-          url: "#",
-        },
-        {
-          title: "Contracts",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Projects",
-      url: "#",
-      icon: FolderKanban,
-      items: [
-        {
-          title: "Ongoing",
-          url: "#",
+            title: "Fashion Academy",
+            url: "#",
+            icon: Bot,
+            items: [
+                {
+                    title: "Course Category",
+                    url: "/dashboard/academy_category",
+                },
+                {
+                    title: "All Courses",
+                    url: "/dashboard/courses",
+                },
+                {
+                    title: "Add Courses",
+                    url: "/dashboard/add_course",
+                },
+            ],
         },
         {
-          title: "Completed",
-          url: "#",
+            title: "Salon Services",
+            url: "#",
+            icon: BookOpen,
+            items: [
+                {
+                    title: "Salon Service",
+                    url: "/dashboard/salon_service",
+                },
+            ],
+        },
+    ],
+    projects: [
+        {
+            title: "Admin Dashboard",
+            url: "/dashboard",
+            icon: Frame,
         },
         {
-          title: "Archived",
-          url: "#",
+            title: "Meta Data",
+            url: "/meta-data",
+            icon: Frame,
         },
-      ],
-    },
-    {
-      title: "Team & Roles",
-      url: "#",
-      icon: ShieldCheck,
-      items: [
+    ],
+    Pages: [
         {
-          title: "Team Members",
-          url: "#",
+            title: "All Services",
+            url: "/services",
+            icon: PieChart,
         },
         {
-          title: "Roles & Permissions",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Billing",
-      url: "#",
-      icon: CreditCard,
-      items: [
-        {
-          title: "Invoices",
-          url: "#",
+            title: "SEO Service",
+            url: "/#",
+            icon: PieChart,
         },
         {
-          title: "Plans",
-          url: "#",
+            title: "Marketing Service",
+            url: "/#",
+            icon: Map,
         },
         {
-          title: "Payment Methods",
-          url: "#",
+            title: "Development Service",
+            url: "/#",
+            icon: User,
         },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
+    ],
+    Other: [
         {
-          title: "Profile",
-          url: "#",
+            title: "Career",
+            url: "/career",
+            icon: BookOpen,
         },
         {
-          title: "Notifications",
-          url: "#",
+            title: "Blog",
+            url: "/blogs",
+            icon: Map,
         },
         {
-          title: "Security",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Support",
-      url: "#",
-      icon: LifeBuoy,
-      items: [
-        {
-          title: "Help Center",
-          url: "#",
+            title: "Contact Details",
+            url: "/contact-details",
+            icon: BookOpen,
         },
         {
-          title: "Contact Support",
-          url: "#",
+            title: "Our Team",
+            url: "/our-team",
+            icon: BookOpen,
+        },
+    ],
+    Enquiry: [
+        {
+            title: "Hero Section",
+            url: "/hero-videos",
+            icon: BookOpen,
         },
         {
-          title: "System Status",
-          url: "#",
+            title: "About Section",
+            url: "/about",
+            icon: BookOpen,
         },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "E-Commerce Platform",
-      url: "/projects/ecommerce",
-      icon: ShoppingCart,
-    },
-    {
-      name: "Social Media Campaign",
-      url: "/projects/social-campaign",
-      icon: Megaphone,
-    },
-    {
-      name: "Corporate Website Redesign",
-      url: "/projects/corporate-website",
-      icon: Brush,
-    },
-  ],
-}
+        {
+            title: "Tools and Technologies",
+            url: "/technologies",
+            icon: Map,
+        },
+        {
+            title: "FAQs",
+            url: "/faqs",
+            icon: BookOpen,
+        },
+        {
+            title: "Vision-Mission",
+            url: "/vision-mission",
+            icon: BookOpen,
+        },
+    ],
+};
 
-
-export function AppSidebar({
-  ...props
-}) {
-  return (
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
-      </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
-      </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>
-  );
+export function AppSidebar({ ...props }) {
+    return (
+        <Sidebar collapsible="icon" {...props}>
+            <SidebarHeader>
+                <TeamSwitcher teams={data.teams} />
+            </SidebarHeader>
+            <SidebarContent>
+                <NavMain />
+                <NavProjects title="Dashboard" projects={data.projects} />
+                <NavProjects title="Pages" projects={data.Pages} />
+                <NavProjects title="Home Page" projects={data.Enquiry} />
+                <NavProjects title="Other Pages" projects={data.Other} />
+            </SidebarContent>
+            <SidebarFooter>
+                <button
+                    // onClick={logout}
+                    className="w-full bg-red-600 border flex text-white text-xl items-center justify-center font-semibold gap-2 rounded-md p-2 hover:bg-red-700 transition-colors"
+                >
+                    Logout
+                </button>
+            </SidebarFooter>
+            <SidebarRail />
+        </Sidebar>
+    );
 }

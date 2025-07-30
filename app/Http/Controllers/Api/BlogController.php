@@ -8,14 +8,17 @@ use App\Models\Blog;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\GD\Driver as GdDriver;
 use Illuminate\Support\Facades\Validator;
-
+use Inertia\Inertia;
 class BlogController extends Controller
 {
     // Get all blogs
     public function index()
     {
-        $blogs = Blog::all();
-        return response()->json($blogs, 200);
+         $blogs = Blog::orderBy('created_at', 'desc')->get();
+        // return response()->json($blogs, 200);
+ return Inertia::render('Admin/Other/Blog', [
+            'blogs' => $blogs,
+        ]);
     }
 
     // Store new blog
@@ -41,37 +44,71 @@ class BlogController extends Controller
         }
 
 
-        $manager = new ImageManager(new GdDriver());
+        // $manager = new ImageManager(new GdDriver());
 
-        // Process card image
-        $cardImgFile = $request->file('card_img');
-        $cardImg     = $manager->read($cardImgFile)->cover(400, 400)->toWebp(85);
-        $cardImgName = uniqid() . '.webp';
-        $cardImg->save(public_path('assets/images/blog/' . $cardImgName));
+        // // Process card image
+        // $cardImgFile = $request->file('card_img');
+        // $cardImg     = $manager->read($cardImgFile)->cover(400, 400)->toWebp(85);
+        // $cardImgName = uniqid() . '.webp';
+        // $cardImg->save(public_path('assets/images/blog/' . $cardImgName));
 
-        // Process banner image
-        $bannerImgFile = $request->file('banner_img');
-        $bannerImg     = $manager->read($bannerImgFile)->cover(400, 400)->toWebp(85);
-        $bannerImgName = uniqid() . '.webp';
-        $bannerImg->save(public_path('assets/images/blog/' . $bannerImgName));
+        // // Process banner image
+        // $bannerImgFile = $request->file('banner_img');
+        // $bannerImg     = $manager->read($bannerImgFile)->cover(400, 400)->toWebp(85);
+        // $bannerImgName = uniqid() . '.webp';
+        // $bannerImg->save(public_path('assets/images/blog/' . $bannerImgName));
 
-        $blog = Blog::create([
-            'meta_key'    => $request->meta_key,
-            'meta_desc'   => $request->meta_desc,
-            'title'       => $request->title,
-            'url'         => $request->url,
-            'keyword'     => $request->keyword,
-            'description' => $request->description,
-            'author'      => $request->author,
-            'published'   => $request->published,
-            'card_img'    => $cardImgName,
-            'banner_img'  => $bannerImgName,
-        ]);
+        // $blog = Blog::create([
+        //     'meta_key'    => $request->meta_key,
+        //     'meta_desc'   => $request->meta_desc,
+        //     'title'       => $request->title,
+        //     'url'         => $request->url,
+        //     'keyword'     => $request->keyword,
+        //     'description' => $request->description,
+        //     'author'      => $request->author,
+        //     'published'   => $request->published,
+        //     'card_img'    => $cardImgName,
+        //     'banner_img'  => $bannerImgName,
+        // ]);
 
-        return response()->json([
-            'message' => 'Blog created successfully.',
-            'data'    => $blog,
-        ], 201);
+        // return response()->json([
+        //     'message' => 'Blog created successfully.',
+        //     'data'    => $blog,
+        // ], 201);
+
+        try {
+            $manager = new ImageManager(new GdDriver());
+
+            // Process card image
+            $cardImgFile = $request->file('card_img');
+            $cardImg     = $manager->read($cardImgFile)->cover(400, 400)->toWebp(85);
+            $cardImgName = 'card_' . uniqid() . '.webp';
+            $cardImg->save(public_path('assets/images/blog/' . $cardImgName));
+
+            // Process banner image
+            $bannerImgFile = $request->file('banner_img');
+            $bannerImg     = $manager->read($bannerImgFile)->cover(1200, 600)->toWebp(85);
+            $bannerImgName = 'banner_' . uniqid() . '.webp';
+            $bannerImg->save(public_path('assets/images/blog/' . $bannerImgName));
+
+            $blog = Blog::create([
+                'meta_key'    => $request->meta_key,
+                'meta_desc'   => $request->meta_desc,
+                'title'       => $request->title,
+                'url'         => $request->url,
+                'keyword'     => $request->keyword,
+                'description' => $request->description,
+                'author'      => $request->author,
+                'published'   => $request->published,
+                'card_img'    => $cardImgName,
+                'banner_img'  => $bannerImgName,
+            ]);
+
+            return redirect()->route('blogs.index')->with('message', 'Blog created successfully.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Failed to create blog. Please try again.'])->withInput();
+        }
     }
 
     // Update blog
@@ -98,70 +135,85 @@ class BlogController extends Controller
 
         $blog = Blog::findOrFail($id);
 
-        $manager = new ImageManager(new GdDriver());
+       try {
+            $manager = new ImageManager(new GdDriver());
 
-        if ($request->hasFile('card_img')) {
-            $cardImgFile = $request->file('card_img');
-            $cardImg     = $manager->read($cardImgFile)->cover(400, 400)->toWebp(85);
-            $cardImgName = uniqid() . '.webp';
-            $cardImg->save(public_path('assets/images/blog/' . $cardImgName));
+            // Handle card image update
+            if ($request->hasFile('card_img')) {
+                // Delete old card image
+                $oldCardImagePath = public_path('assets/images/blog/' . $blog->card_img);
+                if (file_exists($oldCardImagePath)) {
+                    unlink($oldCardImagePath);
+                }
 
-            $blog->card_img = $cardImgName;
+                $cardImgFile = $request->file('card_img');
+                $cardImg     = $manager->read($cardImgFile)->cover(400, 400)->toWebp(85);
+                $cardImgName = 'card_' . uniqid() . '.webp';
+                $cardImg->save(public_path('assets/images/blog/' . $cardImgName));
+                $blog->card_img = $cardImgName;
+            }
+
+            // Handle banner image update
+            if ($request->hasFile('banner_img')) {
+                // Delete old banner image
+                $oldBannerImagePath = public_path('assets/images/blog/' . $blog->banner_img);
+                if (file_exists($oldBannerImagePath)) {
+                    unlink($oldBannerImagePath);
+                }
+
+                $bannerImgFile = $request->file('banner_img');
+                $bannerImg     = $manager->read($bannerImgFile)->cover(1200, 600)->toWebp(85);
+                $bannerImgName = 'banner_' . uniqid() . '.webp';
+                $bannerImg->save(public_path('assets/images/blog/' . $bannerImgName));
+                $blog->banner_img = $bannerImgName;
+            }
+
+            $blog->update([
+                'meta_key'    => $request->meta_key,
+                'meta_desc'   => $request->meta_desc,
+                'title'       => $request->title,
+                'url'         => $request->url,
+                'keyword'     => $request->keyword,
+                'description' => $request->description,
+                'author'      => $request->author,
+                'published'   => $request->published,
+                'card_img'    => $blog->card_img,
+                'banner_img'  => $blog->banner_img,
+            ]);
+
+            return redirect()->route('blogs.index')->with('message', 'Blog updated successfully.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Failed to update blog. Please try again.'])->withInput();
         }
-
-        if ($request->hasFile('banner_img')) {
-            $bannerImgFile = $request->file('banner_img');
-            $bannerImg     = $manager->read($bannerImgFile)->cover(400, 400)->toWebp(85);
-            $bannerImgName = uniqid() . '.webp';
-            $bannerImg->save(public_path('assets/images/blog/' . $bannerImgName));
-
-            $blog->banner_img = $bannerImgName;
-        }
-
-        $blog->update([
-            'meta_key'    => $request->meta_key,
-            'meta_desc'   => $request->meta_desc,
-            'title'       => $request->title,
-            'url'         => $request->url,
-            'keyword'     => $request->keyword,
-            'description' => $request->description,
-            'author'      => $request->author,
-            'published'   => $request->published,
-            'card_img'    => $blog->card_img,
-            'banner_img'  => $blog->banner_img,
-        ]);
-
-        return response()->json([
-            'message' => 'Blog updated successfully.',
-            'data'    => $blog,
-        ], 200);
     }
 
    //Delete method
 public function destroy($id)
 {
-    $blog = Blog::find($id);
+    try {
+            $blog = Blog::findOrFail($id);
 
-    if (!$blog) {
-        return response()->json(['message' => 'Blog not found.'], 404);
-    }
+            // Delete card image file if exists
+            $cardImagePath = public_path('assets/images/blog/' . $blog->card_img);
+            if (file_exists($cardImagePath)) {
+                unlink($cardImagePath);
+            }
 
-    // Delete card image file if exists
-    $cardImagePath = public_path('assets/images/blog/' . $blog->card_img);
-    if (file_exists($cardImagePath)) {
-        unlink($cardImagePath);
-    }
+            // Delete banner image file if exists
+            $bannerImagePath = public_path('assets/images/blog/' . $blog->banner_img);
+            if (file_exists($bannerImagePath)) {
+                unlink($bannerImagePath);
+            }
 
-    // Delete banner image file if exists
-    $bannerImagePath = public_path('assets/images/blog/' . $blog->banner_img);
-    if (file_exists($bannerImagePath)) {
-        unlink($bannerImagePath);
-    }
+            // Delete database record
+            $blog->delete();
 
-    // Delete database record
-    $blog->delete();
+            return redirect()->route('blogs.index')->with('message', 'Blog deleted successfully.');
 
-    return response()->json(['message' => 'Blog deleted successfully.'], 200);
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Failed to delete blog. Please try again.']);
+        }
 }
 
 }

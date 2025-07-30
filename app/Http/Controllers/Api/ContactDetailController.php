@@ -6,14 +6,18 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\ContactDetail;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class ContactDetailController extends Controller
 {
     //Get all data
-    public function index()
+   public function index()
     {
-        $details = ContactDetail::all();
-        return response()->json($details, 200);
+        $contactDetails = ContactDetail::orderBy('created_at', 'desc')->get();
+        
+        return Inertia::render('Admin/Other/ContactDetail', [
+            'contactDetails' => $contactDetails,
+        ]);
     }
 
     //Store the data
@@ -45,17 +49,19 @@ class ContactDetailController extends Controller
             ], 422);
         }
 
-        $contactdetail = ContactDetail::create([
-            'email'          => $request->email,
-            'phone_no'       => $request->phone_no,
-            'whatsapp_no'    => $request->whatsapp_no,
-            'location'       => $request->location,
-        ]);
+       try {
+            $contactDetail = ContactDetail::create([
+                'email'       => array_filter($request->email, fn($email) => !empty(trim($email))),
+                'phone_no'    => array_filter($request->phone_no, fn($phone) => !empty(trim($phone))),
+                'whatsapp_no' => array_filter($request->whatsapp_no, fn($whatsapp) => !empty(trim($whatsapp))),
+                'location'    => $request->location,
+            ]);
 
-         return response()->json([
-            'message' => 'Contact Detail created successfully.',
-            'data'    => $contactdetail,
-        ], 201);
+            return redirect()->route('contact-details.index')->with('message', 'Contact details created successfully.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Failed to create contact details. Please try again.'])->withInput();
+        }
     }
 
     //Update the data
@@ -86,26 +92,34 @@ class ContactDetailController extends Controller
             ], 422);
         }
 
-          $contactdetail = ContactDetail::findOrFail($id);
+        try {
+            $contactDetail = ContactDetail::findOrFail($id);
 
-        $contactdetail->update([
-             'email'         => $request->email,
-            'phone_no'       => $request->phone_no,
-            'whatsapp_no'    => $request->whatsapp_no,
-            'location'       => $request->location,
-        ]);
+            $contactDetail->update([
+                'email'       => array_filter($request->email, fn($email) => !empty(trim($email))),
+                'phone_no'    => array_filter($request->phone_no, fn($phone) => !empty(trim($phone))),
+                'whatsapp_no' => array_filter($request->whatsapp_no, fn($whatsapp) => !empty(trim($whatsapp))),
+                'location'    => $request->location,
+            ]);
 
-         return response()->json([
-        'message' => 'Contact Detail updated successfully.',
-        'data' => $contactdetail,
-        ], 200);
+            return redirect()->route('contact-details.index')->with('message', 'Contact details updated successfully.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Failed to update contact details. Please try again.'])->withInput();
+        }
     }
 
-    //Delete
+    // Delete
     public function destroy($id)
     {
-         $contactdetail = ContactDetail::findOrFail($id);
-         $contactdetail->delete();
-         return response()->json(['message' => 'Record deleted successfully']);
+        try {
+            $contactDetail = ContactDetail::findOrFail($id);
+            $contactDetail->delete();
+            
+            return redirect()->route('contact-details.index')->with('message', 'Contact details deleted successfully.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Failed to delete contact details. Please try again.']);
+        }
     }
 }

@@ -1,9 +1,5 @@
 <?php
 
-use App\Http\Controllers\api\our_teamcontroller;
-use App\Http\Controllers\api\packagecontroller;
-use App\Http\Controllers\api\vision_missioncontroller;
-use App\Http\Controllers\API\TechnologyController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\ServiceController;
@@ -16,6 +12,10 @@ use App\Http\Controllers\API\HeroController;
 use App\Http\Controllers\API\CareerController;
 use App\Http\Controllers\API\BlogController;
 use App\Http\Controllers\API\ContactDetailController;
+use App\Http\Controllers\api\our_teamcontroller;
+use App\Http\Controllers\api\packagecontroller;
+use App\Http\Controllers\api\vision_missioncontroller;
+use App\Http\Controllers\API\TechnologyController;
 
 
 Route::get('/user', function (Request $request) {
@@ -52,9 +52,6 @@ Route::post('/updatevision/{id}',[vision_missioncontroller::class,'updatevision'
 Route::delete('/deletevision/{id}',[vision_missioncontroller::class,'deletevision']);
 
 // Technology routes
-// Route::post('/addtech',[TechnologyController::class,'addtech']);
-// Route::delete('/deletetech/{id}',[TechnologyController::class,'deletetech']);
-// Route::post('/updatetech/{id}',[TechnologyController::class,'updatetech']);
 Route::get('/get_technology', [TechnologyController::class, 'index']);
 Route::post('/post_technology', [TechnologyController::class, 'store']);
 Route::post('/update_technology/{id}', [TechnologyController::class, 'update']);
@@ -69,8 +66,8 @@ Route::delete('/delete_home_about/{id}', [HomeAboutController::class, 'destroy']
 // Creatives routes
 Route::get('/get_creatives', [CreativesController::class, 'index']);
 Route::post('/post_creatives', [CreativesController::class, 'store']);
-Route::delete('/delete_creatives/{id}', [CreativesController::class, 'destroy']);
 Route::put('/update_creatives/{id}', [CreativesController::class, 'update']);
+Route::delete('/delete_creatives/{id}', [CreativesController::class, 'destroy']);
 
 // FAQ routes
 Route::get('/get_faq', [FAQController::class, 'index']);
@@ -81,20 +78,26 @@ Route::delete('/delete_faq/{id}', [FAQController::class, 'destroy']);
 //Hero Routes
 Route::get('/get_hero', [HeroController::class, 'index']);
 Route::post('/post_hero', [HeroController::class, 'store']);
+Route::put('/update_hero/{id}', [HeroController::class, 'update']);
+Route::delete('/delete_hero/{id}', [HeroController::class, 'destroy']);
 
 //Career Routes
 Route::get('/get_career', [CareerController::class, 'index']);
 Route::post('/post_career', [CareerController::class, 'store']);
 Route::put('/update_career/{id}', [CareerController::class, 'update']);
 Route::delete('/delete_career/{id}', [CareerController::class, 'destroy']);
+
+//Our Team routes
 Route::post('insert',[our_teamcontroller::class,'insert']);
 Route::delete('delete_ourteam/{id}',[our_teamcontroller::class,'delete_ourteam']);
 Route::post('update_ourteam/{id}',[our_teamcontroller::class,'update_ourteam']);
 Route::get('show_ourteam',[our_teamcontroller::class,'show_ourteam']);
-Route::post('insert_package',[packagecontroller::class,'insert_package']);
-Route::post('update_package/{id}',[packagecontroller::class,'update_package']);
-Route::get('show_package',[packagecontroller::class,'show_package']);
-Route::delete('delete_package/{id}',[packagecontroller::class,'delete_package']);
+
+//Package Routes
+Route::post('insert_package', [packagecontroller::class,'insert_package']);
+Route::post('update_package/{id}', [packagecontroller::class,'update_package']);
+Route::get('show_package', [packagecontroller::class,'show_package']);
+Route::delete('delete_package/{id}', [packagecontroller::class,'delete_package']);
 
 //Blog Routes
 Route::get('/get_blog', [BlogController::class, 'index']);

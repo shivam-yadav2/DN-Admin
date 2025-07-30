@@ -8,6 +8,14 @@ use Inertia\Inertia;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\EnquiryController;
 use App\Http\Controllers\Api\SubServiceController;
+use App\Http\Controllers\Api\TechnologyController;
+use App\Http\Controllers\API\FAQController;
+use App\Http\Controllers\Api\HeroController;
+use App\Http\Controllers\Api\vision_missioncontroller;
+use App\Http\Controllers\API\CareerController;
+use App\Http\Controllers\API\BlogController;
+use App\Http\Controllers\API\ContactDetailController;
+use App\Http\Controllers\Api\our_teamcontroller;
 
 Route::get('/test', function () {
     return Inertia::render('Test');
@@ -37,5 +45,35 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Home Page Routes 
+
+Route::resource('hero-videos', HeroController::class)->names('hero');
+
+// Route::get('/home_hero', function () {
+//     return Inertia::render('Admin/HomePage/Hero');
+// });
+
+// Route::get('/home_toolsandtechnologies', function () {
+//     return Inertia::render('Admin/HomePage/ToolsPage');
+// });
+
+Route::get('/technologies', [TechnologyController::class, 'index'])->name('technologies.index');
+Route::post('/technologies', [TechnologyController::class, 'store'])->name('technologies.store');
+Route::delete('/technologies/{id}', [TechnologyController::class, 'delete'])->name('technologies.delete');
+Route::put('/technologies/{id}', [TechnologyController::class, 'update'])->name('technologies.update');
+
+Route::get('/faqs', [FAQController::class, 'index'])->name('faqs.index');
+Route::post('/faqs', [FAQController::class, 'store'])->name('faqs.store');
+Route::put('/faqs/{id}', [FAQController::class, 'update'])->name('faqs.update');
+Route::delete('/faqs/{id}', [FAQController::class, 'destroy'])->name('faqs.destroy');
+
+Route::resource('vision-mission', vision_missioncontroller::class)->names('vision-mission');
+
+Route::resource('career', CareerController::class)->names('career');
+Route::resource('blogs', BlogController::class)->names('blogs');
+// In web.php
+Route::resource('contact-details', ContactDetailController::class);
+Route::resource('our-team', our_teamcontroller::class);
 
 require __DIR__.'/auth.php';

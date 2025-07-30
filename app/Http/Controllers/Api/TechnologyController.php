@@ -8,22 +8,30 @@ use App\Models\technology;
 use Intervention\Image\ImageManager;            //Ensure you have intervention image installed
 use Intervention\Image\Drivers\GD\Driver as GdDriver;       //Import GD driver for image proceesing
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class TechnologyController extends Controller
 {
-
     //Get all technologies
     public function index()
     {
-        $technologies = technology::all();
-        return response()->json($technologies, 200);
+        $technologies = technology::all()->map(function ($tech) {
+            return [
+                'id' => $tech->id,
+                'img' => $tech->img,
+                'heading' => $tech->heading,
+            ];
+        });
+        return Inertia::render('Admin/HomePage/ToolsPage', [
+            'technologies' => $technologies,
+        ]);
     }
 
     //Store
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'img' => 'required|image|mimes:jpg,jpeg,png|max:512',
+            'img' => 'required|image|mimes:jpg,jpeg,png,webp|max:512',
             'heading' => 'required|string|max:255',
         ]);
 
@@ -33,7 +41,7 @@ class TechnologyController extends Controller
             ], 422);
         }
 
-        //Check if image file is present in th request
+        //Check if image file is present in the request
         if(!$request->hasFile('img'))
         {
             return response()->json(['message' => 'Image file is required'
@@ -57,10 +65,13 @@ class TechnologyController extends Controller
             'heading' => $request->heading,
         ]);
 
-        return response()->json([
-            'message' => 'Technology created successfully',
-            'data' => $technology,
-        ], 201); }
+        // return response()->json([
+        //     'message' => 'Technology created successfully',
+        //     'data' => $technology,
+        // ], 201);
+        return redirect()->back()->with('success', 'Technology created successfully');
+        
+    }
 
 
         //Delete method
@@ -82,9 +93,11 @@ class TechnologyController extends Controller
         }
 
         $technology->delete();
-        return response()->json([
-            'message' => "Technology deleted successfully",
-        ], 200);
+        // return response()->json([
+        //     'message' => "Technology deleted successfully",
+        // ], 200);
+        return redirect()->back()->with('success', 'Technology Deleted successfully');
+
     }
 
     //Update method

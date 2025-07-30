@@ -6,14 +6,23 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\FAQ;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class FAQController extends Controller
 {
     //Get all FAQs
-    public function index()
+   public function index()
     {
-        $faqs = FAQ::all();
-        return response()->json($faqs,200);
+        $faqs = FAQ::all()->map(function ($faq) {
+            return [
+                'id' => $faq->id,
+                'question' => $faq->question,
+                'answer' => $faq->answer,
+            ];
+        });
+        return Inertia::render('Admin/HomePage/FAQPage', [
+            'faqs' => $faqs,
+        ]);
     }
 
     //Store a new FAQ
@@ -32,10 +41,12 @@ class FAQController extends Controller
 
         // Create a new FAQ
         $faq = FAQ::create($request->all());
-        return response()->json([
-            'message' => 'FAQ created successfully.',
-            'data' => $faq,
-        ], 201);
+        // return response()->json([
+        //     'message' => 'FAQ created successfully.',
+        //     'data' => $faq,
+        // ], 201);
+
+        return redirect()->back()->with('success', 'FAQ created successfully.');
     }
 
     //Update an existing FAQ
@@ -55,7 +66,8 @@ class FAQController extends Controller
         }
 
         $faq->update($request->all());
-        return response()->json($faq);
+        // return response()->json($faq);
+        return redirect()->back()->with('success', 'FAQ updated successfully.');
     }
 
     //Delete an FAQ
@@ -63,7 +75,8 @@ class FAQController extends Controller
     {
         $faq = FAQ::findOrFail($id);
         $faq->delete();
-        return response()->json(['message' => 'FAQ deleted successfully']);
+        // return response()->json(['message' => 'FAQ deleted successfully']);
+        return redirect()->back()->with('success', 'FAQ deleted successfully');
     }
 
 }
