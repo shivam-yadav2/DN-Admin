@@ -14,6 +14,8 @@ use App\Http\Controllers\Api\HeroController;
 use App\Http\Controllers\Api\vision_missioncontroller;
 use App\Http\Controllers\API\CareerController;
 use App\Http\Controllers\API\BlogController;
+use App\Http\Controllers\API\ContactDetailController;
+use App\Http\Controllers\Api\our_teamcontroller;
 
 Route::get('/test', function () {
     return Inertia::render('Test');
@@ -70,5 +72,8 @@ Route::resource('vision-mission', vision_missioncontroller::class)->names('visio
 
 Route::resource('career', CareerController::class)->names('career');
 Route::resource('blogs', BlogController::class)->names('blogs');
+// In web.php
+Route::resource('contact-details', ContactDetailController::class);
+Route::resource('our-team', our_teamcontroller::class);
 
 require __DIR__.'/auth.php';

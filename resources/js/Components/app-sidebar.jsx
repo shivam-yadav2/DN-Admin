@@ -159,12 +159,12 @@ const data = {
         },
         {
             title: "Contact Details",
-            url: "/contact",
+            url: "/contact-details",
             icon: BookOpen,
         },
         {
             title: "Our Team",
-            url: "/team",
+            url: "/our-team",
             icon: BookOpen,
         },
     ],
