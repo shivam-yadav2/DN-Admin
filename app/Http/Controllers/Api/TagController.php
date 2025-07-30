@@ -66,13 +66,13 @@ class TagController extends Controller
             $img->save($destinationPath . '/' . $imageName);
             // $imageName = $timestampName;
         }    
-        elseif ($originalExtension === 'webp') 
+    elseif ($originalExtension === 'webp') 
         {
             // Save WebP as-is
             $image->move($destinationPath, $imageName);
             // $imageName = $timestampName;
         } 
-         else 
+    else 
         {
             // Return if unsupported format
             return response()->json(['message' => 'Only JPG, JPEG, PNG, or WEBP formats allowed.'], 400);

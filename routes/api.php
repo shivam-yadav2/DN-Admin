@@ -17,6 +17,7 @@ use App\Http\Controllers\api\packagecontroller;
 use App\Http\Controllers\api\vision_missioncontroller;
 use App\Http\Controllers\API\TechnologyController;
 use App\Http\Controllers\API\TagController;
+use App\Http\Controllers\API\ProjectController;
 
 
 Route::get('/user', function (Request $request) {
@@ -117,4 +118,8 @@ Route::post('/post_tag', [TagController::class, 'store']);
 Route::post('/update_tag/{id}', [TagController::class, 'update']);
 Route::delete('/delete_tag/{id}', [TagController::class, 'destroy']);
 
-
+// Project Routes
+Route::get('/get_project', [ProjectController::class, 'index']);
+Route::post('/post_project', [ProjectController::class, 'store']);
+Route::post('/update_project/{id}', [ProjectController::class, 'update']);
+Route::delete('/delete_project/{id}', [ProjectController::class, 'destroy']);
