@@ -7,147 +7,159 @@ use App\Models\our_team;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Facades\Image;
+use Inertia\Inertia;
 
 class our_teamcontroller extends Controller
 {
-    public function insert(Request $request)
+    public function index()
+    {
+        $data = our_team::orderBy('created_at', 'desc')->get();
+        
+        return Inertia::render('Admin/Other/OurTeam', [
+            'teamMembers' => $data,
+            'flash' => session('flash')
+        ]);
+    }
+
+    public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'designation' => 'required|string',
+            'name' => 'required|string|max:255',
+            'designation' => 'required|string|max:255',
             'image' => 'required|image|mimes:jpeg,jpg,png,webp|max:2048',
             'joining_date' => 'required|date',
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()->all()
-            ], 422);
+            return back()->withErrors($validator)->withInput();
         }
 
         $imagename = null;
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imagename = time() . '.webp'; // force .webp output
+            $imagename = time() . '_' . uniqid() . '.webp';
             $path = public_path('assets/images/our_team/' . $imagename);
 
-            // ✅ Resize to 500x500 and convert to webp
+            // Create directory if it doesn't exist
+            if (!file_exists(dirname($path))) {
+                mkdir(dirname($path), 0755, true);
+            }
+
+            // Resize to 500x500 and convert to webp
             Image::make($image)
-                ->fit(500, 500)              // Ensures image is 500x500
-                ->encode('webp', 90)         // Converts to webp with 90% quality
-                ->save($path);               // Save to path
+                ->fit(500, 500)
+                ->encode('webp', 90)
+                ->save($path);
         }
 
-        $data = our_team::create([
+     $our_team= our_team::create([
             'name' => $request->name,
             'designation' => $request->designation,
             'img' => $imagename,
             'joining_date' => $request->joining_date,
         ]);
 
+        // return back()->with('flash', [
+        //     'message' => 'Team member added successfully!',
+        //     'type' => 'success'
+        // ]);
         return response()->json([
-            'msg' => 'Data added successfully',
-            'data' => $data,
+            'data'=>$our_team,
+            'msg'=>'Data added successfully',
         ]);
     }
 
-
-    public function delete_ourteam($id)
-    {
-        $info = our_team::find($id);
-        if (!$info) {
-            return response()->json(
-                [
-                    'data' => 'Data not found',
-                ],
-                404
-            );
-        }
-        // Path to the image file
-//        $imagePath = public_path('assets/images/our_team/' . $info->img);
-
-        //    if (file_exists($imagePath)) {
-//       unlink($imagePath); //delete file
-//   }
-
-        $info->delete();
-        return response()->json([
-            'data' => "Data Deleted Successfully",
-        ]);
-
-    }
-
-    public function update_ourteam(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'designation' => 'required|string',
-            'image' => 'required|image|mimes:jpeg,jpg,png,webp|max:2048|dimensions:max_width:500, max_height:500',
+            'name' => 'required|string|max:255',
+            'designation' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:2048',
             'joining_date' => 'required|date',
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()->all()
-            ], 422);
-        }
-
-        $imagename = null;
-
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imagename = time() . '.webp'; // force convert to webp
-            $path = public_path('assets/images/our_team/' . $imagename);
-
-            // Resize and convert to webp
-            $resizedImage = Image::make($image)
-                ->fit(500, 500)
-                ->encode('webp', 90);
-
-            $resizedImage->save($path);
+            return back()->withErrors($validator)->withInput();
         }
 
         $user = our_team::find($id);
 
         if (!$user) {
-            return response()->json([
-                'status' => false,
+            return back()->with('flash', [
                 'message' => 'Team member not found.',
-            ], 404);
+                'type' => 'error'
+            ]);
+        }
+
+        $imagename = $user->img; // Keep existing image by default
+
+        if ($request->hasFile('image')) {
+            // Delete old image if it exists
+            if ($user->img) {
+                $oldImagePath = public_path('assets/images/our_team/' . $user->img);
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath);
+                }
+            }
+
+            $image = $request->file('image');
+            $imagename = time() . '_' . uniqid() . '.webp';
+            $path = public_path('assets/images/our_team/' . $imagename);
+
+            // Create directory if it doesn't exist
+            if (!file_exists(dirname($path))) {
+                mkdir(dirname($path), 0755, true);
+            }
+
+            // Resize and convert to webp
+            Image::make($image)
+                ->fit(500, 500)
+                ->encode('webp', 90)
+                ->save($path);
         }
 
         $user->update([
             'name' => $request->name,
             'designation' => $request->designation,
-            'img' => $imagename ?? $user->img,
+            'img' => $imagename,
             'joining_date' => $request->joining_date,
         ]);
 
+        // return back()->with('flash', [
+        //     'message' => 'Team member updated successfully!',
+        //     'type' => 'success'
+        // ]);
         return response()->json([
-            'msg' => 'Data updated successfully',
-            'data' => $user,
+            'data'=>$user,
+            'msg'=>'Data added successfully',
         ]);
     }
 
-
-    public function show_ourteam()
+    public function destroy($id)
     {
-        $data = our_team::all();
-        if ($data) {
-            return response()->json([
-                'msg' => $data,
-            ], 200);
-        } else {
-            return response()->json([
-                'msg' => 'Data not found',
-            ], 404);
+        $info = our_team::find($id);
+        
+        if (!$info) {
+            return back()->with('flash', [
+                'message' => 'Team member not found.',
+                'type' => 'error'
+            ]);
         }
-    }
-    
 
+        // Delete associated image
+        if ($info->img) {
+            $imagePath = public_path('assets/images/our_team/' . $info->img);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+
+        $info->delete();
+        
+        return back()->with('flash', [
+            'message' => 'Team member deleted successfully!',
+            'type' => 'success'
+        ]);
+    }
 }

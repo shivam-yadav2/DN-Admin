@@ -10,6 +10,12 @@ use App\Http\Controllers\Api\EnquiryController;
 use App\Http\Controllers\Api\SubServiceController;
 use App\Http\Controllers\Api\TechnologyController;
 use App\Http\Controllers\API\FAQController;
+use App\Http\Controllers\Api\HeroController;
+use App\Http\Controllers\Api\vision_missioncontroller;
+use App\Http\Controllers\API\CareerController;
+use App\Http\Controllers\API\BlogController;
+use App\Http\Controllers\API\ContactDetailController;
+use App\Http\Controllers\Api\our_teamcontroller;
 
 Route::get('/test', function () {
     return Inertia::render('Test');
@@ -42,12 +48,11 @@ Route::middleware('auth')->group(function () {
 
 // Home Page Routes 
 
-// Route::get('/hero-videos', [HeroController::class, 'index'])->name('hero-videos.index');
-// Route::post('/hero-videos', [HeroController::class, 'store'])->name('hero-videos.store');
+Route::resource('hero-videos', HeroController::class)->names('hero');
 
-Route::get('/home_hero', function () {
-    return Inertia::render('Admin/HomePage/Hero');
-});
+// Route::get('/home_hero', function () {
+//     return Inertia::render('Admin/HomePage/Hero');
+// });
 
 // Route::get('/home_toolsandtechnologies', function () {
 //     return Inertia::render('Admin/HomePage/ToolsPage');
@@ -63,5 +68,12 @@ Route::post('/faqs', [FAQController::class, 'store'])->name('faqs.store');
 Route::put('/faqs/{id}', [FAQController::class, 'update'])->name('faqs.update');
 Route::delete('/faqs/{id}', [FAQController::class, 'destroy'])->name('faqs.destroy');
 
+Route::resource('vision-mission', vision_missioncontroller::class)->names('vision-mission');
+
+Route::resource('career', CareerController::class)->names('career');
+Route::resource('blogs', BlogController::class)->names('blogs');
+// In web.php
+Route::resource('contact-details', ContactDetailController::class);
+Route::resource('our-team', our_teamcontroller::class);
 
 require __DIR__.'/auth.php';
