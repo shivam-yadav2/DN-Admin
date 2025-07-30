@@ -16,6 +16,7 @@ use App\Http\Controllers\API\CareerController;
 use App\Http\Controllers\API\BlogController;
 use App\Http\Controllers\API\ContactDetailController;
 use App\Http\Controllers\Api\our_teamcontroller;
+use App\Http\Controllers\API\HomeAboutController;
 
 Route::get('/test', function () {
     return Inertia::render('Test');
@@ -75,5 +76,6 @@ Route::resource('blogs', BlogController::class)->names('blogs');
 // In web.php
 Route::resource('contact-details', ContactDetailController::class);
 Route::resource('our-team', our_teamcontroller::class);
+Route::resource('home-about', HomeAboutController::class);
 
 require __DIR__.'/auth.php';

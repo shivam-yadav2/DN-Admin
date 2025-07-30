@@ -8,13 +8,19 @@ use App\Models\HomeAbout; // HomeAbout model
 use Inertia\Inertia; // Import Inertia for rendering views
 use Illuminate\Support\Facades\Validator;
 
+
 class HomeAboutController extends Controller
 {
    //Get all data
-    public function index()
+   public function index()
     {
-        $homeAbouts = HomeAbout::where('is_deleted', false)->get();
-        return response()->json($homeAbouts, 200);
+        $homeAbouts = HomeAbout::where('is_deleted', false)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return Inertia::render('Admin/HomePage/About', [
+            'homeAbouts' => $homeAbouts,
+        ]);
     }
 
     // POST a new home about
@@ -33,13 +39,21 @@ class HomeAboutController extends Controller
             ], 422);
         }
 
-        // Create new home about record
-        $homeAbout = HomeAbout::create($request->all());
+       
 
-        return response()->json([
-            'message' => 'Home About created successfully.',
-            'data' => $homeAbout,
-        ], 201);
+
+        try {
+            // Create new home about record
+                   $homeAbout = HomeAbout::create($request->all());
+
+            return redirect()->route('home-about.index')
+                ->with('success', 'Home About created successfully.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Failed to create Home About. Please try again.')
+                ->withInput();
+        }
     }
 
     // Update an existing home about
@@ -65,12 +79,19 @@ class HomeAboutController extends Controller
         }
 
         // Update home about record
-        $homeAbout->update($request->all());
 
-        return response()->json([
-            'message' => 'Home About updated successfully.',
-            'data' => $homeAbout,
-        ], 200);
+      try {
+                    $homeAbout->update($request->all());
+
+
+            return redirect()->route('home-about.index')
+                ->with('success', 'Home About updated successfully.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Failed to update Home About. Please try again.')
+                ->withInput();
+        }
     }
 
     // Delete a home about (soft delete)
@@ -82,11 +103,17 @@ class HomeAboutController extends Controller
             return response()->json(['message' => 'Home About not found.'], 404);
         }
 
-        // Soft delete the home about
-        $homeAbout->is_deleted = true;
-        $homeAbout->save();
+        try {
+            // Soft delete the home about
+            $homeAbout->update(['is_deleted' => true]);
 
-        return response()->json(['message' => 'Home About deleted successfully.'], 200);
+            return redirect()->route('home-about.index')
+                ->with('success', 'Home About deleted successfully.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Failed to delete Home About. Please try again.');
+        }
     }
 
 }

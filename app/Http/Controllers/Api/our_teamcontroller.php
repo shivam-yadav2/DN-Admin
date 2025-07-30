@@ -60,14 +60,14 @@ class our_teamcontroller extends Controller
             'joining_date' => $request->joining_date,
         ]);
 
-        // return back()->with('flash', [
-        //     'message' => 'Team member added successfully!',
-        //     'type' => 'success'
-        // ]);
-        return response()->json([
-            'data'=>$our_team,
-            'msg'=>'Data added successfully',
+        return back()->with('flash', [
+            'message' => 'Team member added successfully!',
+            'type' => 'success'
         ]);
+        // return response()->json([
+        //     'data'=>$our_team,
+        //     'msg'=>'Data added successfully',
+        // ]);
     }
 
     public function update(Request $request, $id)
@@ -126,14 +126,14 @@ class our_teamcontroller extends Controller
             'joining_date' => $request->joining_date,
         ]);
 
-        // return back()->with('flash', [
-        //     'message' => 'Team member updated successfully!',
-        //     'type' => 'success'
-        // ]);
-        return response()->json([
-            'data'=>$user,
-            'msg'=>'Data added successfully',
+        return back()->with('flash', [
+            'message' => 'Team member updated successfully!',
+            'type' => 'success'
         ]);
+        // return response()->json([
+        //     'data'=>$user,
+        //     'msg'=>'Data added successfully',
+        // ]);
     }
 
     public function destroy($id)
