@@ -12,6 +12,8 @@ use App\Http\Controllers\Api\TechnologyController;
 use App\Http\Controllers\API\FAQController;
 use App\Http\Controllers\Api\HeroController;
 use App\Http\Controllers\Api\vision_missioncontroller;
+use App\Http\Controllers\API\CareerController;
+use App\Http\Controllers\API\BlogController;
 
 Route::get('/test', function () {
     return Inertia::render('Test');
@@ -65,5 +67,8 @@ Route::put('/faqs/{id}', [FAQController::class, 'update'])->name('faqs.update');
 Route::delete('/faqs/{id}', [FAQController::class, 'destroy'])->name('faqs.destroy');
 
 Route::resource('vision-mission', vision_missioncontroller::class)->names('vision-mission');
+
+Route::resource('career', CareerController::class)->names('career');
+Route::resource('blogs', BlogController::class)->names('blogs');
 
 require __DIR__.'/auth.php';

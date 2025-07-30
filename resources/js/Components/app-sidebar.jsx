@@ -118,6 +118,11 @@ const data = {
             url: "/dashboard",
             icon: Frame,
         },
+        {
+            title: "Meta Data",
+            url: "/meta-data",
+            icon: Frame,
+        },
     ],
     Pages: [
         {
@@ -141,10 +146,37 @@ const data = {
             icon: User,
         },
     ],
+    Other: [
+        {
+            title: "Career",
+            url: "/career",
+            icon: BookOpen,
+        },
+        {
+            title: "Blog",
+            url: "/blogs",
+            icon: Map,
+        },
+        {
+            title: "Contact Details",
+            url: "/contact",
+            icon: BookOpen,
+        },
+        {
+            title: "Our Team",
+            url: "/team",
+            icon: BookOpen,
+        },
+    ],
     Enquiry: [
         {
             title: "Hero Section",
             url: "/hero-videos",
+            icon: BookOpen,
+        },
+        {
+            title: "About Section",
+            url: "/about",
             icon: BookOpen,
         },
         {
@@ -162,136 +194,6 @@ const data = {
             url: "/vision-mission",
             icon: BookOpen,
         },
-        
-    ],
-};
-
-const data2 = {
-    user: {
-        name: "Admin User",
-        email: "admin@digitalhub.com",
-        avatar: "/avatars/admin.jpg",
-    },
-    teams: [
-        {
-            name: "Digital Nawab",
-            logo: MonitorSmartphone,
-            plan: "Pro",
-        },
-        {
-            name: "WebVerse",
-            logo: Globe2,
-            plan: "Enterprise",
-        },
-        {
-            name: "CodeCraft",
-            logo: Code,
-            plan: "Startup",
-        },
-    ],
-    navMain: [
-        {
-            title: "Dashboard",
-            url: "/dashboard",
-            icon: LayoutDashboard,
-            isActive: true,
-            items: [
-                {
-                    title: "Overview",
-                    url: "/dashboard",
-                },
-                {
-                    title: "Analytics",
-                    url: "/dashboard",
-                },
-                {
-                    title: "Reports",
-                    url: "/dashboard",
-                },
-            ],
-        },
-        {
-            title: "Services",
-            url: "/services",
-            icon: Layers3,
-            items: [
-                {
-                    title: "All Services",
-                    url: "/services",
-                },
-                {
-                    title: "Digital Marketing",
-                    url: "/services",
-                },
-                {
-                    title: "Web Development",
-                    url: "/services",
-                },
-                {
-                    title: "SEO",
-                    url: "/services",
-                },
-                {
-                    title: "Content Creation",
-                    url: "/services",
-                },
-            ],
-        },
-        {
-            title: "Home Page",
-            url: "/#",
-            icon: Layers3,
-            items: [
-                {
-                    title: "Hero Section",
-                    url: "/services",
-                },
-                {
-                    title: "Digital Marketing",
-                    url: "/services",
-                },
-                {
-                    title: "Web Development",
-                    url: "/services",
-                },
-                {
-                    title: "SEO",
-                    url: "/services",
-                },
-                {
-                    title: "Content Creation",
-                    url: "/services",
-                },
-            ],
-        },
-        {
-            title: "Enquiries",
-            url: "#",
-            icon: Layers3,
-            items: [
-                {
-                    title: "All Enquiries",
-                    url: "/enquiries",
-                },
-            ],
-        },
-    ],
-    projects: [
-        {
-            name: "E-Commerce Platform",
-            url: "/projects/ecommerce",
-            icon: ShoppingCart,
-        },
-        {
-            name: "Social Media Campaign",
-            url: "/projects/social-campaign",
-            icon: Megaphone,
-        },
-        {
-            name: "Corporate Website Redesign",
-            url: "/projects/corporate-website",
-            icon: Brush,
-        },
     ],
 };
 
@@ -306,6 +208,7 @@ export function AppSidebar({ ...props }) {
                 <NavProjects title="Dashboard" projects={data.projects} />
                 <NavProjects title="Pages" projects={data.Pages} />
                 <NavProjects title="Home Page" projects={data.Enquiry} />
+                <NavProjects title="Other Pages" projects={data.Other} />
             </SidebarContent>
             <SidebarFooter>
                 <button

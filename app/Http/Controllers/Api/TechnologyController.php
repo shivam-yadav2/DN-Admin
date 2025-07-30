@@ -31,7 +31,7 @@ class TechnologyController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'img' => 'required|image|mimes:jpg,jpeg,png|max:512',
+            'img' => 'required|image|mimes:jpg,jpeg,png,webp|max:512',
             'heading' => 'required|string|max:255',
         ]);
 
@@ -93,9 +93,11 @@ class TechnologyController extends Controller
         }
 
         $technology->delete();
-        return response()->json([
-            'message' => "Technology deleted successfully",
-        ], 200);
+        // return response()->json([
+        //     'message' => "Technology deleted successfully",
+        // ], 200);
+        return redirect()->back()->with('success', 'Technology Deleted successfully');
+
     }
 
     //Update method

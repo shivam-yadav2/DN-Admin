@@ -6,14 +6,31 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Career;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class CareerController extends Controller
 {
-    //Get all data
+    // Display the careers page with existing entries
     public function index()
     {
         $careers = Career::all();
-        return response()->json($careers,200);
+        return Inertia::render('Admin/Other/Career', [
+            'careers' => $careers->map(function ($career) {
+                return [
+                    'id' => $career->id,
+                    'desig' => $career->desig,
+                    'title' => $career->title,
+                    'city' => $career->city,
+                    'job_type' => $career->job_type,
+                    'work_mode' => $career->work_mode,
+                    'about_role' => $career->about_role,
+                    'responsibilities' => $career->responsibilities,
+                    'requirements' => $career->requirements,
+                    'benefits_perks' => $career->benefits_perks,
+                    'created_at' => $career->created_at,
+                ];
+            }),
+        ]);
     }
 
     //Store
@@ -29,9 +46,9 @@ class CareerController extends Controller
             'benefits_perks' => 'required|array',
         ]);
 
-         if ($validator->fails()) {
+         if ($validate->fails()) {
                 return response()->json([
-                'errors' => $validator->errors()->all()
+                'errors' => $validate->errors()->all()
             ], 422);
         }
 
@@ -48,10 +65,11 @@ class CareerController extends Controller
             'benefits_perks'    => $request->benefits_perks,
         ]);
 
-        return response()->json([
-            'message' => 'Career created successfully.',
-            'data' => $career,
-        ], 201);
+        // return response()->json([
+        //     'message' => 'Career created successfully.',
+        //     'data' => $career,
+        // ], 201);
+        return redirect()->route('career.index')->with('message', 'Career added successfully');
     }
 
 
@@ -88,10 +106,11 @@ class CareerController extends Controller
         'benefits_perks' => $request->benefits_perks,
     ]);
 
-    return response()->json([
-        'message' => 'Career updated successfully.',
-        'data' => $career,
-    ], 200);
+    // return response()->json([
+    //     'message' => 'Career updated successfully.',
+    //     'data' => $career,
+    // ], 200);
+    return redirect()->route('career.index')->with('message', 'Career updated successfully');
 }
 
 //Delete 
@@ -99,7 +118,8 @@ class CareerController extends Controller
     {
          $career = Career::findOrFail($id);
         $career->delete();
-        return response()->json(['message' => 'Record deleted successfully']);
+        // return response()->json(['message' => 'Record deleted successfully']);
+         return redirect()->route('career.index')->with('message', 'Career deleted successfully');
     }
 
 }

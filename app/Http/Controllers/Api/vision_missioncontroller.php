@@ -45,17 +45,6 @@ class vision_missioncontroller extends Controller
     }
 
 
-    // public function show()
-    // {
-    //     $info = vision_mission::all();
-    //     if ($info) 
-    //         {
-    //             return response()->json(['info' => $info], 200);
-    //         }
-    //     return response()->json(['msg' => 'data not found'], 404);
-    // }
-
-    // Display the vision/mission page with existing entries
     public function index()
     {
         $visions = vision_mission::all();
@@ -75,14 +64,13 @@ class vision_missioncontroller extends Controller
         ]);
     }
 
-    public function updatevision(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $data = vision_mission::find($id);
 
         if (!$data) {
             return response()->json(['msg' => 'Data not found'], 404);
         }
-
 
         $validator = Validator::make($request->all(), [
             'heading' => 'required',
@@ -109,13 +97,15 @@ class vision_missioncontroller extends Controller
         ]);
 
   
-        return response()->json([
-            'msg' => "Data updated successfully",
-            'data' => $data
-        ]);
+        // return response()->json([
+        //     'msg' => "Data updated successfully",
+        //     'data' => $data
+        // ]);
+        return redirect()->route('vision-mission.index')->with('message', 'Vision/Mission Updated successfully');
+
     }
 
-       public function deletevision($id){
+       public function destroy($id){
            $info= vision_mission::find($id);
              if(!$info){
                 return response()->json([
@@ -124,9 +114,11 @@ class vision_missioncontroller extends Controller
              }
 
              $info->delete();
-             return response()->json([
-                'msg'=>'Data deleted Successfully',
-             ]);
+            //  return response()->json([
+            //     'msg'=>'Data deleted Successfully',
+            //  ]);
+        return redirect()->route('vision-mission.index')->with('message', 'Vision/Mission Deleted successfully');
+
        }
 
 
