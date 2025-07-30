@@ -53,16 +53,20 @@ class our_teamcontroller extends Controller
                 ->save($path);
         }
 
-        our_team::create([
+     $our_team= our_team::create([
             'name' => $request->name,
             'designation' => $request->designation,
             'img' => $imagename,
             'joining_date' => $request->joining_date,
         ]);
 
-        return back()->with('flash', [
-            'message' => 'Team member added successfully!',
-            'type' => 'success'
+        // return back()->with('flash', [
+        //     'message' => 'Team member added successfully!',
+        //     'type' => 'success'
+        // ]);
+        return response()->json([
+            'data'=>$our_team,
+            'msg'=>'Data added successfully',
         ]);
     }
 
@@ -122,9 +126,13 @@ class our_teamcontroller extends Controller
             'joining_date' => $request->joining_date,
         ]);
 
-        return back()->with('flash', [
-            'message' => 'Team member updated successfully!',
-            'type' => 'success'
+        // return back()->with('flash', [
+        //     'message' => 'Team member updated successfully!',
+        //     'type' => 'success'
+        // ]);
+        return response()->json([
+            'data'=>$user,
+            'msg'=>'Data added successfully',
         ]);
     }
 

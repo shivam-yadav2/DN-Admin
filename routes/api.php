@@ -88,7 +88,7 @@ Route::put('/update_career/{id}', [CareerController::class, 'update']);
 Route::delete('/delete_career/{id}', [CareerController::class, 'destroy']);
 
 //Our Team routes
-Route::post('insert',[our_teamcontroller::class,'insert']);
+Route::post('insert',[our_teamcontroller::class,'store']);
 Route::delete('delete_ourteam/{id}',[our_teamcontroller::class,'delete_ourteam']);
 Route::post('update_ourteam/{id}',[our_teamcontroller::class,'update_ourteam']);
 Route::get('show_ourteam',[our_teamcontroller::class,'show_ourteam']);
