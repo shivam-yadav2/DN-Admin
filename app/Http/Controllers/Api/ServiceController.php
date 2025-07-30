@@ -88,15 +88,19 @@ if (!file_exists($destinationPath)) {
 }
 
 if (in_array($originalExtension, ['jpg', 'jpeg', 'png'])) {
-    // Convert JPG/PNG to WebP
+    // Convert JPG/PNG/JPEG to WebP
     $img = $manager->read($image->getRealPath())->toWebp(80); 
     $img->save($destinationPath . '/' . $timestampName);
     $imageName = $timestampName;
-} elseif ($originalExtension === 'webp') {
+} 
+elseif ($originalExtension === 'webp') 
+    {
     // Save WebP as-is
     $image->move($destinationPath, $timestampName);
     $imageName = $timestampName;
-} else {
+} 
+else 
+    {
     // Return if unsupported format
     return response()->json(['message' => 'Only JPG, JPEG, PNG, or WEBP formats allowed.'], 400);
 }
@@ -104,9 +108,9 @@ if (in_array($originalExtension, ['jpg', 'jpeg', 'png'])) {
 
         // Create new service record
         $service = Service::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'image' => $imageName,
+            'name'          => $request->name,
+            'description'   => $request->description,
+            'image'         => $imageName,
         ]);
 
         return response()->json([
@@ -122,11 +126,16 @@ if (in_array($originalExtension, ['jpg', 'jpeg', 'png'])) {
     public function update(Request $request, $id)
     {
         // Validate request
-        $request->validate([
-            'name' => 'required|string|max:255|unique:services,name,' . $id,
-            'description' => 'required|string|max:255',
-            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+       $validator = Validator($request->all(),[
+            'name'          => 'required|string|max:255|unique:services,name,' . $id,
+            'description'   => 'required|string|max:255',
+            'image'         => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
+        if ($validator->fails()) {
+                return response()->json([
+                'errors' => $validator->errors()->all()
+            ], 422);
+        }
 
         // Find the service
         $service = Service::find($id);
@@ -134,43 +143,40 @@ if (in_array($originalExtension, ['jpg', 'jpeg', 'png'])) {
             return response()->json(['message' => 'Service not found.'], 404);
         }
 
-        // Handle image upload if provided
-        // if ($request->hasFile('image')) {
-        //     $imageName = time() . '.' . $request->file('image')->getClientOriginalExtension();
-        //     $request->file('image')->move(public_path('assets/images'), $imageName);
-        //     $service->image = $imageName;
-        // }
-
         // Process the uploaded file
-$image = $request->file('image'); // Get the uploaded file
-$originalExtension = strtolower($image->getClientOriginalExtension()); // Get and lowercase the original extension
+        $image = $request->file('image'); // Get the uploaded file
+        $originalExtension = strtolower($image->getClientOriginalExtension()); // Get and lowercase the original extension
 
-$manager = new ImageManager(new GdDriver()); // Create Intervention Image manager instance
+        $manager = new ImageManager(new GdDriver()); // Create Intervention Image manager instance
 
-$timestampName = time() . '.webp'; // Generate a unique filename
+        $timestampName = time() . '.webp'; // Generate a unique filename
 
-$destinationPath = public_path('assets/images/services'); // Define storage path
+        $destinationPath = public_path('assets/images/services'); // Define storage path
 
-// Create directory if it doesn't exist
-if (!file_exists($destinationPath)) {
-    mkdir($destinationPath, 0755, true);
-}
+        // Create directory if it doesn't exist
+        if (!file_exists($destinationPath)) 
+            {
+                mkdir($destinationPath, 0755, true);
+            }
 
-if (in_array($originalExtension, ['jpg', 'jpeg', 'png'])) {
-    // Convert JPG/PNG to WebP
-    $img = $manager->read($image->getRealPath())->toWebp(80); 
-    $img->save($destinationPath . '/' . $timestampName);
-    $imageName = $timestampName;
-} elseif ($originalExtension === 'webp') {
-    // Save WebP as-is
-    $image->move($destinationPath, $timestampName);
-    $imageName = $timestampName;
-} else {
-    // Return if unsupported format
-    return response()->json(['message' => 'Only JPG, JPEG, PNG, or WEBP formats allowed.'], 400);
-}
-
-
+    if (in_array($originalExtension, ['jpg', 'jpeg', 'png'])) 
+        {
+            // Convert JPG/PNG to WebP
+            $img = $manager->read($image->getRealPath())->toWebp(80); 
+            $img->save($destinationPath . '/' . $timestampName);
+            $imageName = $timestampName;
+         } 
+    elseif ($originalExtension === 'webp')
+         {
+            // Save WebP as-is
+            $image->move($destinationPath, $timestampName);
+            $imageName = $timestampName;
+        } 
+    else 
+        {
+             // Return if unsupported format
+                return response()->json(['message' => 'Only JPG, JPEG, PNG, or WEBP formats allowed.'], 400);
+        }
 
         // Update service details
         $service->name = $request->name;

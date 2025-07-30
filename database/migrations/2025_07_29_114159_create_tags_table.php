@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('home_abouts', function (Blueprint $table) {
+        Schema::create('tags', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->text('description');
-            $table->string('metric');
-            $table->boolean('is_deleted')->default(false);
+             $table->string('title');
+            $table->string('description')->nullable();
+            $table->string('keyword')->nullable();
+            $table->string('page_url');
+            $table->string('image')->nullable;
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('home_abouts');
+        Schema::dropIfExists('tags');
     }
 };

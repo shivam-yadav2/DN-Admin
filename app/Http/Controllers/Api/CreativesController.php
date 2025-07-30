@@ -14,7 +14,7 @@ class CreativesController extends Controller
     //Get all creatives
     public function index()
     {
-        $creatives = OurCreative::all();
+        $creatives = Creative::all();
         return response()->json($creatives, 200);
     }
 
@@ -23,38 +23,75 @@ class CreativesController extends Controller
     {
         $request->validate([
             'images' => 'required|array',
-            'images.*' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'images.*' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         if (!$request->hasFile('images')) {
             return response()->json(['message' => 'Image file is required.'], 400);
         }
 
-        $manager = new ImageManager(new GdDriver());
-        $uploaded = [];
-
-        foreach ($request->file('images') as $imageFile) {
-            $image = $manager->read($imageFile);
-            $width = $image->width();
-            $height = $image->height();
-
-            if ($width <= $height) {
-                continue; // Skip portrait images
+         // Ensure directory exists before saving
+        $destinationPath = public_path('assets/images/creatives');
+        if (!file_exists($destinationPath)) 
+            {
+                mkdir($destinationPath, 0755, true);
             }
 
-            $webpName = time() . '_' . uniqid() . '.webp';
-            $webpPath = public_path('assets/creatives/' . $webpName);
+        $manager = new ImageManager(new GdDriver());
+        $uploaded = [];                                                                                                                                                                                                                                                                           
 
-            $image->toWebp(80)->save($webpPath);
+        foreach ($request->file('images') as $imageFile) 
+            {
 
-            $creative = OurCreative::create([
-                'image' => $webpName,
-            ]);
+              $extension = strtolower($imageFile->getClientOriginalExtension());
+            
+             //  If WebP, just check dimensions and move
+                if ($extension === 'webp')
+                {
+                    $image = $manager->read($imageFile);
+                    $width = $image->width();
+                    $height = $image->height();
 
-            $uploaded[] = $creative;
-        }
+                    if ($width <= $height)
+                    {
+                        continue; // Skip portrait
+                    }
 
-        // ✅ Return error if no valid images uploaded
+                    $filename = time() . '_' . uniqid() . '.webp';
+                    $image->save($destinationPath . '/' . $filename);
+
+                    $creative = Creative::create
+                    ([
+                        'image' => $filename,
+                    ]);
+
+                    $uploaded[] = $creative;
+                    continue;
+                }
+
+                //Process jpg/png/jpeg
+                $image = $manager->read($imageFile);
+                $width = $image->width();
+                $height = $image->height();
+
+                 if ($width <= $height) 
+                {
+                    continue; // Skip portrait
+                }
+
+                $webpName = time() . '_' . uniqid() . '.webp';
+                $webpPath = $destinationPath . '/' . $webpName;
+
+                 $image->toWebp(80)->save($webpPath);
+
+                $creative = Creative::create([
+                 'image' => $webpName,
+                ]);
+
+                $uploaded[] = $creative;
+            }
+
+        // Return error if no valid images uploaded
         if (count($uploaded) === 0) {
             return response()->json(['message' => 'No valid landscape images uploaded.'], 422);
         }
@@ -64,65 +101,26 @@ class CreativesController extends Controller
             'data' => $uploaded,
         ], 201);
     }
+
    
-    //Update a creative
-     public function update(Request $request, $id)
-    {
-        $creative = OurCreative::find($id);
-
-        if (!$creative) {
-            return response()->json(['message' => 'Creative not found.'], 404);
-        }
-
-        $request->validate([
-            'image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
-
-        if ($request->hasFile('image')) {
-            $manager = new ImageManager(new GdDriver());
-            $image = $manager->read($request->file('image'));
-            $width = $image->width();
-            $height = $image->height();
-
-            if ($width <= $height) {
-                return response()->json(['message' => 'Image must be in landscape orientation.'], 422);
-            }
-
-            $webpName = time() . '_' . uniqid() . '.webp';
-            $webpPath = public_path('assets/creatives/' . $webpName);
-            $image->toWebp(85)->save($webpPath);
-
-            // Optional: delete old image file here if needed
-            $creative->image = $webpName;
-        }
-
-        $creative->save();
-
-        return response()->json([
-            'message' => 'Creative updated successfully.',
-            'data' => $creative,
-        ], 200);
-    }
-    
      //Delete a creative
     public function destroy($id)
     {
         $creative = Creative::findOrFail($id);
 
         // Delete each image from storage
-        foreach ($creative->images as $filename) 
-        {
-            $filePath = public_path('assets/creatives/' . $filename);
-            if (file_exists($filePath)) 
-            {
-                unlink($filePath);
-            }
+        // Delete image file
+        $filePath = public_path('assets/images/creatives' . $creative->image);
+         if (file_exists($filePath))
+         {
+            unlink($filePath);
         }
 
         // Delete the DB record
         $creative->delete();
 
-        return response()->json(['message' => 'Creative and associated images deleted successfully.']);
+        return response()->json(['message' => 'Creative deleted successfully.']);
     }
 }
+
 
