@@ -9,17 +9,26 @@ use App\Models\HomeAbout; // HomeAbout model
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
 use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver for image processing
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
+use Illuminate\Validation\ValidationException;
 
 class HomeAboutController extends Controller
 {
-   //Get all data
+   /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        $homeAbouts = HomeAbout::all();
-        return response()->json($homeAbouts, 200);
+        $homeAbouts = HomeAbout::orderBy('created_at', 'desc')->get();
+
+        return Inertia::render('Admin/HomePage/About', [
+            'homeAbouts' => $homeAbouts,
+        ]);
     }
 
-    // POST a new home about
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
         // Validate request
@@ -27,153 +36,133 @@ class HomeAboutController extends Controller
             'tag'           => 'required|string|max:255',
             'heading'       => 'required|string|max:255',
             'sub_heading'   => 'required|string|max:255',
-            'image'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:512',
+            'image'         => 'required|image|mimes:jpg,jpeg,png,webp|max:512',
             'content'       => 'required|string|max:1000',
             'button_text'   => 'required|string|max:100',
-            'button_url'    => 'required|url|unique|max:100',
+            'button_url'    => 'required|url|max:100',
         ]);
 
         if ($validator->fails()) {
-                return response()->json([
-                'errors' => $validator->errors()->all()
-            ], 422);
+            throw ValidationException::withMessages($validator->errors()->toArray());
         }
 
-        if(!$request->hasFile('image'))
-        {
-            return response()->json(['message' => 'Image file is required'], 400);
+        try {
+            // Process the uploaded file
+            $image = $request->file('image');
+            $originalExtension = strtolower($image->getClientOriginalExtension());
+
+            $manager = new ImageManager(new GdDriver());
+
+            $timestampName = time() . '.webp';
+            $imageName = $timestampName;
+            $destinationPath = public_path('assets/images/homeAbout');
+
+            // Create directory
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+
+            if (in_array($originalExtension, ['jpg', 'jpeg', 'png', 'webp'])) {
+                // Convert to WebP
+                $img = $manager->read($image->getRealPath())->toWebp(80);
+                $img->save($destinationPath . '/' . $imageName);
+            } elseif ($originalExtension === 'webp') {
+                // Save WebP as-is
+                $image->move($destinationPath, $imageName);
+            } else {
+                return redirect()->back()
+                    ->with('error', 'Only JPG, JPEG, PNG, or WEBP formats allowed.')
+                    ->withInput();
+            }
+
+            // Create new home about record
+            $homeAbout = HomeAbout::create([
+                'tag'          => $request->tag,
+                'heading'       => $request->heading,
+                'sub_heading'   => $request->sub_heading,
+                'image'         => $imageName,
+                'content'       => $request->content,
+                'button_text'   => $request->button_text,
+                'button_url'    => $request->button_url
+            ]);
+
+            return redirect()->route('home-about.index')
+                ->with('success', 'Home About created successfully.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Failed to create Home About. Please try again.')
+                ->withInput();
         }
-
-        //Initialize variable to hold the final image name
-        // $imageName = null;
-
-        //Process the uploaded file
-        $image = $request->file('image');       //Get the uploaded file
-        $originalExtension = strtolower($image->getClientOriginalExtension());
-
-        $manager = new ImageManager(new GdDriver());
-
-        $timestampName = time(). '.webp';       //Generate a unique file name
-        $imageName = $timestampName;
-        $destinationPath = public_path('assets/images/homeAbout');
-
-        //Create directory
-        if (!file_exists($destinationPath)) {
-    mkdir($destinationPath, 0755, true);
     }
 
-    if (in_array($originalExtension, ['jpg', 'jpeg', 'png']))
-         {
-            // Convert JPG/PNG/JPEG to WebP
-            $img = $manager->read($image->getRealPath())->toWebp(80); 
-            $img->save($destinationPath . '/' . $imageName);
-            // $imageName = $timestampName;
-        }    
-        elseif ($originalExtension === 'webp') 
-        {
-            // Save WebP as-is
-            $image->move($destinationPath, $imageName);
-            // $imageName = $timestampName;
-        } 
-         else 
-        {
-            // Return if unsupported format
-            return response()->json(['message' => 'Only JPG, JPEG, PNG, or WEBP formats allowed.'], 400);
-        }
-
-        // Create new home about record
-        $homeAbout = HomeAbout::create([
-             'tag'          => $request->tag,
-            'heading'       => $request->heading,
-            'sub_heading'   => $request->sub_heading,
-            'image'         => $imageName,
-            'content'       => $request->content,
-            'button_text'   => $request->button_text,
-            'button_url'    => $request->button_url
-        ]);
-
-        return response()->json([
-            'message' => 'Home About created successfully.',
-            'data' => $homeAbout,
-        ], 201);
-    }
-
-    // Update an existing home about
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, $id)
     {
         $homeAbout = HomeAbout::find($id);
 
-        if (!$homeAbout) 
-            {
-                 return response()->json(['message' => 'Home About not found.'], 404);
-            }
+        if (!$homeAbout) {
+            return redirect()->route('home-about.index')
+                ->with('error', 'Home About not found.');
+        }
 
         // Validate request
         $validator = Validator::make($request->all(), [
-            
             'tag'           => 'required|string|max:255',
             'heading'       => 'required|string|max:255',
             'sub_heading'   => 'required|string|max:255',
             'image'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:512',
             'content'       => 'required|string|max:1000',
             'button_text'   => 'required|string|max:100',
-            'button_url'    => 'required|url|unique|max:100',
+            'button_url'    => 'required|url|max:100',
         ]);
 
         if ($validator->fails()) {
-                return response()->json([
-                'errors' => $validator->errors()->all()
-            ], 422);
+            throw ValidationException::withMessages($validator->errors()->toArray());
         }
 
-        // Default to old image
-                $imageName = $homeAbout->image;
+        try {
+            // Default to old image
+            $imageName = $homeAbout->image;
 
-                // Process the uploaded file
-         if ($request->hasFile('image')) 
-            {
+            // Process the uploaded file if provided
+            if ($request->hasFile('image')) {
                 $oldImagePath = public_path('assets/images/homeAbout/' . $homeAbout->image);
-                if (file_exists($oldImagePath)) 
-                    {
-                        unlink($oldImagePath);
-                    }
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath);
+                }
 
-                $image = $request->file('image'); // Get the uploaded file
-                $originalExtension = strtolower($image->getClientOriginalExtension()); // Get and lowercase the original extension
+                $image = $request->file('image');
+                $originalExtension = strtolower($image->getClientOriginalExtension());
 
-                $manager = new ImageManager(new GdDriver()); // Create Intervention Image manager instance
+                $manager = new ImageManager(new GdDriver());
 
-                $timestampName = time() . '.webp'; // Generate a unique filename
-
-                $destinationPath = public_path('assets/images/homeAbout'); // Define storage path
+                $timestampName = time() . '.webp';
+                $imageName = $timestampName;
+                $destinationPath = public_path('assets/images/homeAbout');
 
                 // Create directory if it doesn't exist
-                if (!file_exists($destinationPath)) 
-                {
+                if (!file_exists($destinationPath)) {
                     mkdir($destinationPath, 0755, true);
                 }
 
-                 if (in_array($originalExtension, ['jpg', 'jpeg', 'png'])) 
-                {
-                    // Convert JPG/PNG to WebP
-                    $img = $manager->read($image->getRealPath())->toWebp(80); 
+                if (in_array($originalExtension, ['jpg', 'jpeg', 'png'])) {
+                    // Convert to WebP
+                    $img = $manager->read($image->getRealPath())->toWebp(80);
                     $img->save($destinationPath . '/' . $imageName);
-                    $imageName = $timestampName;
-                } 
-            
-                elseif ($originalExtension === 'webp')
-                {
+                } elseif ($originalExtension === 'webp') {
                     // Save WebP as-is
                     $image->move($destinationPath, $imageName);
-                    $imageName = $timestampName;
-                } 
-                 else 
-                {
-                    // Return if unsupported format
-                    return response()->json(['message' => 'Only JPG, JPEG, PNG, or WEBP formats allowed.'], 400);
+                } else {
+                    return redirect()->back()
+                        ->with('error', 'Only JPG, JPEG, PNG, or WEBP formats allowed.')
+                        ->withInput();
                 }
             }
 
+<<<<<<< HEAD
         // Update home about record
         $homeAbout->update([
              'tag'          => $request->tag ?? $homeAbout->tag,
@@ -184,30 +173,52 @@ class HomeAboutController extends Controller
             'button_text'   => $request->button_text ?? $homeAbout->button_text,
             'button_url'    => $request->button_url ?? $homeAbout->button_url
         ]);
+=======
+            // Update home about record
+            $homeAbout->update([
+                'tag'          => $request->tag ?? $homeAbout->tag,
+                'heading'       => $request->heading ?? $homeAbout->heading,
+                'sub_heading'   => $request->sub_heading ?? $homeAbout->sub_heading,
+                'image'         => $imageName ?? $homeAbout->image ,
+                'content'       => $request->content ?? $homeAbout->content,
+                'button_text'   => $request->button_text ?? $homeAbout->button_text,
+                'button_url'    => $request->button_url ?? $homeAbout->button_url
+            ]);
+>>>>>>> 625b579d842449758a1f9c962d17634f823b3f09
 
-        return response()->json([
-            'message' => 'Home About updated successfully.',
-            'data'    => $homeAbout,
-        ], 200);
+            return redirect()->route('home-about.index')
+                ->with('success', 'Home About updated successfully.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Failed to update Home About. Please try again.')
+                ->withInput();
+        }
     }
 
-    // Delete a home about (soft delete)
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy($id)
     {
         $homeAbout = HomeAbout::findOrFail($id);
 
-        // Delete each image from storage
-        // Delete image file
-        $filePath = public_path('assets/images/homeAbout/' . $homeAbout->image);
-         if (file_exists($filePath))
-         {
-            unlink($filePath);
+        try {
+            // Delete image file
+            $filePath = public_path('assets/images/homeAbout/' . $homeAbout->image);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+
+            // Delete the DB record
+            $homeAbout->delete();
+
+            return redirect()->route('home-about.index')
+                ->with('success', 'Home About deleted successfully.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Failed to delete Home About. Please try again.');
         }
-
-        // Delete the DB record
-        $homeAbout->delete();
-
-        return response()->json(['message' => 'Record deleted successfully.']);
     }
-
 }

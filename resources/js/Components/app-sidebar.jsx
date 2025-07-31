@@ -176,7 +176,7 @@ const data = {
         },
         {
             title: "About Section",
-            url: "/about",
+            url: "/home-about",
             icon: BookOpen,
         },
         {

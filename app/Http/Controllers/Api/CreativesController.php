@@ -8,15 +8,23 @@ use App\Models\Creative;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
 use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver for image processing
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class CreativesController extends Controller
 {
-    //Get all creatives
+    // Show all creatives (for web interface)
     public function index()
     {
-        $creatives = Creative::all();
-        return response()->json($creatives, 200);
+        $creatives = Creative::latest()->get();
+        
+        return Inertia::render('Admin/Other/CreativesManager', [
+            'creatives' => $creatives,
+            'success' => session('success'),
+            'error' => session('error')
+        ]);
     }
+
+
 
     //Store a new creative
     public function store(Request $request)
@@ -96,10 +104,11 @@ class CreativesController extends Controller
             return response()->json(['message' => 'No valid landscape images uploaded.'], 422);
         }
 
-        return response()->json([
-            'message' => 'Creatives uploaded successfully.',
-            'data' => $uploaded,
-        ], 201);
+        // return response()->json([
+        //     'message' => 'Creatives uploaded successfully.',
+        //     'data' => $uploaded,
+        // ], 201);
+        return redirect()->route('creatives.index')->with('success', $message);
     }
 
    
@@ -119,7 +128,8 @@ class CreativesController extends Controller
         // Delete the DB record
         $creative->delete();
 
-        return response()->json(['message' => 'Creative deleted successfully.']);
+        // return response()->json(['message' => 'Creative deleted successfully.']);
+        return redirect()->back()->with('success', 'Creative deleted successfully.');
     }
 }
 

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('our_creatives', function (Blueprint $table) {
+        Schema::create('creatives', function (Blueprint $table) {
             $table->id();
             $table->string('image');
             $table->timestamps();
