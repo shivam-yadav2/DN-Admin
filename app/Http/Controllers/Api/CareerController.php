@@ -95,13 +95,13 @@ class CareerController extends Controller
     $career = Career::findOrFail($id);
 
     $career->update([
-        'desig' => $request->desig,
-        'title' => $request->title,
-        'city' => $request->city,
-        'job_type' => $request->job_type ?? 'part-time',
-        'work_mode' => $request->work_mode ?? 'onsite',
-        'about_role' => $request->about_role,
-        'responsibilities' => $request->responsibilities,
+        'desig'             => $request->desig ?? $career->desig,
+        'title'              => $request->title ?? $career->title,
+        'city'                  => $request->city ?? $career->city,
+        'job_type'              => $request->job_type ?? 'part-time' ?? $career->job_type,
+        'work_mode' => $request->work_mode ?? 'onsite' ?? $career->work_mode,
+        'about_role' => $request->about_role ?? $career->about_role,
+        'responsibilities' => $request->responsibilities ?? $career->responsibilities,
         'requirements' => $request->requirements,
         'benefits_perks' => $request->benefits_perks,
     ]);

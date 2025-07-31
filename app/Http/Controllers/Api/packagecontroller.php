@@ -15,10 +15,10 @@ class packagecontroller extends Controller
 
         $validator = Validator::make($request->all(), [
             'heading' => 'required',
-            'img' => 'required|image|mimes:jpeg,jpg,png|max:2048|dimensions:max_width:200,max_height:200',
-            'price' => 'required',
-            'description' => 'required',
-            'target_audience' => 'required',
+            'img' => 'required|image|mimes:jpeg,jpg,png,webp|max:2048|dimensions:max_width:200,max_height:200',
+            'price' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'target_audience' => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -62,7 +62,7 @@ class packagecontroller extends Controller
      {
         $validator = Validator::make($request->all(), [
             'heading' => 'required',
-            'img' => 'required|image|mimes:jpeg,jpg,png|max:2048|dimensions:max_width:200,max_height:200',
+            'img' => 'required|image|mimes:jpeg,jpg,png,webp|max:2048|dimensions:max_width:200,max_height:200',
             'price' => 'required',
             'description' => 'required',
             'target_audience' => 'required',
@@ -92,11 +92,11 @@ class packagecontroller extends Controller
 
             $resizedImage->save($path);
            $data= $info->update([
-                'img' => $imagename,
-                'heading' => $request->heading,
-                'price' => $request->price,
-                'description' => $request->description,
-                'target_audience' => $request->target_audience,
+                'img' => $imagename ?? $info->img,
+                'heading' => $request->heading ?? $info->heading,
+                'price' => $request->price ?? $info->price,
+                'description' => $request->description ?? $info->description,
+                'target_audience' => $request->target_audience ?? $info->target_audience,
             ]);
             return response()->json([
                 'mesg' => 'Data updated successfully',

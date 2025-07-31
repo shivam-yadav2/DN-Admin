@@ -176,13 +176,13 @@ class HomeAboutController extends Controller
 
         // Update home about record
         $homeAbout->update([
-             'tag'          => $request->tag,
-            'heading'       => $request->heading,
-            'sub_heading'   => $request->sub_heading,
-            'image'         => $imageName,
-            'content'       => $request->content,
-            'button_text'   => $request->button_text,
-            'button_url'    => $request->button_url
+             'tag'          => $request->tag ?? $homeAbout->tag,
+            'heading'       => $request->heading ?? $homeAbout->heading,
+            'sub_heading'   => $request->sub_heading ?? $homeAbout->sub_heading,
+            'image'         => $imageName ?? $homeAbout->image,
+            'content'       => $request->content ?? $homeAbout->content,
+            'button_text'   => $request->button_text ?? $homeAbout->button_text,
+            'button_url'    => $request->button_url ?? $homeAbout->button_url
         ]);
 
         return response()->json([

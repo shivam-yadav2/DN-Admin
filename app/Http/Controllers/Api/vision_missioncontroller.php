@@ -13,12 +13,12 @@ class vision_missioncontroller extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'heading' => 'required|max:255',
-            'para' => 'required|unique:vision_mission,para|max:255',
-            'vision_heading' => 'required |unique:vision_mission,vision_heading|max:255',
-            'vision_description' => 'required |unique:vision_mission,vision_description|max:255',
-            'mission_heading' => 'required |unique:vision_mission,mission_heading|max:255',
-            'mission_description' => 'required |unique:vision_mission,mission_description|max:255',
+            'heading'                   => 'required|max:255',
+            'para'                      => 'required|unique:vision_mission,para|max:255',
+            'vision_heading'            => 'required |unique:vision_mission,vision_heading|max:255',
+            'vision_description'        => 'required |unique:vision_mission,vision_description|max:255',
+            'mission_heading'           => 'required |unique:vision_mission,mission_heading|max:255',
+            'mission_description'       => 'required |unique:vision_mission,mission_description|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -28,12 +28,12 @@ class vision_missioncontroller extends Controller
         }
 
         $data = vision_mission::create([
-            'heading' => $request->heading,
-            'para' => $request->para,
-            'vision_heading' => $request->vision_heading,
-            'vision_description' => $request->vision_description,
-            'mission_heading' => $request->mission_heading,
-            'mission_description' => $request->mission_description,
+            'heading'                   => $request->heading,
+            'para'                      => $request->para,
+            'vision_heading'            => $request->vision_heading,
+            'vision_description'        => $request->vision_description,
+            'mission_heading'           => $request->mission_heading,
+            'mission_description'       => $request->mission_description,
 
         ]);
 
@@ -75,6 +75,7 @@ class vision_missioncontroller extends Controller
         $validator = Validator::make($request->all(), [
             'heading' => 'required',
             'para' => 'required',
+            
             'vision_heading' => 'required',
             'vision_description' => 'required',
             'mission_heading' => 'required',
@@ -88,12 +89,12 @@ class vision_missioncontroller extends Controller
         }
 
         $data->update([
-            'heading' => $request->heading,
-            'para' => $request->para,
-            'vision_heading' => $request->vision_heading,
-            'vision_description' => $request->vision_description,
-            'mission_heading' => $request->mission_heading,
-            'mission_description' => $request->mission_description,
+            'heading'               => $request->heading ?? $vision_mission->heading ,
+            'para'                  => $request->para ?? $vision_mission->para,
+            'vision_heading'        => $request->vision_heading ?? $vision_mission->vision_heading,
+            'vision_description'    => $request->vision_description ?? $vision_mission->vision_description,
+            'mission_heading'       => $request->mission_heading ?? $vision_mission->mission_heading,
+            'mission_description'   => $request->mission_description ?? $vision_mission->mission_description,
         ]);
 
   

@@ -120,10 +120,10 @@ class our_teamcontroller extends Controller
         }
 
         $user->update([
-            'name' => $request->name,
-            'designation' => $request->designation,
-            'img' => $imagename,
-            'joining_date' => $request->joining_date,
+            'name' => $request->name ?? $user->name,
+            'designation' => $request->designation ?? $user->designation,
+            'img' => $imagename ?? $user->img,
+            'joining_date' => $request->joining_date ?? $user->joining_date,
         ]);
 
         // return back()->with('flash', [
@@ -132,7 +132,7 @@ class our_teamcontroller extends Controller
         // ]);
         return response()->json([
             'data'=>$user,
-            'msg'=>'Data added successfully',
+            'msg'=>'Data updated successfully',
         ]);
     }
 

@@ -96,10 +96,10 @@ class ContactDetailController extends Controller
             $contactDetail = ContactDetail::findOrFail($id);
 
             $contactDetail->update([
-                'email'       => array_filter($request->email, fn($email) => !empty(trim($email))),
-                'phone_no'    => array_filter($request->phone_no, fn($phone) => !empty(trim($phone))),
-                'whatsapp_no' => array_filter($request->whatsapp_no, fn($whatsapp) => !empty(trim($whatsapp))),
-                'location'    => $request->location,
+                'email'       => array_filter($request->email, fn($email) => !empty(trim($email))) ?? $contactDetail->email,
+                'phone_no'    => array_filter($request->phone_no, fn($phone) => !empty(trim($phone))) ?? $contactDetail->phone_no,
+                'whatsapp_no' => array_filter($request->whatsapp_no, fn($whatsapp) => !empty(trim($whatsapp))) ?? $contactDetail->whatsapp_no,
+                'location'    => $request->location ?? $contactDetail->location,
             ]);
 
             return redirect()->route('contact-details.index')->with('message', 'Contact details updated successfully.');
