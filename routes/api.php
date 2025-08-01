@@ -18,6 +18,7 @@ use App\Http\Controllers\api\vision_missioncontroller;
 use App\Http\Controllers\API\TechnologyController;
 use App\Http\Controllers\API\TagController;
 use App\Http\Controllers\API\ProjectController;
+use App\Http\Controllers\API\ApiController;
 
 
 Route::get('/user', function (Request $request) {
@@ -123,3 +124,6 @@ Route::get('/get_project', [ProjectController::class, 'index']);
 Route::post('/post_project', [ProjectController::class, 'store']);
 Route::post('/update_project/{id}', [ProjectController::class, 'update']);
 Route::delete('/delete_project/{id}', [ProjectController::class, 'destroy']);
+
+//Frontend API Route
+Route::get('/all-data', [ApiController::class, 'index']);
