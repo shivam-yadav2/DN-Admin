@@ -169,16 +169,16 @@ class BlogController extends Controller
             }
 
             $blog->update([
-                'meta_key'    => $request->meta_key,
-                'meta_desc'   => $request->meta_desc,
-                'title'       => $request->title,
-                'url'         => $request->url,
-                'keyword'     => $request->keyword,
-                'description' => $request->description,
-                'author'      => $request->author,
-                'published'   => $request->published,
-                'card_img'    => $blog->card_img,
-                'banner_img'  => $blog->banner_img,
+                'meta_key'    => $request->meta_key ?? $blog->meta_key,
+                'meta_desc'   => $request->meta_descv ?? $blog->meta_desc,
+                'title'       => $request->title ?? $blog->title,
+                'url'         => $request->url ?? $blog->url,
+                'keyword'     => $request->keyword ?? $blog->keyword,
+                'description' => $request->description ?? $blog->description,
+                'author'      => $request->author ?? $blog->author,
+                'published'   => $request->published ?? $blog->published,
+                'card_img'    => $blog->card_img ?? $cardImgName,
+                'banner_img'  => $blog->banner_img ?? $bannerImgName,
             ]);
 
             return redirect()->route('blogs.index')->with('message', 'Blog updated successfully.');

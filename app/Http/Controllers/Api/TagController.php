@@ -57,24 +57,25 @@ class TagController extends Controller
         $destinationPath = public_path('assets/images/tags');
 
         //Create directory
-        if (!file_exists($destinationPath)) {
-    mkdir($destinationPath, 0755, true);
-    }
+        if (!file_exists($destinationPath)) 
+            {
+                mkdir($destinationPath, 0755, true);
+            }
 
-    if (in_array($originalExtension, ['jpg', 'jpeg', 'png']))
+        if (in_array($originalExtension, ['jpg', 'jpeg', 'png']))
          {
             // Convert JPG/PNG/JPEG to WebP
             $img = $manager->read($image->getRealPath())->toWebp(80); 
             $img->save($destinationPath . '/' . $imageName);
             // $imageName = $timestampName;
         }    
-    elseif ($originalExtension === 'webp') 
+        elseif ($originalExtension === 'webp') 
         {
             // Save WebP as-is
             $image->move($destinationPath, $imageName);
             // $imageName = $timestampName;
         } 
-    else 
+        else 
         {
             // Return if unsupported format
             return response()->json(['message' => 'Only JPG, JPEG, PNG, or WEBP formats allowed.'], 400);
@@ -172,12 +173,11 @@ class TagController extends Controller
 
         // Update tag record
         $tag->update([
-              'title'          => $request->title,
-              'description'    => $request->description,
-              'keyword'        => $request->keyword,
-              'page_url'       => $request->page_url,
-              'image'          => $imageName,
-            
+              'title'          => $request->title ?? $tag->title,
+              'description'    => $request->description ?? $tag->description,
+              'keyword'        => $request->keyword ?? $tag->keyword,
+              'page_url'       => $request->page_url ?? $tag->page_url,
+              'image'          => $imageName ?? $tag->image,
         ]);
 
          return back()->with([

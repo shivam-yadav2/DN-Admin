@@ -189,7 +189,7 @@ class ProjectController extends Controller
         $videoName = $project->video;
         if ($request->hasFile('video'))
         {
-            $oldVideoPath = public_path('assets/projects/videos/' . $project->video);
+            $oldVideoPath = public_path('assets/videos /projects/' . $project->video);
             if (file_exists($oldVideoPath)) 
                 {
                     unlink($oldVideoPath);
@@ -202,12 +202,11 @@ class ProjectController extends Controller
                     return response()->json(['message' => 'Only WEBM format allowed for video'], 400);
                 }
             $videoName = time() . '.' . $videoExtension;
-            $video->move(public_path('assets/projects/videos
-            '), $videoName);
+            $video->move(public_path('assets/videos/projects'), $videoName);
         }
 
         // Update tag record
-        $tag->update([
+        $project->update([
               'type'            => $request->type ?? $project->type,
               'title'           => $request->title ?? $project->title,
               'image'           => $imageName ?? $project->image,

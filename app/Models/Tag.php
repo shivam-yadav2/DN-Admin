@@ -9,7 +9,7 @@ class Tag extends Model
     //
     protected $fillable =[
         'title',
-        'decription',
+        'description',
         'keyword',
         'page_url',
         'image'

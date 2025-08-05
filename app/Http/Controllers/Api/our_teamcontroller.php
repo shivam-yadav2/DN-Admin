@@ -124,15 +124,25 @@ class our_teamcontroller extends Controller
         }
 
         $user->update([
-            'name' => $request->name,
-            'designation' => $request->designation,
-            'img' => $imagename,
-            'joining_date' => $request->joining_date,
+            'name' => $request->name ?? $user->name,
+            'designation' => $request->designation ?? $user->designation,
+            'img' => $imagename ?? $user->img,
+            'joining_date' => $request->joining_date ?? $user->joining_date,
         ]);
 
+<<<<<<< HEAD
+        // return back()->with('flash', [
+        //     'message' => 'Team member updated successfully!',
+        //     'type' => 'success'
+        // ]);
+        return response()->json([
+            'data'=>$user,
+            'msg'=>'Data updated successfully',
+=======
         return back()->with('flash', [
             'message' => 'Team member updated successfully!',
             'type' => 'success'
+>>>>>>> 625b579d842449758a1f9c962d17634f823b3f09
         ]);
     }
 
