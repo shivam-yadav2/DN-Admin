@@ -115,12 +115,12 @@ const data = {
     projects: [
         {
             title: "Admin Dashboard",
-            url: "/dashboard",
+            url: "/",
             icon: Frame,
         },
         {
             title: "Meta Data",
-            url: "/meta-data",
+            url: "/tags",
             icon: Frame,
         },
     ],
@@ -167,6 +167,17 @@ const data = {
             url: "/our-team",
             icon: BookOpen,
         },
+        {
+            title: "Our Packages",
+            url: "/packages",
+            icon: BookOpen,
+        },
+        {
+            title: "Our Projects",
+            url: "/projects",
+            icon: BookOpen,
+        },
+        
     ],
     Enquiry: [
         {
@@ -192,6 +203,11 @@ const data = {
         {
             title: "Vision-Mission",
             url: "/vision-mission",
+            icon: BookOpen,
+        },
+        {
+            title: "Our Creatives",
+            url: "/creatives",
             icon: BookOpen,
         },
     ],
