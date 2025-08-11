@@ -18,6 +18,9 @@ use App\Http\Controllers\API\ContactDetailController;
 use App\Http\Controllers\Api\our_teamcontroller;
 use App\Http\Controllers\API\HomeAboutController;
 use App\Http\Controllers\API\CreativesController;
+use App\Http\Controllers\Api\packagecontroller;
+use App\Http\Controllers\Api\TagController;
+use App\Http\Controllers\Api\ProjectController;
 
 Route::get('/test', function () {
     return Inertia::render('Test');
@@ -79,5 +82,8 @@ Route::resource('contact-details', ContactDetailController::class);
 Route::resource('our-team', our_teamcontroller::class);
 Route::resource('home-about', HomeAboutController::class);
 Route::resource('creatives', CreativesController::class);
+Route::resource('packages', packagecontroller::class);
+Route::resource('tags', TagController::class);
+Route::resource('projects', ProjectController::class);
 
 require __DIR__.'/auth.php';

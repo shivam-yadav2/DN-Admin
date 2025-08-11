@@ -8,14 +8,18 @@ use App\Models\Project;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
 use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver
+use Inertia\Inertia;
 
 class ProjectController extends Controller
 {
-    //Get all projects
     public function index()
     {
-        $projects = Project::all();
-        return response()->json($projects, 200);
+        $projects = Project::orderBy('created_at', 'desc')->get();
+        
+        return Inertia::render('Admin/Other/Projects', [
+            'projects' => $projects,
+            'flash' => session('flash')
+        ]);
     }
 
     // POST a new project
@@ -101,10 +105,10 @@ class ProjectController extends Controller
             'url'           => $request->url,
         ]);
 
-        return response()->json([
-            'message' => 'Project created successfully',
-            'data' => $project
-        ], 201);
+        return redirect()->back()->with('flash', [
+            'message' => 'Project created successfully!',
+            'type' => 'success'
+        ]);
     }
 
     // Update an existing project
@@ -185,7 +189,7 @@ class ProjectController extends Controller
         $videoName = $project->video;
         if ($request->hasFile('video'))
         {
-            $oldVideoPath = public_path('assets/projects/videos/' . $project->video);
+            $oldVideoPath = public_path('assets/videos /projects/' . $project->video);
             if (file_exists($oldVideoPath)) 
                 {
                     unlink($oldVideoPath);
@@ -198,12 +202,11 @@ class ProjectController extends Controller
                     return response()->json(['message' => 'Only WEBM format allowed for video'], 400);
                 }
             $videoName = time() . '.' . $videoExtension;
-            $video->move(public_path('assets/projects/videos
-            '), $videoName);
+            $video->move(public_path('assets/videos/projects'), $videoName);
         }
 
         // Update tag record
-        $tag->update([
+        $project->update([
               'type'            => $request->type ?? $project->type,
               'title'           => $request->title ?? $project->title,
               'image'           => $imageName ?? $project->image,
@@ -215,9 +218,40 @@ class ProjectController extends Controller
             
         ]);
 
-        return response()->json([
-            'message' => 'Record updated successfully.',
-            'data'    => $tag,
-        ], 200);
+         return redirect()->back()->with('flash', [
+            'message' => 'Project updated successfully!',
+            'type' => 'success'
+        ]);
+    }
+     // Delete a project
+    public function destroy($id)
+    {
+        $project = Project::find($id);
+
+        if (!$project) {
+            return redirect()->back()->withErrors(['general' => 'Project not found']);
+        }
+
+        // Delete associated files
+        if ($project->image) {
+            $imagePath = public_path('assets/images/projects/' . $project->image);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+
+        if ($project->video) {
+            $videoPath = public_path('assets/videos/projects/' . $project->video);
+            if (file_exists($videoPath)) {
+                unlink($videoPath);
+            }
+        }
+
+        $project->delete();
+
+        return redirect()->back()->with('flash', [
+            'message' => 'Project deleted successfully!',
+            'type' => 'success'
+        ]);
     }
 }

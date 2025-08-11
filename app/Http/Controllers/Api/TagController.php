@@ -8,14 +8,16 @@ use App\Models\Tag;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
 use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver for image processing
 use Illuminate\Support\Facades\Validator;
-
+use Inertia\Inertia;
 class TagController extends Controller
 {
     ////Get all data
     public function index()
     {
         $tags = Tag::all();
-        return response()->json($tags, 200);
+        return Inertia::render('Admin/Other/TagManagement', [
+            'tags' => $tags
+        ]);
     }
 
     // POST a new tag
@@ -24,7 +26,7 @@ class TagController extends Controller
         // Validate request
         $validator = Validator::make($request->all(), [
             'title'          => 'required|string|max:255',
-            'description'    => 'nullable|string|max:255',
+            'description'    => 'required|string|max:255',
             'keyword'        => 'nullable|string|max:255',
             'page_url'       => 'required|url|max:255|unique:tags,page_url',
             'image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:512',
@@ -55,24 +57,25 @@ class TagController extends Controller
         $destinationPath = public_path('assets/images/tags');
 
         //Create directory
-        if (!file_exists($destinationPath)) {
-    mkdir($destinationPath, 0755, true);
-    }
+        if (!file_exists($destinationPath)) 
+            {
+                mkdir($destinationPath, 0755, true);
+            }
 
-    if (in_array($originalExtension, ['jpg', 'jpeg', 'png']))
+        if (in_array($originalExtension, ['jpg', 'jpeg', 'png']))
          {
             // Convert JPG/PNG/JPEG to WebP
             $img = $manager->read($image->getRealPath())->toWebp(80); 
             $img->save($destinationPath . '/' . $imageName);
             // $imageName = $timestampName;
         }    
-    elseif ($originalExtension === 'webp') 
+        elseif ($originalExtension === 'webp') 
         {
             // Save WebP as-is
             $image->move($destinationPath, $imageName);
             // $imageName = $timestampName;
         } 
-    else 
+        else 
         {
             // Return if unsupported format
             return response()->json(['message' => 'Only JPG, JPEG, PNG, or WEBP formats allowed.'], 400);
@@ -88,10 +91,10 @@ class TagController extends Controller
             
         ]);
 
-        return response()->json([
-            'message' => 'Record created successfully.',
-            'data' => $tag,
-        ], 201);
+        return back()->with([
+            'message' => 'Tag added successfully!',
+            'type' => 'success'
+        ]);
     }
 
     // Update an existing tag 
@@ -170,18 +173,17 @@ class TagController extends Controller
 
         // Update tag record
         $tag->update([
-              'title'          => $request->title,
-              'description'    => $request->description,
-              'keyword'        => $request->keyword,
-              'page_url'       => $request->page_url,
-              'image'          => $imageName,
-            
+              'title'          => $request->title ?? $tag->title,
+              'description'    => $request->description ?? $tag->description,
+              'keyword'        => $request->keyword ?? $tag->keyword,
+              'page_url'       => $request->page_url ?? $tag->page_url,
+              'image'          => $imageName ?? $tag->image,
         ]);
 
-        return response()->json([
-            'message' => 'Record updated successfully.',
-            'data'    => $tag,
-        ], 200);
+         return back()->with([
+            'message' => 'Tag updated successfully!',
+            'type' => 'success'
+        ]);
     }
 
     // Delete a tag 
@@ -200,7 +202,10 @@ class TagController extends Controller
         // Delete the DB record
         $tag->delete();
 
-        return response()->json(['message' => 'Record deleted successfully.']);
+         return back()->with([
+            'message' => 'Tag deleted successfully!',
+            'type' => 'success'
+        ]);
     }
 
 }
