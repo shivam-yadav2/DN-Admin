@@ -162,18 +162,6 @@ class HomeAboutController extends Controller
                 }
             }
 
-<<<<<<< HEAD
-        // Update home about record
-        $homeAbout->update([
-             'tag'          => $request->tag ?? $homeAbout->tag,
-            'heading'       => $request->heading ?? $homeAbout->heading,
-            'sub_heading'   => $request->sub_heading ?? $homeAbout->sub_heading,
-            'image'         => $imageName ?? $homeAbout->image,
-            'content'       => $request->content ?? $homeAbout->content,
-            'button_text'   => $request->button_text ?? $homeAbout->button_text,
-            'button_url'    => $request->button_url ?? $homeAbout->button_url
-        ]);
-=======
             // Update home about record
             $homeAbout->update([
                 'tag'          => $request->tag ?? $homeAbout->tag,
@@ -184,7 +172,6 @@ class HomeAboutController extends Controller
                 'button_text'   => $request->button_text ?? $homeAbout->button_text,
                 'button_url'    => $request->button_url ?? $homeAbout->button_url
             ]);
->>>>>>> 625b579d842449758a1f9c962d17634f823b3f09
 
             return redirect()->route('home-about.index')
                 ->with('success', 'Home About updated successfully.');

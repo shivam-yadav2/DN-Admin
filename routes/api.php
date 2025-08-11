@@ -19,6 +19,8 @@ use App\Http\Controllers\API\TechnologyController;
 use App\Http\Controllers\API\TagController;
 use App\Http\Controllers\API\ProjectController;
 use App\Http\Controllers\API\ApiController;
+use App\Http\Controllers\API\SeoHighlightController;                                                                                                                                                                                                                                                                                                                                                                            
+use App\Http\Controllers\API\SeoFormController;                                                                                                                                                                                                                                                                                                                                                                            
 
 
 Route::get('/user', function (Request $request) {
@@ -127,3 +129,16 @@ Route::delete('/delete_project/{id}', [ProjectController::class, 'destroy']);
 
 //Frontend API Route
 Route::get('/all-data', [ApiController::class, 'index']);
+
+//SEO Routes
+Route::get('/get_seo', [SeoHighlightController::class, 'index']);
+Route::post('/post_seo', [SeoHighlightController::class, 'store']);
+Route::post('/update_seo/{id}', [SeoHighlightController::class, 'update']);
+Route::delete('delete_seo/{id}', [SeoHighlightController::class, 'destroy']);
+
+//SEO Audit Form Routes
+Route::get('/get_form', [SeoFormController::class, 'index']);
+Route::post('/post_form', [SeoFormController::class, 'store']);
+Route::post('/update_form/{id}', [SeoFormController::class, 'update']);
+Route::delete('delete_form/{id}', [SeoFormController::class, 'destroy']);
+

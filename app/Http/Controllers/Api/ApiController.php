@@ -59,7 +59,7 @@ class ApiController extends Controller
                 'packages'           => $packages,
                 'projects'           => $projects,
                 'services'           => $services,
-                'subservices'        => $subServices,
+                'subServices'        => $subServices,
                 'tags'               => $tags,
                 'technologies'       => $technologies,
                 'vision_missions'    => $visionMissions,
