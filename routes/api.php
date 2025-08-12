@@ -19,6 +19,8 @@ use App\Http\Controllers\API\TechnologyController;
 use App\Http\Controllers\API\TagController;
 use App\Http\Controllers\API\ProjectController;
 use App\Http\Controllers\API\ApiController;
+use App\Http\Controllers\API\SeoHighlightController;                                                                                                                                                                                                                                                                                                                                                                            
+use App\Http\Controllers\API\SeoFormController;                                                                                                                                                                                                                                                                                                                                                                            
 
 
 Route::get('/user', function (Request $request) {
