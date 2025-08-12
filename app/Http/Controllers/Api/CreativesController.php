@@ -108,7 +108,7 @@ class CreativesController extends Controller
         //     'message' => 'Creatives uploaded successfully.',
         //     'data' => $uploaded,
         // ], 201);
-        return redirect()->route('creatives.index')->with('success', $message);
+        return redirect()->route('creatives.index')->with('success', "Images Added Successfully");
     }
 
    

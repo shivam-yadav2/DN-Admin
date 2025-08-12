@@ -6,11 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Models\our_team;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver; // ✅ Use GD driver for v3
 use Inertia\Inertia;
 
 class our_teamcontroller extends Controller
 {
+    protected $imageManager;
+
+    public function __construct()
+    {
+        // ✅ Initialize ImageManager with GD driver
+        $this->imageManager = new ImageManager(new Driver());
+    }
+
     public function index()
     {
         $data = our_team::orderBy('created_at', 'desc')->get();
@@ -46,14 +55,14 @@ class our_teamcontroller extends Controller
                 mkdir(dirname($path), 0755, true);
             }
 
-            // Resize to 500x500 and convert to webp
-            Image::make($image)
-                ->fit(500, 500)
-                ->encode('webp', 90)
+            // ✅ v3 syntax: Resize & convert to WebP
+            $this->imageManager->read($image)
+                ->cover(500, 500)   // Replaces fit() in v3
+                ->toWebp(90)
                 ->save($path);
         }
 
-     $our_team= our_team::create([
+        $our_team = our_team::create([
             'name' => $request->name,
             'designation' => $request->designation,
             'img' => $imagename,
@@ -64,10 +73,6 @@ class our_teamcontroller extends Controller
             'message' => 'Team member added successfully!',
             'type' => 'success'
         ]);
-        // return response()->json([
-        //     'data'=>$our_team,
-        //     'msg'=>'Data added successfully',
-        // ]);
     }
 
     public function update(Request $request, $id)
@@ -92,10 +97,10 @@ class our_teamcontroller extends Controller
             ]);
         }
 
-        $imagename = $user->img; // Keep existing image by default
+        $imagename = $user->img; // Keep existing image if not replaced
 
         if ($request->hasFile('image')) {
-            // Delete old image if it exists
+            // Delete old image if exists
             if ($user->img) {
                 $oldImagePath = public_path('assets/images/our_team/' . $user->img);
                 if (file_exists($oldImagePath)) {
@@ -107,15 +112,14 @@ class our_teamcontroller extends Controller
             $imagename = time() . '_' . uniqid() . '.webp';
             $path = public_path('assets/images/our_team/' . $imagename);
 
-            // Create directory if it doesn't exist
             if (!file_exists(dirname($path))) {
                 mkdir(dirname($path), 0755, true);
             }
 
-            // Resize and convert to webp
-            Image::make($image)
-                ->fit(500, 500)
-                ->encode('webp', 90)
+            // ✅ v3 syntax: Resize & convert to WebP
+            $this->imageManager->read($image)
+                ->cover(500, 500)
+                ->toWebp(90)
                 ->save($path);
         }
 
@@ -127,14 +131,17 @@ class our_teamcontroller extends Controller
         ]);
 
 
+        // return back()->with('flash', [
+        //     'message' => 'Team member updated successfully!',
+        //     'type' => 'success'
+        // ]);
+       
+
         return back()->with('flash', [
             'message' => 'Team member updated successfully!',
             'type' => 'success'
+
         ]);
-        // return response()->json([
-        //     'data'=>$user,
-        //     'msg'=>'Data updated successfully',
-        // ]);
     }
 
     public function destroy($id)
@@ -148,7 +155,6 @@ class our_teamcontroller extends Controller
             ]);
         }
 
-        // Delete associated image
         if ($info->img) {
             $imagePath = public_path('assets/images/our_team/' . $info->img);
             if (file_exists($imagePath)) {

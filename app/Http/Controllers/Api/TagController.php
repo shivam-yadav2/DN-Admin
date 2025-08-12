@@ -8,14 +8,16 @@ use App\Models\Tag;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
 use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver for image processing
 use Illuminate\Support\Facades\Validator;
-
+use Inertia\Inertia;
 class TagController extends Controller
 {
     ////Get all data
     public function index()
     {
         $tags = Tag::all();
-        return response()->json($tags, 200);
+        return Inertia::render('Admin/Other/TagManagement', [
+            'tags' => $tags
+        ]);
     }
 
     // POST a new tag
@@ -24,7 +26,7 @@ class TagController extends Controller
         // Validate request
         $validator = Validator::make($request->all(), [
             'title'          => 'required|string|max:255',
-            'description'    => 'nullable|string|max:255',
+            'description'    => 'required|string|max:255',
             'keyword'        => 'nullable|string|max:255',
             'page_url'       => 'required|url|max:255|unique:tags,page_url',
             'image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:512',
@@ -89,10 +91,10 @@ class TagController extends Controller
             
         ]);
 
-        return response()->json([
-            'message' => 'Record created successfully.',
-            'data' => $tag,
-        ], 201);
+        return back()->with([
+            'message' => 'Tag added successfully!',
+            'type' => 'success'
+        ]);
     }
 
     // Update an existing tag 
@@ -178,10 +180,10 @@ class TagController extends Controller
               'image'          => $imageName ?? $tag->image,
         ]);
 
-        return response()->json([
-            'message' => 'Record updated successfully.',
-            'data'    => $tag,
-        ], 200);
+         return back()->with([
+            'message' => 'Tag updated successfully!',
+            'type' => 'success'
+        ]);
     }
 
     // Delete a tag 
@@ -200,7 +202,10 @@ class TagController extends Controller
         // Delete the DB record
         $tag->delete();
 
-        return response()->json(['message' => 'Record deleted successfully.']);
+         return back()->with([
+            'message' => 'Tag deleted successfully!',
+            'type' => 'success'
+        ]);
     }
 
 }

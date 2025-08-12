@@ -24,46 +24,8 @@ use App\Models\vision_mission;
 class ApiController extends Controller
 {
     //
-    public function index()
+    public function get_blog()
     {
-        $blogs               = Blog           ::  all();
-        $careers             = Career         :: all();
-        $ContactDetails      = ContactDetail  :: all();
-        $creatives           = Creative       :: all();
-        $enquiries           = Enquiry        :: all();
-        $faqs                = FAQ            :: all();
-        $hero                = Hero           :: all();
-        $homeAbout           = HomeAbout      :: all();
-        $ourTeams            = our_team       :: all();
-        $packages            = packages        :: all();
-        $projects            = Project        :: all();
-        $services            = Service        :: all();
-        $subServices         = SubService     :: all();
-        $tags                = Tag            :: all();
-        $technologies        = Technology     :: all();
-        $visionMissions      = vision_mission :: all();
-
-        return response()->json([
-            'message' => 'Data retrieved successfully',
-            'status' => 'success',
-            'data' => [
-                'blogs'              => $blogs,
-                'careers'            => $careers,
-                'contact_details'    => $ContactDetails,
-                'creatives'          => $creatives,
-                'enquiries'          => $enquiries,
-                'faqs'               => $faqs,
-                'hero'               => $hero,
-                'homeAbout'          => $homeAbout,
-                'ourTeams'           => $ourTeams,
-                'packages'           => $packages,
-                'projects'           => $projects,
-                'services'           => $services,
-                'subServices'        => $subServices,
-                'tags'               => $tags,
-                'technologies'       => $technologies,
-                'vision_missions'    => $visionMissions,
-            ]
-        ], 200);
+       
     }
 }

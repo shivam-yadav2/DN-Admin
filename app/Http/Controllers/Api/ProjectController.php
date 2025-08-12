@@ -8,14 +8,18 @@ use App\Models\Project;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
 use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver
+use Inertia\Inertia;
 
 class ProjectController extends Controller
 {
-    //Get all projects
     public function index()
     {
-        $projects = Project::all();
-        return response()->json($projects, 200);
+        $projects = Project::orderBy('created_at', 'desc')->get();
+        
+        return Inertia::render('Admin/Other/Projects', [
+            'projects' => $projects,
+            'flash' => session('flash')
+        ]);
     }
 
     // POST a new project
@@ -101,10 +105,10 @@ class ProjectController extends Controller
             'url'           => $request->url,
         ]);
 
-        return response()->json([
-            'message' => 'Project created successfully',
-            'data' => $project
-        ], 201);
+        return redirect()->back()->with('flash', [
+            'message' => 'Project created successfully!',
+            'type' => 'success'
+        ]);
     }
 
     // Update an existing project
@@ -214,22 +218,21 @@ class ProjectController extends Controller
             
         ]);
 
-        return response()->json([
-            'message' => 'Record updated successfully.',
-            'data'    => $project,
-        ], 200);
+         return redirect()->back()->with('flash', [
+            'message' => 'Project updated successfully!',
+            'type' => 'success'
+        ]);
     }
-
-    //Delete a project
+     // Delete a project
     public function destroy($id)
     {
         $project = Project::find($id);
 
         if (!$project) {
-            return response()->json(['message' => 'Project not found'], 404);
+            return redirect()->back()->withErrors(['general' => 'Project not found']);
         }
 
-        // Delete image if it exists
+        // Delete associated files
         if ($project->image) {
             $imagePath = public_path('assets/images/projects/' . $project->image);
             if (file_exists($imagePath)) {
@@ -237,7 +240,6 @@ class ProjectController extends Controller
             }
         }
 
-        // Delete video if it exists
         if ($project->video) {
             $videoPath = public_path('assets/videos/projects/' . $project->video);
             if (file_exists($videoPath)) {
@@ -245,11 +247,11 @@ class ProjectController extends Controller
             }
         }
 
-        // Delete the project record
         $project->delete();
 
-        return response()->json([
-            'message' => 'Project deleted successfully'
-        ], 200);
+        return redirect()->back()->with('flash', [
+            'message' => 'Project deleted successfully!',
+            'type' => 'success'
+        ]);
     }
 }
