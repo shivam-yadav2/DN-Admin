@@ -123,6 +123,11 @@ const data = {
             url: "/tags",
             icon: Frame,
         },
+        {
+            title: "Enquiries",
+            url: "/enquiries",
+            icon: Frame,
+        },
     ],
     Pages: [
         {

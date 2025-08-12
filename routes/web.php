@@ -26,15 +26,15 @@ Route::get('/test', function () {
     return Inertia::render('Test');
 });
 
-Route::get('/services', [ServiceController::class, 'index'])->name('services');
+// Route::get('/services', [ServiceController::class, 'index'])->name('services');
 
-Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
+// Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
 
-Route::post('/subservices', [SubServiceController::class, 'store'])->name('subservices.store');
+// Route::post('/subservices', [SubServiceController::class, 'store'])->name('subservices.store');
 
-Route::post('/services/{id}', [ServiceController::class, 'update'])->name('services.update');
+// Route::post('/services/{id}', [ServiceController::class, 'update'])->name('services.update');
 
-Route::post('/services/{id}', [ServiceController::class, 'destroy'])->name('services.destroy');
+// Route::post('/services/{id}', [ServiceController::class, 'destroy'])->name('services.destroy');
 
 Route::get('/', function () {
     return Inertia::render('Admin/Dashboard');
@@ -54,6 +54,8 @@ Route::middleware('auth')->group(function () {
 // Home Page Routes 
 
 Route::resource('hero-videos', HeroController::class)->names('hero');
+Route::resource('services', ServiceController::class)->names('service');
+Route::resource('subservices', SubServiceController::class)->names('subservice');
 
 // Route::get('/home_hero', function () {
 //     return Inertia::render('Admin/HomePage/Hero');

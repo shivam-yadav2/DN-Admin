@@ -12,7 +12,7 @@ class SubServiceController extends Controller
     // GET all 
     public function index()
     {
-        $subServices = SubService::with('service')->get()->map(function ($subService) {
+        $subServices = SubService::with('service')->where('is_deleted', 0)->get()->map(function ($subService) {
             return [
                 'id' => $subService->id,
                 'service_id' => $subService->service_id,
@@ -56,7 +56,7 @@ class SubServiceController extends Controller
         //     'message' => 'SubService added successfully.',
         //     'data' => $subService,
         // ], 201);
-        return redirect()->route('services')->with('message', 'subService added successfully.');
+        return redirect()->route('service.index')->with('message', 'subService added successfully.');
     }
 
     // Get all subservices by service ID
@@ -78,17 +78,19 @@ class SubServiceController extends Controller
     //Delete a subservice
     public function destroy($id)
     {
-        $subService = SubService::find($id);
+        $subService = SubService::findOrFail($id);
 
-        if (!$subService) {
-            return response()->json(['message' => 'SubService not found.'], 404);
+        // Delete image from storage
+        $imagePath = public_path('assets/images/subservices/' . $subService->image);
+        if (file_exists($imagePath)) {
+            unlink($imagePath);
         }
 
         // Soft delete the subservice
-        $subService->is_deleted = true; // Assuming you have an 'is_deleted' column for soft deletion
-        $subService->save();
+        $subService->delete(); // Assuming you have an 'is_deleted' column for soft deletion
+        // $subService->save();
 
-        return response()->json(['message' => 'SubService deleted successfully.'], 200);
+        return redirect()->route('service.index')->with('message', 'SubService deleted successfully.');
     }
 
    
