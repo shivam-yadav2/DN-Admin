@@ -15,7 +15,7 @@ class BlogController extends Controller
     public function index()
     {
          $blogs = Blog::orderBy('created_at', 'desc')->get();
-        // return response()->json($blogs, 200);
+        // return response()->json($blogs, 200); 
  return Inertia::render('Admin/Other/Blog', [
             'blogs' => $blogs,
         ]);
