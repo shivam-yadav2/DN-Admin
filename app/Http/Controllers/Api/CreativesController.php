@@ -24,9 +24,7 @@ class CreativesController extends Controller
         ]);
     }
 
-
-
-    //Store a new creative
+     //Store a new creative
     public function store(Request $request)
     {
         $request->validate([
