@@ -128,20 +128,26 @@ Route::post('/post_project', [ProjectController::class, 'store']);
 Route::post('/update_project/{id}', [ProjectController::class, 'update']);
 Route::delete('/delete_project/{id}', [ProjectController::class, 'destroy']);
 
+
+
 //Frontend API Route
-Route::get('/all-data', [ApiController::class, 'index']);
+Route::get('getblog',[ApiController::class,'getblog']);
+Route::get('getcareer', [ApiController::class, 'getcareer']);
+Route::get('getcontactdetail', [ApiController::class, 'getcontactdetail']);
+Route::get('getcreatives', [ApiController::class, 'getcreatives']);
+Route::get('getourteam', [ApiController::class, 'getourteam']);
+Route::get('getpackage', [ApiController::class, 'getpackage']);
+Route::get('getfaq', [ApiController::class, 'getfaq']);
+Route::get('gethero', [ApiController::class, 'gethero']);
+Route::get('getproject', [ApiController::class, 'getproject']);
+Route::get('gettag', [ApiController::class, 'gettag']);
+Route::get('gettechnlogies', [ApiController::class, 'gettechnlogies']);
+Route::get('getvision_mission', [ApiController::class, 'getvision_mission']);
+Route::get('gethomeabout', [ApiController::class, 'gethomeabout']);
+// Route::get('getservice', [ApiController::class, 'getservice']);
+Route::get('getsubservice', [ApiController::class, 'getsubservice']);
+Route::get('careerdetail/{id}', [ApiController::class, 'careerdetail']);
 
-//SEO Routes
-Route::get('/get_seo', [SeoHighlightController::class, 'index']);
-Route::post('/post_seo', [SeoHighlightController::class, 'store']);
-Route::post('/update_seo/{id}', [SeoHighlightController::class, 'update']);
-Route::delete('delete_seo/{id}', [SeoHighlightController::class, 'destroy']);
-
-//SEO Audit Form Routes
-Route::get('/get_form', [SeoFormController::class, 'index']);
-Route::post('/post_form', [SeoFormController::class, 'store']);
-Route::post('/update_form/{id}', [SeoFormController::class, 'update']);
-Route::delete('delete_form/{id}', [SeoFormController::class, 'destroy']);
 
 //Seo Service Routes
 Route::get('/get_seoservice', [SeoServiceController::class, 'index']);
