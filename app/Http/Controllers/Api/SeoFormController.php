@@ -1,10 +1,11 @@
 <?php
 
+//Not working
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-USE App\Models\SEO_Form;
+use App\Models\SEO_Form;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
 use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver
@@ -25,7 +26,7 @@ class SeoFormController extends Controller
         $validator = Validator::make($request->all(),[
             'image'             => 'nullable|image|mimes:jpg,jpeg,png,webp|max:512',
             'name'              => 'required|string|max:255',
-            'website_url'       => 'required|url|max:255|unique',
+            'website_url'       => 'required|url|max:255|unique:seo_forms,website_url',
             'email'             => 'required|email|max:255',
             'current_traffic'   => 'required|string|in:Low,Medium,High|max:100',
             'message'           => 'required|string|max:1000',
@@ -70,7 +71,7 @@ class SeoFormController extends Controller
                 } 
                 else 
                 {
-                    return response()->json(['message' => 'Only JPG, JPEG, PNG or WEBP formats allowe'], 400);
+                    return response()->json(['message' => 'Only JPG, JPEG, PNG or WEBP formats allowed'], 400);
                 }
             }
          else 
@@ -116,7 +117,7 @@ class SeoFormController extends Controller
             
             'image'             => 'nullable|image|mimes:jpg,jpeg,png,webp|max:512',
             'name'              => 'required|string|max:255',
-            'website_url'       => 'required|url|max:255|unique:seo_forms,website_url ,' . $id,
+            'website_url'       => 'required|url|max:255|unique:seo_forms,website_url,' . $id,
             'email'             => 'required|email|max:255',
             'current_traffic'   => 'required|string|in:Low,Medium,High|max:100',
             'message'           => 'required|string|max:1000',
@@ -136,7 +137,7 @@ class SeoFormController extends Controller
             // Process the uploaded file
          if ($request->hasFile('image')) 
             {
-                $oldImagePath = public_path('assets/images/seo/' . $form->image);
+                $oldImagePath = public_path('assets/images/seo_form/' . $form->image);
                 if (file_exists($oldImagePath)) 
                     {
                         unlink($oldImagePath);
@@ -180,10 +181,13 @@ class SeoFormController extends Controller
 
         // Update tag record
         $form->update([
-               'image'          => $imageName,
-              'heading'         => $request->heading ?? $form->heading,
-              'description'      => $request->description ?? $form->description,
-              
+            'image'           => $imageName,
+            'name'            => $request->name,
+            'website_url'     => $request->website_url,
+            'email'           => $request->email,
+            'current_traffic' => $request->current_traffic,
+            'message'         => $request->message,
+            'button'          => $request->button,
             
         ]);
 

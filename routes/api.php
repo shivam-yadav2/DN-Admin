@@ -21,6 +21,7 @@ use App\Http\Controllers\API\ProjectController;
 use App\Http\Controllers\API\ApiController;
 use App\Http\Controllers\API\SeoHighlightController;                                                                                                                                                                                                                                                                                                                                                                            
 use App\Http\Controllers\API\SeoFormController;                                                                                                                                                                                                                                                                                                                                                                            
+use App\Http\Controllers\Api\SeoServiceController;                                                                                                                                                                                                                                                                                                                                                                            
 
 
 Route::get('/user', function (Request $request) {
@@ -149,3 +150,8 @@ Route::get('careerdetail/{id}', [ApiController::class, 'careerdetail']);
 Route::get('blogdetail/{id}', [ApiController::class, 'getblogdetail']);
 
 
+//Seo Service Routes
+Route::get('/get_seoservice', [SeoServiceController::class, 'index']);
+Route::post('/post_seoservice', [SeoServiceController::class, 'store']);
+Route::post('/update_seoservice/{id}', [SeoServiceController::class, 'update']);
+Route::delete('delete_seoservice/{id}', [SeoServiceController::class, 'destroy']);
