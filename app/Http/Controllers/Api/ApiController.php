@@ -179,14 +179,18 @@ public function careerdetail($id){
         $careerdetail=Career::find($id);
          return response()->json([
             'data'=>$careerdetail,
-            'msg'>"Getting data successfully",
+            'msg'=>"Getting data successfully",
          ]);
 
 
 }
 
-
-    
-  
+public function getblogdetail($id){
+    $blogdetail=Blog::find($id);
+    return response()->json([
+        'data'=> $blogdetail,
+        'msg'=>"Getting data successfully",
+    ]);
+}
 
 }

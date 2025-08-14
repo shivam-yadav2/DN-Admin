@@ -146,5 +146,6 @@ Route::get('gethomeabout', [ApiController::class, 'gethomeabout']);
 // Route::get('getservice', [ApiController::class, 'getservice']);
 Route::get('getsubservice', [ApiController::class, 'getsubservice']);
 Route::get('careerdetail/{id}', [ApiController::class, 'careerdetail']);
+Route::get('blogdetail/{id}', [ApiController::class, 'getblogdetail']);
 
 
