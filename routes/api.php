@@ -99,10 +99,10 @@ Route::post('update_ourteam/{id}',[our_teamcontroller::class,'update_ourteam']);
 Route::get('show_ourteam',[our_teamcontroller::class,'show_ourteam']);
 
 //Package Routes
-Route::post('insert_package', [packagecontroller::class,'insert_package']);
-Route::post('update_package/{id}', [packagecontroller::class,'update_package']);
-Route::get('show_package', [packagecontroller::class,'show_package']);
-Route::delete('delete_package/{id}', [packagecontroller::class,'delete_package']);
+Route::post('post_package', [packagecontroller::class,'store']);
+Route::post('update_package/{id}', [packagecontroller::class,'update']);
+Route::get('get_package', [packagecontroller::class,'index']);
+Route::delete('delete_package/{id}', [packagecontroller::class,'destroy']);
 
 //Blog Routes
 Route::get('/get_blog', [BlogController::class, 'index']);
@@ -127,8 +127,6 @@ Route::get('/get_project', [ProjectController::class, 'index']);
 Route::post('/post_project', [ProjectController::class, 'store']);
 Route::post('/update_project/{id}', [ProjectController::class, 'update']);
 Route::delete('/delete_project/{id}', [ProjectController::class, 'destroy']);
-
-
 
 //Frontend API Route
 Route::get('getblog',[ApiController::class,'getblog']);
@@ -155,3 +153,15 @@ Route::get('/get_seoservice', [SeoServiceController::class, 'index']);
 Route::post('/post_seoservice', [SeoServiceController::class, 'store']);
 Route::post('/update_seoservice/{id}', [SeoServiceController::class, 'update']);
 Route::delete('delete_seoservice/{id}', [SeoServiceController::class, 'destroy']);
+
+//Seo Form Routes
+Route::get('/get_seoform', [SeoFormController::class, 'index']);
+Route::post('/post_seoform', [SeoFormController::class, 'store']);
+Route::post('/update_seoform/{id}', [SeoFormController::class, 'update']);
+
+
+//Seo Highlight Routes
+Route::get('/get_seo', [SeoHighlightController::class, 'index']);
+Route::post('/post_seo', [SeoHighlightController::class, 'store']);
+Route::post('/update_seo/{id}', [SeoHighlightController::class, 'update']);
+Route::delete('delete_seo/{id}', [SeoHighlightController::class, 'destroy']);

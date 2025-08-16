@@ -31,7 +31,7 @@ class EnquiryController extends Controller
             'city' => $enquiry->city,
             'addedFor' => $enquiry->service_id ? "Course: {$enquiry->service->name}" : 'N/A',
             'enquiryFor' => [
-                'title' => $enquiry->subservice_id ? $enquiry->subservice->name : 'N/A',
+            'title' => $enquiry->subservice_id ? $enquiry->subservice->name : 'N/A',
             ],
             'createdAt' => $enquiry->created_at->toISOString(),
             'leadStatus' => $enquiry->status ?? 'new',

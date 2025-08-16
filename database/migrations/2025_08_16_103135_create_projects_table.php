@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('video')->nullable();
             $table->text('description');
             $table->string('duration');
-            $table->string('tech_used');
+            $table->json('tech_used');
             $table->string('url');
             $table->timestamps();
         });

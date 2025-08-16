@@ -31,7 +31,8 @@ class SeoServiceController extends Controller
 
         if ($validator->fails()) 
             {
-                return response()->json($validator->errors(), 422);
+                return response()->json([$validator->errors()->all()
+            ], 422);
             }
      
         if (!$request->hasFile('image')) {
@@ -44,9 +45,12 @@ class SeoServiceController extends Controller
 
         $manager = new ImageManager(new GdDriver());
 
-        $timestampName = time() . '.webp'; // Generate a unique file name
-        $imageName = $timestampName;
-        $destinationPath = public_path('assets/images/seo-service');
+        // $timestampName = time() . '.webp'; // Generate a unique file name
+        // $imageName = $timestampName;
+
+          // Assign filename properly
+        $imageName = time() . '.webp'; 
+        $destinationPath = 'assets/images/seo_service';
 
         // Create directory if it doesn't exist
         if (!file_exists($destinationPath)) {
@@ -68,6 +72,9 @@ class SeoServiceController extends Controller
         {
             return response()->json(['message' => 'Only JPG, JPEG, PNG or WEBP formats allowed'], 400);
         }
+
+         // Save relative path in DB
+                $imageName = 'assets/images/seo_service/' . $imageName;
 
         //Create a new seo service
         $seo_service = Seo_Service::create([
@@ -106,17 +113,20 @@ class SeoServiceController extends Controller
             ], 422);
         }
 
-         // Default to old image
+            // Default to old image
                 $imageName = $seo_service->image;
 
             // Process the uploaded file
          if ($request->hasFile('image')) 
             {
-                $oldImagePath = public_path('assets/images/projects/' . $seo_service->image);
-                if (file_exists($oldImagePath)) 
-                    {
-                        unlink($oldImagePath);
-                    }
+                // $oldImagePath = public_path('assets/images/projects/' . $seo_service->image);
+                // if (file_exists($oldImagePath)) 
+                //     {
+                //         unlink($oldImagePath);
+                //     }
+                 if ($seo_service->image && file_exists(public_path($seo_service->image))) {
+                    unlink(public_path($seo_service->image));
+                }
 
                 $image = $request->file('image'); // Get the uploaded file
                 $originalExtension = strtolower($image->getClientOriginalExtension()); // Get and lowercase the original extension
@@ -125,7 +135,7 @@ class SeoServiceController extends Controller
 
                 $timestampName = time() . '.webp'; // Generate a unique filename
 
-                $destinationPath = public_path('assets/images/seo-service'); // Define storage path
+                $destinationPath = 'assets/images/seo_service'; // Define storage path
 
                 // Create directory if it doesn't exist
                 if (!file_exists($destinationPath)) 
@@ -137,21 +147,25 @@ class SeoServiceController extends Controller
                 {
                     // Convert JPG/PNG to WebP
                     $img = $manager->read($image->getRealPath())->toWebp(80); 
-                    $img->save($destinationPath . '/' . $imageName);
-                    $imageName = $timestampName;
+                    $img->save($destinationPath . '/' . $timestampName);
+                    // $imageName = $timestampName;
                 } 
             
                 elseif ($originalExtension === 'webp')
                 {
                     // Save WebP as-is
-                    $image->move($destinationPath, $imageName);
-                    $imageName = $timestampName;
+                    $image->move($destinationPath, $timestampName);
+                    // $imageName = $timestampName;
                 } 
                  else 
                 {
                     // Return if unsupported format
                     return response()->json(['message' => 'Only JPG, JPEG, PNG, or WEBP formats allowed.'], 400);
                 }
+
+                 // Save relative path in DB
+                $imageName = 'assets/images/seo_service
+                /' . $timestampName;
             }
             // Update tag record
         $seo_service->update([
@@ -181,7 +195,7 @@ class SeoServiceController extends Controller
 
         // Delete associated files
         if ($seo_service->image) {
-            $imagePath = public_path('assets/images/seo-service/' . $seo_service->image);
+            $imagePath = ('assets/images/seo-service/' . $seo_service->image);
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }
