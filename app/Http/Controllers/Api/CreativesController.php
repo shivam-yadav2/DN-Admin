@@ -24,14 +24,12 @@ class CreativesController extends Controller
         ]);
     }
 
-
-
-    //Store a new creative
+     //Store a new creative
     public function store(Request $request)
     {
         $request->validate([
-            'images' => 'required|array',
-            'images.*' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'images'    => 'required|array',
+            'images.*'  => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         if (!$request->hasFile('images')) {
@@ -39,7 +37,7 @@ class CreativesController extends Controller
         }
 
          // Ensure directory exists before saving
-        $destinationPath = public_path('assets/images/creatives');
+        $destinationPath = 'assets/images/creatives';
         if (!file_exists($destinationPath)) 
             {
                 mkdir($destinationPath, 0755, true);
@@ -70,7 +68,7 @@ class CreativesController extends Controller
 
                     $creative = Creative::create
                     ([
-                        'image' => $filename,
+                        'image' =>  'assets/images/creatives/' . $filename,
                     ]);
 
                     $uploaded[] = $creative;
@@ -93,7 +91,7 @@ class CreativesController extends Controller
                  $image->toWebp(80)->save($webpPath);
 
                 $creative = Creative::create([
-                 'image' => $webpName,
+                 'image' => 'assets/images/creatives/' . $webpName,
                 ]);
 
                 $uploaded[] = $creative;
@@ -104,11 +102,11 @@ class CreativesController extends Controller
             return response()->json(['message' => 'No valid landscape images uploaded.'], 422);
         }
 
-        // return response()->json([
-        //     'message' => 'Creatives uploaded successfully.',
-        //     'data' => $uploaded,
-        // ], 201);
-        return redirect()->route('creatives.index')->with('success', "Images Added Successfully");
+        return response()->json([
+            'message' => 'Creatives uploaded successfully.',
+            'data' => $uploaded,
+        ], 201);
+        // return redirect()->route('creatives.index')->with('success', "Images Added Successfully");
     }
 
    
@@ -118,8 +116,7 @@ class CreativesController extends Controller
         $creative = Creative::findOrFail($id);
 
         // Delete each image from storage
-        // Delete image file
-        $filePath = public_path('assets/images/creatives' . $creative->image);
+        $filePath = 'assets/images/creatives/' . $creative->image;
          if (file_exists($filePath))
          {
             unlink($filePath);

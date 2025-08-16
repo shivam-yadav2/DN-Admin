@@ -1,10 +1,11 @@
 <?php
 
+//Not working
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-USE App\Models\SEO_Form;
+use App\Models\SEO_Form;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
 use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver
@@ -19,13 +20,13 @@ class SeoFormController extends Controller
         return response()->json($forms, 200);
     }
 
-    //Stor data
+    //Store data
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(),[
             'image'             => 'nullable|image|mimes:jpg,jpeg,png,webp|max:512',
             'name'              => 'required|string|max:255',
-            'website_url'       => 'required|url|max:255|unique',
+            'website_url'       => 'required|url|max:255|unique:seo_forms,website_url',
             'email'             => 'required|email|max:255',
             'current_traffic'   => 'required|string|in:Low,Medium,High|max:100',
             'message'           => 'required|string|max:1000',
@@ -48,9 +49,12 @@ class SeoFormController extends Controller
 
                 $manager = new ImageManager(new GdDriver());
 
-                $timestampName = time() . '.webp'; // Generate a unique file name
-                $imageName = $timestampName;
-                $destinationPath = public_path('assets/images/seo_form');
+                // $timestampName = time() . '.webp'; // Generate a unique file name
+                //  $imageName = $timestampName;
+
+                  // ✅ Assign filename properly
+                $imageName = time() . '.webp';  
+                $destinationPath = 'assets/images/seo_form';
 
                 // Create directory if it doesn't exist
                 if (!file_exists($destinationPath)) {
@@ -70,8 +74,11 @@ class SeoFormController extends Controller
                 } 
                 else 
                 {
-                    return response()->json(['message' => 'Only JPG, JPEG, PNG or WEBP formats allowe'], 400);
+                    return response()->json(['message' => 'Only JPG, JPEG, PNG or WEBP formats allowed'], 400);
                 }
+
+                // Save relative path in DB
+                $imageName = 'assets/images/seo_form/' . $imageName;
             }
          else 
             {
@@ -114,13 +121,13 @@ class SeoFormController extends Controller
         // Validate request
         $validator = Validator::make($request->all(), [
             
-            'image'             => 'nullable|image|mimes:jpg,jpeg,png,webp|max:512',
-            'name'              => 'required|string|max:255',
-            'website_url'       => 'required|url|max:255|unique:seo_forms,website_url ,' . $id,
-            'email'             => 'required|email|max:255',
-            'current_traffic'   => 'required|string|in:Low,Medium,High|max:100',
-            'message'           => 'required|string|max:1000',
-            'button'            => 'required|string|max:255',
+            'image'             => 'sometimes|nullable|image|mimes:jpg,jpeg,png,webp|max:512',
+            'name'              => 'sometimes|required|string|max:255',
+            'website_url'       => 'sometimes|required|url|max:255|unique:seo_forms,website_url,' . $id,
+            'email'             => 'sometimes|required|email|max:255',
+            'current_traffic'   => 'sometimes|required|string|in:Low,Medium,High|max:100',
+            'message'           => 'sometimes|required|string|max:1000',
+            'button'            => 'sometimes|required|string|max:255',
             
         ]);
 
@@ -136,11 +143,15 @@ class SeoFormController extends Controller
             // Process the uploaded file
          if ($request->hasFile('image')) 
             {
-                $oldImagePath = public_path('assets/images/seo/' . $form->image);
-                if (file_exists($oldImagePath)) 
-                    {
-                        unlink($oldImagePath);
-                    }
+                // $oldImagePath =('assets/images/seo_form/' . $form->image);
+                // if (file_exists($oldImagePath)) 
+                //     {
+                //         unlink($oldImagePath);
+                //     }
+                 // delete old image if exists
+                if ($form->image && file_exists(public_path($form->image))) {
+                    unlink(public_path($form->image));
+                }
 
                 $image = $request->file('image'); // Get the uploaded file
                 $originalExtension = strtolower($image->getClientOriginalExtension()); // Get and lowercase the original extension
@@ -149,7 +160,7 @@ class SeoFormController extends Controller
 
                 $timestampName = time() . '.webp'; // Generate a unique filename
 
-                $destinationPath = public_path('assets/images/seo_form'); // Define storage path
+                $destinationPath = 'assets/images/seo_form'; // Define storage path
 
                 // Create directory if it doesn't exist
                 if (!file_exists($destinationPath)) 
@@ -161,29 +172,34 @@ class SeoFormController extends Controller
                 {
                     // Convert JPG/PNG to WebP
                     $img = $manager->read($image->getRealPath())->toWebp(80); 
-                    $img->save($destinationPath . '/' . $imageName);
-                    $imageName = $timestampName;
+                    $img->save($destinationPath . '/' . $timestampName);
+                    // $imageName = $timestampName;
                 } 
             
                 elseif ($originalExtension === 'webp')
                 {
                     // Save WebP as-is
-                    $image->move($destinationPath, $imageName);
-                    $imageName = $timestampName;
+                    $image->move($destinationPath, $timestampName);
+                    // $imageName = $timestampName;
                 } 
                  else 
                 {
                     // Return if unsupported format
                     return response()->json(['message' => 'Only JPG, JPEG, PNG, or WEBP formats allowed.'], 400);
                 }
+                 // Save relative path in DB
+                $imageName = 'assets/images/seo_form/' . $timestampName;
             }
 
         // Update tag record
         $form->update([
-               'image'          => $imageName,
-              'heading'         => $request->heading ?? $form->heading,
-              'description'      => $request->description ?? $form->description,
-              
+            'image'           => $imageName,
+            'name'            => $request->name ?? $form->name, 
+            'website_url'     => $request->website_url ?? $form->website_url,
+            'email'           => $request->email ?? $form->email,
+            'current_traffic' => $request->current_traffic ?? $form->current_traffic,
+            'message'         => $request->message ?? $form->message ,
+            'button'          => $request->button ?? $form->button ,
             
         ]);
 

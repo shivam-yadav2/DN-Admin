@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\packages;
@@ -23,11 +23,11 @@ class packagecontroller extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'heading' => 'required',
-            'img' => 'required|image|mimes:jpeg,jpg,png,webp|max:2048|dimensions:max_width:200,max_height:200',
-            'price' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
-            'target_audience' => 'required|string|max:255',
+            'heading'           => 'required',
+            'img'               => 'required|image|mimes:jpeg,jpg,png,webp|max:2048|dimensions:max_width:200,max_height:200',
+            'price'             => 'required|string|max:255',
+            'description'       => 'required|string|max:255',
+            'target_audience'   => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -43,7 +43,7 @@ class packagecontroller extends Controller
         if ($request->hasFile('img')) {
             $image = $request->file('img');
             $imagename = time() . '.webp'; // force convert to webp
-            $path = public_path('assets/images/package/' . $imagename);
+            $path = ('assets/images/package/' . $imagename);
 
             // ✅ v3: Resize and convert to webp
             $this->imageManager->read($image)
@@ -52,7 +52,7 @@ class packagecontroller extends Controller
                 ->save($path);
 
             $data = packages::create([
-                'img' => $imagename,
+                'img' => 'assets/images/package/' . $imagename,
                 'heading' => $request->heading,
                 'price' => $request->price,
                 'description' => $request->description,
@@ -69,11 +69,11 @@ class packagecontroller extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'heading' => 'required',
-            'img' => 'required|image|mimes:jpeg,jpg,png,webp|max:2048|dimensions:max_width:200,max_height:200',
-            'price' => 'required',
-            'description' => 'required',
-            'target_audience' => 'required',
+            'heading'           => 'sometimes|required',
+            'img'               => 'sometimes|required|image|mimes:jpeg,jpg,png,webp|max:2048|dimensions:max_width:200,max_height:200',
+            'price'             => 'sometimes|required',
+            'description'       => 'sometimes|required',
+            'target_audience'   => 'sometimes|required',
         ]);
 
         if ($validator->fails()) {
@@ -106,11 +106,11 @@ class packagecontroller extends Controller
                 ->save($path);
 
             $info->update([
-                'img' => $imagename,
-                'heading' => $request->heading,
-                'price' => $request->price,
-                'description' => $request->description,
-                'target_audience' => $request->target_audience,
+                'img'               => 'assets/images/package/' .  $imagename,
+                'heading'           => $request->heading,
+                'price'             => $request->price,
+                'description'       => $request->description,
+                'target_audience'   => $request->target_audience,
             ]);
 
             return back()->with([

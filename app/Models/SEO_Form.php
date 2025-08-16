@@ -8,6 +8,7 @@ class SEO_Form extends Model
 {
     //
     protected $fillable = [
+        'image',
         'name',
         'website_url',
         'email',

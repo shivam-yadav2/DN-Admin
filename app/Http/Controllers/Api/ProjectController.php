@@ -55,7 +55,7 @@ class ProjectController extends Controller
 
         $timestampName = time() . '.webp'; // Generate a unique file name
         $imageName = $timestampName;
-        $destinationPath = public_path('assets/images/projects');
+        $destinationPath = ('assets/images/projects');
 
         // Create directory if it doesn't exist
         if (!file_exists($destinationPath)) {
@@ -90,15 +90,15 @@ class ProjectController extends Controller
                     400);
             }
              $videoName = time() . '.' . $videoExtension;
-             $video->move(public_path('assets/videos/projects'), $videoName);
+             $video->move(('assets/videos/projects'), $videoName);
         }
     
         // Create new project record
         $project = Project::create([
             'type'          => $request->type,
             'title'         => $request->title,
-            'image'         => $imageName,
-            'video'         => $videoName,
+            'image'         => 'assets/images/projects/' . $imageName,
+            'video'         => 'assets/videos/projects/' . $videoName,
             'description'   => $request->description,
             'duration'      => $request->duration,
             'tech_used'     => $request->tech_used,
@@ -139,16 +139,21 @@ class ProjectController extends Controller
         }
 
            // Default to old image
-                $imageName = $project->image;
+                $imageName =  $project->image;
+                  $videoName = $project->video;
 
             // Process the uploaded file
          if ($request->hasFile('image')) 
             {
-                $oldImagePath = public_path('assets/images/projects/' . $project->image);
-                if (file_exists($oldImagePath)) 
-                    {
-                        unlink($oldImagePath);
-                    }
+                // $oldImagePath = ('assets/images/projects/' . $project->image);
+                // if (file_exists($oldImagePath)) 
+                //     {
+                //         unlink($oldImagePath);
+                //     }
+                // Delete old image if exists
+                if ($project->image && file_exists(public_path($project->image))) {
+                    unlink(public_path($project->image));
+                }
 
                 $image = $request->file('image'); // Get the uploaded file
                 $originalExtension = strtolower($image->getClientOriginalExtension()); // Get and lowercase the original extension
@@ -157,7 +162,7 @@ class ProjectController extends Controller
 
                 $timestampName = time() . '.webp'; // Generate a unique filename
 
-                $destinationPath = public_path('assets/images/projects'); // Define storage path
+                $destinationPath = ('assets/images/projects'); // Define storage path
 
                 // Create directory if it doesn't exist
                 if (!file_exists($destinationPath)) 
@@ -169,31 +174,38 @@ class ProjectController extends Controller
                 {
                     // Convert JPG/PNG to WebP
                     $img = $manager->read($image->getRealPath())->toWebp(80); 
-                    $img->save($destinationPath . '/' . $imageName);
-                    $imageName = $timestampName;
+                    $img->save($destinationPath . '/' . $timestampName);
+                    // $imageName = $timestampName;
                 } 
             
                 elseif ($originalExtension === 'webp')
                 {
                     // Save WebP as-is
-                    $image->move($destinationPath, $imageName);
-                    $imageName = $timestampName;
+                    $image->move($destinationPath, $timestampName);
+                    // $imageName = $timestampName;
                 } 
                  else 
                 {
                     // Return if unsupported format
                     return response()->json(['message' => 'Only JPG, JPEG, PNG, or WEBP formats allowed.'], 400);
                 }
+
+                 $imageName = 'assets/images/projects/' . $timestampName; // ✅ relative path in DB
             }
          // Handle video update
-        $videoName = $project->video;
+        // $videoName = $project->video;
         if ($request->hasFile('video'))
         {
-            $oldVideoPath = public_path('assets/videos /projects/' . $project->video);
-            if (file_exists($oldVideoPath)) 
-                {
-                    unlink($oldVideoPath);
-                }
+            // $oldVideoPath = ('assets/videos /projects/' . $project->video);
+            // if (file_exists($oldVideoPath)) 
+            //     {
+            //         unlink($oldVideoPath);
+            //     }
+
+            if ($project->video && file_exists(public_path($project->video))) {
+            unlink(public_path($project->video));
+        }
+
 
             $video = $request->file('video');
             $videoExtension = strtolower($video->getClientOriginalExtension());
@@ -201,16 +213,21 @@ class ProjectController extends Controller
                 {
                     return response()->json(['message' => 'Only WEBM format allowed for video'], 400);
                 }
-            $videoName = time() . '.' . $videoExtension;
-            $video->move(public_path('assets/videos/projects'), $videoName);
+            // $videoName = time() . '.' . $videoExtension;
+            // $video->move(('assets/videos/projects'), $videoName);
+
+             $timestampVideo = time() . '.' . $videoExtension;
+        $video->move(public_path('assets/videos/projects'), $timestampVideo);
+
+        $videoName = 'assets/videos/projects/' . $timestampVideo; // ✅ relative path in DB
         }
 
         // Update tag record
         $project->update([
               'type'            => $request->type ?? $project->type,
               'title'           => $request->title ?? $project->title,
-              'image'           => $imageName ?? $project->image,
-              'video'           => $request->video ? $videoName : $project->video,
+              'image'           => $imageName,
+              'video'           => $videoName,
               'descripton'      => $request->descripton ?? $project->descripton,
               'duration'        => $request->duration ?? $project->duration,
               'tech_used'       => $request->tech_used ?? $project->tech_used,
@@ -234,14 +251,14 @@ class ProjectController extends Controller
 
         // Delete associated files
         if ($project->image) {
-            $imagePath = public_path('assets/images/projects/' . $project->image);
+            $imagePath = public_path($project->image);
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }
         }
 
         if ($project->video) {
-            $videoPath = public_path('assets/videos/projects/' . $project->video);
+            $videoPath = public_path($project->video);
             if (file_exists($videoPath)) {
                 unlink($videoPath);
             }

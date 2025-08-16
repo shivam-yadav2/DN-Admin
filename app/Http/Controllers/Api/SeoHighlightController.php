@@ -42,9 +42,12 @@ class SeoHighlightController extends Controller
 
                 $manager = new ImageManager(new GdDriver());
 
-                $timestampName = time() . '.webp'; // Generate a unique file name
-                $imageName = $timestampName;
-                $destinationPath = public_path('assets/images/seo');
+                // $timestampName = time() . '.webp'; // Generate a unique file name
+                // $imageName = $timestampName;
+
+                  // Assign filename properly
+                $imageName = time() . '.webp'; 
+                $destinationPath = 'assets/images/seo';
 
                 // Create directory if it doesn't exist
                 if (!file_exists($destinationPath)) {
@@ -66,6 +69,9 @@ class SeoHighlightController extends Controller
                 {
                     return response()->json(['message' => 'Only JPG, JPEG, PNG or WEBP formats allowe'], 400);
                 }
+
+                 // Save relative path in DB
+                $imageName = 'assets/images/seo/' . $imageName;
             }
          else 
             {
@@ -122,11 +128,15 @@ class SeoHighlightController extends Controller
             // Process the uploaded file
          if ($request->hasFile('image')) 
             {
-                $oldImagePath = public_path('assets/images/seo/' . $seo->image);
-                if (file_exists($oldImagePath)) 
-                    {
-                        unlink($oldImagePath);
-                    }
+                // $oldImagePath = ('assets/images/seo/' . $seo->image);
+                // if (file_exists($oldImagePath)) 
+                //     {
+                //         unlink($oldImagePath);
+                //     }
+
+                 if ($seo->image && file_exists(public_path($seo->image))) {
+                    unlink(public_path($seo->image));
+                }
 
                 $image = $request->file('image'); // Get the uploaded file
                 $originalExtension = strtolower($image->getClientOriginalExtension()); // Get and lowercase the original extension
@@ -135,7 +145,7 @@ class SeoHighlightController extends Controller
 
                 $timestampName = time() . '.webp'; // Generate a unique filename
 
-                $destinationPath = public_path('assets/images/seo'); // Define storage path
+                $destinationPath = 'assets/images/seo'; // Define storage path
 
                 // Create directory if it doesn't exist
                 if (!file_exists($destinationPath)) 
@@ -147,21 +157,23 @@ class SeoHighlightController extends Controller
                 {
                     // Convert JPG/PNG to WebP
                     $img = $manager->read($image->getRealPath())->toWebp(80); 
-                    $img->save($destinationPath . '/' . $imageName);
-                    $imageName = $timestampName;
+                    $img->save($destinationPath . '/' . $timestampName);
+                    // $imageName = $timestampName;
                 } 
             
                 elseif ($originalExtension === 'webp')
                 {
                     // Save WebP as-is
-                    $image->move($destinationPath, $imageName);
-                    $imageName = $timestampName;
+                    $image->move($destinationPath, $timestampName);
+                    // $imageName = $timestampName;
                 } 
                  else 
                 {
                     // Return if unsupported format
                     return response()->json(['message' => 'Only JPG, JPEG, PNG, or WEBP formats allowed.'], 400);
                 }
+                 // Save relative path in DB
+                $imageName = 'assets/images/seo/' . $timestampName;
             }
 
         // Update tag record
@@ -177,5 +189,32 @@ class SeoHighlightController extends Controller
             'message' => 'Record updated successfully.',
             'data'    => $seo,
         ], 200);
+    }
+
+     // Delete a project
+    public function destroy($id)
+    {
+        $seo_highlight = Seo_Highlight::find($id);
+
+        if (!$seo_highlight) {
+        return response()->json([
+            'message' => 'Seo Highlight not found',
+          
+        ], 404);
+    }
+
+        // Delete associated files
+        if ($seo_highlight->image) {
+            $imagePath = public_path($seo_highlight->image);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+
+        $seo_highlight->delete();
+
+        return response()->json ([
+            'message' => 'Seo Highlight deleted successfully!',
+        ]);
     }
 }

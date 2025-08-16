@@ -19,4 +19,7 @@ class Project extends Model
     ];
     public $timestamps = true;
     protected $table = 'projects';
+    protected $casts =[
+        'tech_used' => 'array'    
+    ];
 }
