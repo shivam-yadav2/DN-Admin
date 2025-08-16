@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useForm, usePage, router } from "@inertiajs/react";
 import {
     Plus,
@@ -12,6 +12,87 @@ import {
     Eye,
 } from "lucide-react";
 import Layout from "@/Layouts/Layout";
+
+// Quill Rich Text Editor Component
+const QuillEditor = ({ value, onChange, placeholder = "Start writing..." }) => {
+    const editorRef = useRef(null);
+    const quillRef = useRef(null);
+
+    useEffect(() => {
+        // Load Quill CSS and JS
+        if (!document.querySelector('#quill-css')) {
+            const link = document.createElement('link');
+            link.id = 'quill-css';
+            link.rel = 'stylesheet';
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css';
+            document.head.appendChild(link);
+        }
+
+        if (!window.Quill) {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js';
+            script.onload = initializeQuill;
+            document.head.appendChild(script);
+        } else {
+            initializeQuill();
+        }
+
+        return () => {
+            if (quillRef.current) {
+                quillRef.current = null;
+            }
+        };
+    }, []);
+
+    const initializeQuill = () => {
+        if (window.Quill && editorRef.current && !quillRef.current) {
+            quillRef.current = new window.Quill(editorRef.current, {
+                theme: 'snow',
+                placeholder: placeholder,
+                modules: {
+                    toolbar: [
+                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                        [{ 'font': [] }],
+                        [{ 'size': ['small', false, 'large', 'huge'] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'script': 'sub'}, { 'script': 'super' }],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'indent': '-1'}, { 'indent': '+1' }],
+                        [{ 'direction': 'rtl' }],
+                        [{ 'align': [] }],
+                        ['link', 'image', 'video'],
+                        ['blockquote', 'code-block'],
+                        ['clean']
+                    ]
+                }
+            });
+
+            // Set initial content
+            if (value) {
+                quillRef.current.root.innerHTML = value;
+            }
+
+            // Listen for content changes
+            quillRef.current.on('text-change', () => {
+                const html = quillRef.current.root.innerHTML;
+                onChange(html);
+            });
+        }
+    };
+
+    useEffect(() => {
+        if (quillRef.current && value !== quillRef.current.root.innerHTML) {
+            quillRef.current.root.innerHTML = value || '';
+        }
+    }, [value]);
+
+    return (
+        <div className="quill-wrapper">
+            <div ref={editorRef} style={{ minHeight: '200px' }} />
+        </div>
+    );
+};
 
 const Blog = () => {
     const { blogs, flash } = usePage().props;
@@ -254,9 +335,10 @@ const Blog = () => {
                                     <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2">
                                         {blog.title}
                                     </h3>
-                                    <p className="text-gray-600 text-sm mb-3 line-clamp-3">
-                                        {blog.description}
-                                    </p>
+                                    <div 
+                                        className="text-gray-600 text-sm mb-3 line-clamp-3"
+                                        dangerouslySetInnerHTML={{ __html: blog.description }}
+                                    />
 
                                     <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
                                         <div className="flex items-center gap-1">
@@ -411,22 +493,19 @@ const Blog = () => {
                                 />
                             </div>
 
+                            {/* Quill Rich Text Editor for Blog Description */}
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                                     Blog Description *
                                 </label>
-                                <textarea
+                                <QuillEditor
                                     value={form.data.description}
-                                    onChange={(e) =>
-                                        form.setData(
-                                            "description",
-                                            e.target.value
-                                        )
-                                    }
-                                    rows={4}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                                    onChange={(content) => form.setData("description", content)}
                                     placeholder="Write a compelling description of your blog post..."
                                 />
+                                {form.errors.description && (
+                                    <p className="text-sm text-red-600 mt-1">{form.errors.description}</p>
+                                )}
                             </div>
 
                             {/* Author and Date */}

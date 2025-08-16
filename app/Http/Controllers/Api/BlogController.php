@@ -26,11 +26,11 @@ class BlogController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'meta_key'    => 'required|string|max:255',
-            'meta_desc'   => 'required|string|max:255',
+            'meta_desc'   => 'required|string',
             'title'       => 'required|string|max:255',
             'url'         => 'required|string|max:255',
             'keyword'     => 'required|array',
-            'description' => 'required|string|max:255',
+            'description' => 'required|string',
             'author'      => 'required|string|max:255',
             'published'   => 'required|date',
             'card_img'    => 'required|image|mimes:jpg,jpeg,png,webp|max:512',
@@ -76,7 +76,7 @@ class BlogController extends Controller
         //     'data'    => $blog,
         // ], 201);
 
-        try {
+        // try {
             $manager = new ImageManager(new GdDriver());
 
             // Process card image
@@ -106,9 +106,9 @@ class BlogController extends Controller
 
             return redirect()->route('blogs.index')->with('message', 'Blog created successfully.');
 
-        } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Failed to create blog. Please try again.'])->withInput();
-        }
+        // } catch (\Exception $e) {
+        //     return redirect()->back()->withErrors(['error' => 'Failed to create blog. Please try again.'])->withInput();
+        // }
     }
 
     // Update blog
@@ -116,11 +116,11 @@ class BlogController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'meta_key'    => 'required|string|max:255',
-            'meta_desc'   => 'required|string|max:255',
+            'meta_desc'   => 'required|string',
             'title'       => 'required|string|max:255',
             'url'         => 'required|string|max:255',
             'keyword'     => 'required|array',
-            'description' => 'required|string|max:255',
+            'description' => 'required|string',
             'author'      => 'required|string|max:255',
             'published'   => 'required|date',
             'card_img'    => 'sometimes|image|mimes:jpg,jpeg,png,webp|max:512',

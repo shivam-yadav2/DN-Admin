@@ -92,6 +92,4 @@ class SubServiceController extends Controller
 
         return redirect()->route('service.index')->with('message', 'SubService deleted successfully.');
     }
-
-   
 }

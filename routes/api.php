@@ -131,6 +131,7 @@ Route::delete('/delete_project/{id}', [ProjectController::class, 'destroy']);
 
 //Frontend API Route
 Route::get('getblog',[ApiController::class,'getblog']);
+Route::get('blogdetail',[ApiController::class,'getblogbyid']);
 Route::get('getcareer', [ApiController::class, 'getcareer']);
 Route::get('getcontactdetail', [ApiController::class, 'getcontactdetail']);
 Route::get('getcreatives', [ApiController::class, 'getcreatives']);
