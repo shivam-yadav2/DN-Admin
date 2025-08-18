@@ -48,7 +48,7 @@ class our_teamcontroller extends Controller
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imagename = time() . '_' . uniqid() . '.webp';
-            $path = public_path('assets/images/our_team/' . $imagename);
+            $path = 'assets/images/our_team/' .$imagename;
 
             // Create directory if it doesn't exist
             if (!file_exists(dirname($path))) {
@@ -65,7 +65,7 @@ class our_teamcontroller extends Controller
         $our_team = our_team::create([
             'name' => $request->name,
             'designation' => $request->designation,
-            'img' => $imagename,
+            'img' => $path,
             'joining_date' => $request->joining_date,
         ]);
 
@@ -110,7 +110,7 @@ class our_teamcontroller extends Controller
 
             $image = $request->file('image');
             $imagename = time() . '_' . uniqid() . '.webp';
-            $path = public_path('assets/images/our_team/' . $imagename);
+            $path = 'assets/images/our_team/' . $imagename;
 
             if (!file_exists(dirname($path))) {
                 mkdir(dirname($path), 0755, true);
@@ -126,7 +126,7 @@ class our_teamcontroller extends Controller
         $user->update([
             'name' => $request->name ?? $user->name,
             'designation' => $request->designation ?? $user->designation,
-            'img' => $imagename ?? $user->img,
+            'img' => $path ?? $user->img,
             'joining_date' => $request->joining_date ?? $user->joining_date,
         ]);
 
