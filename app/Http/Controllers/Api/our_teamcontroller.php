@@ -33,10 +33,10 @@ class our_teamcontroller extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'designation' => 'required|string|max:255',
-            'image' => 'required|image|mimes:jpeg,jpg,png,webp|max:2048',
-            'joining_date' => 'required|date',
+            'name'              => 'required|string|max:255',
+            'designation'       => 'required|string|max:255',
+            'image'             => 'required|image|mimes:jpeg,jpg,png,webp|max:2048',
+            'joining_date'      => 'required|date',
         ]);
 
         if ($validator->fails()) {
