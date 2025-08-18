@@ -129,6 +129,24 @@ const data = {
             icon: Frame,
         },
     ],
+    SEO: [
+       
+        {
+            title: "SEO Service",
+            url: "/seo-services",
+            icon: Frame,
+        },
+        {
+            title: "SEO Highlights",
+            url: "/seo-highlights",
+            icon: Frame,
+        },
+        {
+            title: "SEO Form",
+            url: "/seo-forms",
+            icon: Frame,
+        },
+    ],
     Pages: [
         {
             title: "All Services",
@@ -229,6 +247,7 @@ export function AppSidebar({ ...props }) {
                 <NavProjects title="Dashboard" projects={data.projects} />
                 <NavProjects title="Pages" projects={data.Pages} />
                 <NavProjects title="Home Page" projects={data.Enquiry} />
+                <NavProjects title="SEO" projects={data.SEO} />
                 <NavProjects title="Other Pages" projects={data.Other} />
             </SidebarContent>
             <SidebarFooter>

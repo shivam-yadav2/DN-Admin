@@ -22,6 +22,9 @@ use App\Http\Controllers\API\CreativesController;
 use App\Http\Controllers\Api\packagecontroller;
 use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\ProjectController;
+use App\Http\Controllers\Api\SeoServiceController;
+use App\Http\Controllers\API\SeoHighlightController;
+use App\Http\Controllers\API\SeoFormController;
 
 Route::get('/test', function () {
     return Inertia::render('Test');
@@ -88,6 +91,8 @@ Route::resource('creatives', CreativesController::class);
 Route::resource('packages', packagecontroller::class);
 Route::resource('tags', TagController::class);
 Route::resource('projects', ProjectController::class);
-
+Route::resource('seo-services', SeoServiceController::class)->names('seo-services');
+Route::resource('seo-highlights', SeoHighlightController::class)->names('seo-highlights');
+Route::resource('seo-forms', SeoFormController::class)->names('seo-forms');
 
 require __DIR__.'/auth.php';

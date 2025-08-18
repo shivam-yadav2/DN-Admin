@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\SEO_Highlight;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
-use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver
+use Intervention\Image\Drivers\Gd\Driver as GdDriver; // Import GD driver
+use Inertia\Inertia;
 
 class SeoHighlightController extends Controller
 {
@@ -15,7 +16,9 @@ class SeoHighlightController extends Controller
     public function index()
     {
         $seo = SEO_Highlight::all();
-        return response()->json($seo, 200);
+        return Inertia::render('Admin/SEO/Highlight', [
+            'seo_highlights' => $seo,
+        ]);
     }
 
     //Store data
@@ -92,10 +95,11 @@ class SeoHighlightController extends Controller
             'description'   => $request->description
         ]);
 
-        return response()->json([
-            'message' => 'SEO Highlight created successfully',
-            'data' => $seo
-        ], 201);
+        // return response()->json([
+        //     'message' => 'SEO Highlight created successfully',
+        //     'data' => $seo
+        // ], 201);
+        return redirect()->route('seo-highlights.index')->with('message', 'SEO Highlight created successfully');
     }
 
     //Updata data
@@ -185,10 +189,11 @@ class SeoHighlightController extends Controller
             
         ]);
 
-        return response()->json([
-            'message' => 'Record updated successfully.',
-            'data'    => $seo,
-        ], 200);
+        // return response()->json([
+        //     'message' => 'Record updated successfully.',
+        //     'data'    => $seo,
+        // ], 200);
+        return redirect()->route('seo-highlights.index')->with('message', 'SEO Highlight updated successfully');
     }
 
      // Delete a project
@@ -213,8 +218,9 @@ class SeoHighlightController extends Controller
 
         $seo_highlight->delete();
 
-        return response()->json ([
-            'message' => 'Seo Highlight deleted successfully!',
-        ]);
+        // return response()->json ([
+        //     'message' => 'Seo Highlight deleted successfully!',
+        // ]);
+        return redirect()->route('seo-highlights.index')->with('message', 'SEO Highlight deleted successfully');
     }
 }

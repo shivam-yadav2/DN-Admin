@@ -9,7 +9,7 @@ use App\Models\SEO_Form;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
 use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver
-
+use Inertia\Inertia;
 
 class SeoFormController extends Controller
 {
@@ -17,7 +17,9 @@ class SeoFormController extends Controller
     public function index()
     {
         $forms = SEO_Form::all();
-        return response()->json($forms, 200);
+        return Inertia::render('Admin/SEO/SEOForm', [
+            'seo_forms' => $forms,
+        ]);
     }
 
     //Store data
