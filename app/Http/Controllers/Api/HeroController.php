@@ -61,15 +61,14 @@ class HeroController extends Controller
         'video' => 'assets/heros/' . $videoName, // Store only filename or relative path
         ]);
 
-        return response()->json([
-            'message' => 'Video uploaded successfully',
-            'data' => $hero,
-            ], 201);
+        // return response()->json([
+        //     'message' => 'Video uploaded successfully',
+        //     'data' => $hero,
+        //     ], 201);
         
-        // return redirect()->route('hero.index')->with('message', 'Video uploaded successfully');
+        return redirect()->route('hero.index')->with('message', 'Video uploaded successfully');
     }
     
-
     //Delete
     public function destroy($id)
     {

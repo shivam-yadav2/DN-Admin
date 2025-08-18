@@ -33,7 +33,7 @@ class ProjectController extends Controller
             'video'          => 'nullable|file|mimes:webm|max:5120',
             'description'    => 'required|string|max:1000',
             'duration'       => 'required|string|max:255',
-            'tech_used'      => 'required|string|max:255',
+            'tech_used'      => 'required|array',
             'url'            => 'nullable|url|max:255|unique:projects,url',
         ]);
 
@@ -128,7 +128,7 @@ class ProjectController extends Controller
             'video'          => 'nullable|file|mimes:webm|max:5120',
             'description'    => 'sometimes|required|string|max:1000',
             'duration'       => 'sometimes|required|string|max:255',
-            'tech_used'      => 'sometimes|required|string|max:255',
+            'tech_used'      => 'sometimes|required|array',
             'url'            => 'nullable|url|max:255|unique:projects,url,' . $id,
         ]);
 

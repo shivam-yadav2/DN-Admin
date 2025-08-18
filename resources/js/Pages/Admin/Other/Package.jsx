@@ -362,9 +362,7 @@ const Packages = () => {
                                                                     className="h-12 w-12 rounded-lg object-cover"
                                                                     src={`/assets/images/package/${pkg.img}`}
                                                                     alt={pkg.heading}
-                                                                    onError={(e) => {
-                                                                        e.target.src = '/placeholder-image.jpg';
-                                                                    }}
+                                                                    
                                                                 />
                                                             ) : (
                                                                 <div className="h-12 w-12 rounded-lg bg-gray-300 flex items-center justify-center">

@@ -478,7 +478,7 @@ const CreativesManager = ({ creatives = [], success, error }) => {
                 >
                   <div className="aspect-video relative">
                     <img
-                      src={`/assets/images/creatives/${creative.image}`}
+                      src={`${creative.image}`}
                       alt="Creative"
                       className="w-full h-full object-cover"
                     />
@@ -486,7 +486,7 @@ const CreativesManager = ({ creatives = [], success, error }) => {
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 flex items-center justify-center">
                       <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-2">
                         <button
-                          onClick={() => window.open(`/assets/images/creatives/${creative.image}`, '_blank')}
+                          onClick={() => window.open(`${creative.image}`, '_blank')}
                           className="bg-white text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors"
                         >
                           <Eye className="w-4 h-4" />
@@ -568,7 +568,7 @@ const CreativesManager = ({ creatives = [], success, error }) => {
                         </td>
                         <td className="px-6 py-4">
                           <img
-                            src={`/assets/images/creatives/${creative.image}`}
+                            src={`${creative.image}`}
                             alt="Creative"
                             className="w-16 h-10 object-cover rounded"
                           />
@@ -582,7 +582,7 @@ const CreativesManager = ({ creatives = [], success, error }) => {
                         <td className="px-6 py-4 text-sm">
                           <div className="flex gap-2">
                             <button
-                              onClick={() => window.open(`/assets/images/creatives/${creative.image}`, '_blank')}
+                                onClick={() => window.open(`${creative.image}`, '_blank')}
                               className="text-blue-600 hover:text-blue-900"
                             >
                               <Eye className="w-4 h-4" />

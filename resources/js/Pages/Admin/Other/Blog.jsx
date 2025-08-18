@@ -307,7 +307,7 @@ const Blog = () => {
                             >
                                 <div className="relative">
                                     <img
-                                        src={`/assets/images/blog/${blog.card_img}`}
+                                        src={`${blog.card_img}`}
                                         alt={blog.title}
                                         className="w-full h-48 object-cover"
                                     />

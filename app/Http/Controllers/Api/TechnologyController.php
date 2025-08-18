@@ -65,11 +65,11 @@ class TechnologyController extends Controller
             'heading' => $request->heading,
         ]);
 
-        return response()->json([
-            'message' => 'Technology created successfully',
-            'data' => $technology,
-        ], 201);
-        // return redirect()->back()->with('success', 'Technology created successfully');
+        // return response()->json([
+        //     'message' => 'Technology created successfully',
+        //     'data' => $technology,
+        // ], 201);
+        return redirect()->route('tools.index')->with('message', 'Technology created successfully');
         
     }
 

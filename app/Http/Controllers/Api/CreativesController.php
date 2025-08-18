@@ -102,11 +102,11 @@ class CreativesController extends Controller
             return response()->json(['message' => 'No valid landscape images uploaded.'], 422);
         }
 
-        return response()->json([
-            'message' => 'Creatives uploaded successfully.',
-            'data' => $uploaded,
-        ], 201);
-        // return redirect()->route('creatives.index')->with('success', "Images Added Successfully");
+        // return response()->json([
+        //     'message' => 'Creatives uploaded successfully.',
+        //     'data' => $uploaded,
+        // ], 201);
+        return redirect()->route('creatives.index')->with('message', "Images Added Successfully");
     }
 
    
