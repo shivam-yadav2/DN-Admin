@@ -52,9 +52,12 @@ class TagController extends Controller
 
         $manager = new ImageManager(new GdDriver());
 
-        $timestampName = time(). '.webp';       //Generate a unique file name
-        $imageName = $timestampName;
-        $destinationPath = public_path('assets/images/tags');
+        // $timestampName = time(). '.webp';       //Generate a unique file name
+        // $imageName = $timestampName;
+
+         // Assign filename properly
+        $imageName = time() . '.webp'; 
+        $destinationPath = 'assets/images/tags';
 
         //Create directory
         if (!file_exists($destinationPath)) 
@@ -80,6 +83,9 @@ class TagController extends Controller
             // Return if unsupported format
             return response()->json(['message' => 'Only JPG, JPEG, PNG, or WEBP formats allowed.'], 400);
         }
+
+         // Save relative path in DB
+        $imageName = 'assets/images/tags/' . $imageName;
 
         // Create new tag record
         $tag = Tag::create([
@@ -110,11 +116,11 @@ class TagController extends Controller
         // Validate request
         $validator = Validator::make($request->all(), [
             
-            'title'         => 'required|string|max:255',
-            'description'    => 'nullable|string|max:255',
-            'keyword'        => 'nullable|string|max:255',
-            'page_url'       => 'required|url|max:255|unique:tags,page_url,' . $id,
-            'image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:512',
+            'title'         => 'sometimes|required|string|max:255',
+            'description'    => 'sometimes|nullable|string|max:255',
+            'keyword'        => 'sometimes|nullable|string|max:255',
+            'page_url'       => 'sometimes|required|url|max:255|unique:tags,page_url,' . $id,
+            'image'          => 'sometimes|nullable|image|mimes:jpg,jpeg,png,webp|max:512',
         ]);
 
         if ($validator->fails()) {
@@ -129,11 +135,15 @@ class TagController extends Controller
                 // Process the uploaded file
          if ($request->hasFile('image')) 
             {
-                $oldImagePath = public_path('assets/images/tags/' . $tag->image);
-                if (file_exists($oldImagePath)) 
-                    {
-                        unlink($oldImagePath);
-                    }
+                // $oldImagePath = public_path('assets/images/tags/' . $tag->image);
+                // if (file_exists($oldImagePath)) 
+                //     {
+                //         unlink($oldImagePath);
+                //     }
+
+                  if ($tag->image && file_exists(public_path($tag->image))) {
+                    unlink(public_path($tag->image));
+                }
 
                 $image = $request->file('image'); // Get the uploaded file
                 $originalExtension = strtolower($image->getClientOriginalExtension()); // Get and lowercase the original extension
@@ -142,7 +152,7 @@ class TagController extends Controller
 
                 $timestampName = time() . '.webp'; // Generate a unique filename
 
-                $destinationPath = public_path('assets/images/tags'); // Define storage path
+                $destinationPath = 'assets/images/tags'; // Define storage path
 
                 // Create directory if it doesn't exist
                 if (!file_exists($destinationPath)) 
@@ -154,21 +164,24 @@ class TagController extends Controller
                 {
                     // Convert JPG/PNG to WebP
                     $img = $manager->read($image->getRealPath())->toWebp(80); 
-                    $img->save($destinationPath . '/' . $imageName);
-                    $imageName = $timestampName;
+                    $img->save($destinationPath . '/' . $timestampName);
+                    // $imageName = $timestampName;
                 } 
             
                 elseif ($originalExtension === 'webp')
                 {
                     // Save WebP as-is
-                    $image->move($destinationPath, $imageName);
-                    $imageName = $timestampName;
+                    $image->move($destinationPath, $timestampName);
+                    // $imageName = $timestampName;
                 } 
                  else 
                 {
                     // Return if unsupported format
                     return response()->json(['message' => 'Only JPG, JPEG, PNG, or WEBP formats allowed.'], 400);
                 }
+
+                // Save relative path in DB
+                $imageName = 'assets/images/tag/' . $timestampName;
             }
 
         // Update tag record
@@ -191,9 +204,17 @@ class TagController extends Controller
     {
         $tag = Tag::findOrFail($id);
 
+        if (!$tag) 
+            {
+                return response()->json([
+                    'message' => 'Tag not found',
+                
+                ], 404);
+            }
+
         // Delete each image from storage
-        // Delete image file
-        $filePath = public_path('assets/images/tags/' . $tag->image);
+
+        $filePath = public_path( $tag->image);
          if (file_exists($filePath))
          {
             unlink($filePath);
@@ -202,9 +223,8 @@ class TagController extends Controller
         // Delete the DB record
         $tag->delete();
 
-         return back()->with([
+         return response()->json([
             'message' => 'Tag deleted successfully!',
-            'type' => 'success'
         ]);
     }
 

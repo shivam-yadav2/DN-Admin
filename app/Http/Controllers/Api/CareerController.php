@@ -40,7 +40,7 @@ class CareerController extends Controller
             'desig'                 => 'required|string|max:255',
             'title'                 => 'required|string|max:255',
             'city'                  => 'required|string|max:255',
-            'about_role'            => 'required|string|max:255',
+            'about_role'            => 'required|string|max:1200',
             'responsibilities'      => 'required|array',
             'requirements'          => 'required|array',
             'benefits_perks'        => 'required|array',

@@ -26,11 +26,11 @@ class BlogController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'meta_key'    => 'required|string|max:255',
-            'meta_desc'   => 'required|string|max:255',
+            'meta_desc'   => 'required|string',
             'title'       => 'required|string|max:255',
             'url'         => 'required|string|max:255',
             'keyword'     => 'required|array',
-            'description' => 'required|string|max:255',
+            'description' => 'required|string',
             'author'      => 'required|string|max:255',
             'published'   => 'required|date',
             'card_img'    => 'required|image|mimes:jpg,jpeg,png,webp|max:512',
@@ -76,20 +76,22 @@ class BlogController extends Controller
         //     'data'    => $blog,
         // ], 201);
 
-        try {
+        // try {
             $manager = new ImageManager(new GdDriver());
 
             // Process card image
             $cardImgFile = $request->file('card_img');
             $cardImg     = $manager->read($cardImgFile)->cover(400, 400)->toWebp(85);
             $cardImgName = 'card_' . uniqid() . '.webp';
-            $cardImg->save(public_path('assets/images/blog/' . $cardImgName));
+            $cardPath = 'assets/images/blog/' . $cardImgName;
+             $cardImg->save(public_path($cardPath));
 
             // Process banner image
             $bannerImgFile = $request->file('banner_img');
             $bannerImg     = $manager->read($bannerImgFile)->cover(1200, 600)->toWebp(85);
             $bannerImgName = 'banner_' . uniqid() . '.webp';
-            $bannerImg->save(public_path('assets/images/blog/' . $bannerImgName));
+            $bannerPath ='assets/images/blog/' . $bannerImgName;
+             $bannerImg->save(public_path($bannerPath));
 
             $blog = Blog::create([
                 'meta_key'    => $request->meta_key,
@@ -100,15 +102,15 @@ class BlogController extends Controller
                 'description' => $request->description,
                 'author'      => $request->author,
                 'published'   => $request->published,
-                'card_img'    => $cardImgName,
-                'banner_img'  => $bannerImgName,
+                'card_img'    => 'assets/images/blog/' . $cardImgName,
+                'banner_img'  => 'assets/images/blog/' . $bannerImgName,
             ]);
 
             return redirect()->route('blogs.index')->with('message', 'Blog created successfully.');
 
-        } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Failed to create blog. Please try again.'])->withInput();
-        }
+        // } catch (\Exception $e) {
+        //     return redirect()->back()->withErrors(['error' => 'Failed to create blog. Please try again.'])->withInput();
+        // }
     }
 
     // Update blog
@@ -116,11 +118,11 @@ class BlogController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'meta_key'    => 'required|string|max:255',
-            'meta_desc'   => 'required|string|max:255',
+            'meta_desc'   => 'required|string',
             'title'       => 'required|string|max:255',
             'url'         => 'required|string|max:255',
             'keyword'     => 'required|array',
-            'description' => 'required|string|max:255',
+            'description' => 'required|string',
             'author'      => 'required|string|max:255',
             'published'   => 'required|date',
             'card_img'    => 'sometimes|image|mimes:jpg,jpeg,png,webp|max:512',
@@ -141,36 +143,48 @@ class BlogController extends Controller
             // Handle card image update
             if ($request->hasFile('card_img')) {
                 // Delete old card image
-                $oldCardImagePath = public_path('assets/images/blog/' . $blog->card_img);
-                if (file_exists($oldCardImagePath)) {
-                    unlink($oldCardImagePath);
-                }
+                // $oldCardImagePath = ('assets/images/blog/' . $blog->card_img);
+                // if (file_exists($oldCardImagePath)) {
+                //     unlink($oldCardImagePath);
+                // }
+
+                 if ($blog->card_img && file_exists(public_path($blog->card_img)))
+                     {
+                        unlink(public_path($blog->card_img));
+                    }
 
                 $cardImgFile = $request->file('card_img');
                 $cardImg     = $manager->read($cardImgFile)->cover(400, 400)->toWebp(85);
                 $cardImgName = 'card_' . uniqid() . '.webp';
-                $cardImg->save(public_path('assets/images/blog/' . $cardImgName));
-                $blog->card_img = $cardImgName;
+                $cardPath    = 'assets/images/blog/' . $cardImgName;
+                $cardImg->save(public_path($cardPath));
+                $blog->card_img =  $cardPath;
             }
 
             // Handle banner image update
             if ($request->hasFile('banner_img')) {
                 // Delete old banner image
-                $oldBannerImagePath = public_path('assets/images/blog/' . $blog->banner_img);
-                if (file_exists($oldBannerImagePath)) {
-                    unlink($oldBannerImagePath);
-                }
+                // $oldBannerImagePath =('assets/images/blog/' . $blog->banner_img);
+                // if (file_exists($oldBannerImagePath)) {
+                //     unlink($oldBannerImagePath);
+                // }
+
+                if ($blog->banner_img && file_exists(public_path($blog->banner_img))) 
+                    {
+                        unlink(public_path($blog->banner_img));
+                    }
 
                 $bannerImgFile = $request->file('banner_img');
                 $bannerImg     = $manager->read($bannerImgFile)->cover(1200, 600)->toWebp(85);
                 $bannerImgName = 'banner_' . uniqid() . '.webp';
-                $bannerImg->save(public_path('assets/images/blog/' . $bannerImgName));
-                $blog->banner_img = $bannerImgName;
+                $bannerPath    = 'assets/images/blog/' . $bannerImgName;
+                $bannerImg->save(public_path($bannerPath));
+                $blog->banner_img =  $bannerPath;
             }
 
             $blog->update([
                 'meta_key'    => $request->meta_key ?? $blog->meta_key,
-                'meta_desc'   => $request->meta_descv ?? $blog->meta_desc,
+                'meta_desc'   => $request->meta_desc ?? $blog->meta_desc,
                 'title'       => $request->title ?? $blog->title,
                 'url'         => $request->url ?? $blog->url,
                 'keyword'     => $request->keyword ?? $blog->keyword,
@@ -195,16 +209,28 @@ public function destroy($id)
             $blog = Blog::findOrFail($id);
 
             // Delete card image file if exists
-            $cardImagePath = public_path('assets/images/blog/' . $blog->card_img);
+            // $cardImagePath = public_path('assets/images/blog/' . $blog->card_img);
+            // if (file_exists($cardImagePath)) {
+            //     unlink($cardImagePath);
+            // }
+            if (!empty($blog->card_img)) {
+            $cardImagePath ='assets/images/blog/' . $blog->card_img;
             if (file_exists($cardImagePath)) {
                 unlink($cardImagePath);
             }
+        }
 
             // Delete banner image file if exists
-            $bannerImagePath = public_path('assets/images/blog/' . $blog->banner_img);
+            // $bannerImagePath = public_path('assets/images/blog/' . $blog->banner_img);
+            // if (file_exists($bannerImagePath)) {
+            //     unlink($bannerImagePath);
+            // }
+            if (!empty($blog->banner_img)) {
+            $bannerImagePath = 'assets/images/blog/' . $blog->banner_img;
             if (file_exists($bannerImagePath)) {
                 unlink($bannerImagePath);
             }
+        }
 
             // Delete database record
             $blog->delete();

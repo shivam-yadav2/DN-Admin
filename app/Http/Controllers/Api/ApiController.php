@@ -23,9 +23,6 @@ use App\Models\vision_mission;
 
 class ApiController extends Controller
 {
-   
-
-
     public function getblog()
     {
          $blogs = Blog::all();
@@ -36,7 +33,17 @@ class ApiController extends Controller
 //         ]);
     }
 
+    // get blog by id
+    public function getblogbyid(Request $request)
+    {
+        $url = $request->url;
+         $blogs = Blog::where('url', $url)->first();
+         return response()->json([
+            'data'=>$blogs,
+            'msg'=>"Getting data successfully",
+         ]);
 
+    }
 
     public function getcareer()
     {
