@@ -46,7 +46,7 @@ class ServiceController extends Controller
     public function store(Request $request)
     {
         // Validate request
-        $validator = Validator($request->all(),[
+        $validator = Validator::make($request->all(),[
             'name'          => 'required|string|max:255|unique:services,name',
             'description'   => 'required|string|max:255',
             'image'         => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -76,9 +76,9 @@ class ServiceController extends Controller
 
                 $manager = new ImageManager(new GdDriver()); // Create Intervention Image manager instance
 
-                $timestampName = time() . '.webp'; // Generate a unique filename
-
-                $destinationPath = public_path('assets/images/services'); // Define storage path
+                // Assign filename properly
+                $imageName = time() . '.webp'; // Generate a unique filename
+                $destinationPath = 'assets/images/services'; // Define storage path
 
                 // Create directory if it doesn't exist
                 if (!file_exists($destinationPath)) 
@@ -90,20 +90,23 @@ class ServiceController extends Controller
                     {
                         // Convert JPG/PNG/JPEG to WebP
                         $img = $manager->read($image->getRealPath())->toWebp(80); 
-                        $img->save($destinationPath . '/' . $timestampName);
-                        $imageName = $timestampName;
+                        $img->save($destinationPath . '/' . $imageName);
+                        // $imageName = $timestampName;
                     } 
                 elseif ($originalExtension === 'webp') 
                     {
                         // Save WebP as-is
-                        $image->move($destinationPath, $timestampName);
-                        $imageName = $timestampName;
+                        $image->move($destinationPath, $imageName);
+                        // $imageName = $timestampName;
                     } 
                 else 
                     {
                         // Return if unsupported format
                         return response()->json(['message' => 'Only JPG, JPEG, PNG, or WEBP formats allowed.'], 400);
                     }
+                
+                     // Save relative path in DB
+                $imageName = 'assets/images/services/' . $imageName;
             }
        
          // Create new service record
@@ -125,22 +128,23 @@ class ServiceController extends Controller
     //Update a service
     public function update(Request $request, $id)
     {
+         // Find the service
+        $service = Service::find($id);
+         if (!$service) {
+            return response()->json(['message' => 'Service not found.'], 404);
+        }
+
         // Validate request
        $validator = Validator($request->all(),[
-            'name'          => 'nullable|string|max:255|unique:services,name,' . $id,
-            'description'   => 'nullable|string|max:255',
-            'image'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'name'          => 'sometimes|required|string|max:255|unique:services,name,' . $id,
+            'description'   => 'sometimes|required|string|max:255',
+            'image'         => 'sometimes|nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
+
         if ($validator->fails()) {
                 return response()->json([
                 'errors' => $validator->errors()->all()
             ], 422);
-        }
-
-        // Find the service
-        $service = Service::find($id);
-        if (!$service) {
-            return response()->json(['message' => 'Service not found.'], 404);
         }
 
         // Process the uploaded file
@@ -148,6 +152,11 @@ class ServiceController extends Controller
 
         if($request->hasFile('image'))
         {
+             if ($service->image && file_exists(public_path($service->image))) 
+                {
+                    unlink(public_path($service->image));
+                }
+
             $image = $request->file('image'); // Get the uploaded file
             $originalExtension = strtolower($image->getClientOriginalExtension()); // Get and lowercase the original extension
 
@@ -155,10 +164,10 @@ class ServiceController extends Controller
 
             $timestampName = time() . '.webp'; // Generate a unique filename
 
-            $destinationPath = public_path('assets/images/services'); // Define storage path
+            $destinationPath = 'assets/images/services'; // Define storage path
 
             // Create directory if it doesn't exist
-            if (!file_exists($destinationPath)) 
+            if (!file_exists(public_path($destinationPath))) 
             {
                 mkdir($destinationPath, 0755, true);
             }
@@ -167,20 +176,23 @@ class ServiceController extends Controller
             {
                 // Convert JPG/PNG to WebP
                 $img = $manager->read($image->getRealPath())->toWebp(80); 
-                $img->save($destinationPath . '/' . $timestampName);
-                $imageName = $timestampName;
+                $img->save(public_path($destinationPath . '/' . $timestampName));
+                // $imageName = $timestampName;
             } 
             elseif ($originalExtension === 'webp')
             {
                 // Save WebP as-is
-                $image->move($destinationPath, $timestampName);
-                $imageName = $timestampName;
+                $image->move(public_path($destinationPath, $timestampName));
+                // $imageName = $timestampName;
             }   
             else 
             {
                 // Return if unsupported format
                 return response()->json(['message' => 'Only JPG, JPEG, PNG, or WEBP formats allowed.'], 400);
             }
+
+              // Save relative path in DB
+                $imageName = 'assets/images/services/' . $timestampName;
         }
         
 
