@@ -119,7 +119,7 @@ class ServiceController extends Controller
         // ], 201);
 
         // Redirect back with success message
-        return redirect()->route('services')->with('message', 'Service added successfully.');
+        return redirect()->route('service.index')->with('message', 'Service added successfully.');
     }
 
     //Update a service
@@ -190,26 +190,24 @@ class ServiceController extends Controller
         $service->image = $imageName ?? $service->image;
         $service->save();
 
-        return response()->json([
-            'message' => 'Service updated successfully.',
-            'data' => $service,
-        ], 200);
+        return redirect()->route('service.index')->with('message', 'Service updated successfully.');
     }
 
     //Delete a service
     public function destroy($id)
     {
-        $service = Service::find($id);
+        $service = Service::findOrFail($id);
 
-        if (!$service) {
-            return response()->json(['message' => 'Service not found.'], 404);
+        // Delete image from storage
+        $imagePath = public_path('assets/images/services/' . $service->image);
+        if (file_exists($imagePath)) {
+            unlink($imagePath);
         }
 
-        // Soft delete the service
-        $service->is_deleted = true; // Assuming you have an 'is_deleted' column for soft deletion
-        $service->save();
+        // Delete service
+        $service->delete();
 
-        return response()->json(['message' => 'Service deleted successfully.'], 200);
+        return redirect()->route('service.index')->with('message', 'Service deleted successfully.');
     }
 
 }

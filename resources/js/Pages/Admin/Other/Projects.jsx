@@ -3,6 +3,86 @@ import { useForm, usePage, router } from "@inertiajs/react";
 import { Plus, Edit, Trash2, X, Globe, Calendar, Code, ImageIcon, Upload, Play, ExternalLink } from "lucide-react";
 import Layout from "@/Layouts/Layout";
 
+// Enhanced SingleInputArray component
+const SingleInputArray = ({ form, field, label, placeholder }) => {
+    const [tempValue, setTempValue] = useState("");
+
+    const handleAdd = () => {
+        if (tempValue.trim() !== "") {
+            form.setData({
+                ...form.data,
+                [field]: [...form.data[field], tempValue.trim()]
+            });
+            setTempValue("");
+        }
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleAdd();
+        }
+    };
+
+    const handleRemove = (index) => {
+        const updated = form.data[field].filter((_, i) => i !== index);
+        form.setData({
+            ...form.data,
+            [field]: updated
+        });
+    };
+
+    return (
+        <div className="space-y-3">
+            <label className="block text-sm font-semibold text-gray-700">{label}</label>
+            <div className="flex gap-3">
+                <input
+                    type="text"
+                    value={tempValue}
+                    onChange={(e) => setTempValue(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder={placeholder}
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                />
+                <button
+                    type="button"
+                    onClick={handleAdd}
+                    className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                >
+                    Add
+                </button>
+            </div>
+
+            {/* Show added items */}
+            <div className="space-y-2">
+                {form.data[field].map((item, index) => (
+                    item?.trim() && (
+                        <div
+                            key={index}
+                            className="flex justify-between items-center px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg"
+                        >
+                            <span className="text-gray-800 flex-1">{item}</span>
+                            <button
+                                type="button"
+                                onClick={() => handleRemove(index)}
+                                className="text-red-600 hover:text-red-800 transition-colors font-medium"
+                            >
+                                Remove
+                            </button>
+                        </div>
+                    )
+                ))}
+            </div>
+            
+            {form.errors[field] && (
+                <p className="text-sm text-red-600">
+                    {form.errors[field]}
+                </p>
+            )}
+        </div>
+    );
+};
+
 const Projects = () => {
     const { projects, flash } = usePage().props;
     const [editingProject, setEditingProject] = useState(null);
@@ -18,9 +98,11 @@ const Projects = () => {
         image: null,
         video: null,
         description: "",
-        duration: "",
-        tech_used: "",
+        starting_date: "",
+        ending_date: "",
+        tech_used: [], // Array for technologies
         url: "",
+        duration: "", // Calculated and set dynamically
     });
 
     useEffect(() => {
@@ -46,9 +128,11 @@ const Projects = () => {
             image: null,
             video: null,
             description: "",
-            duration: "",
-            tech_used: "",
+            starting_date: "",
+            ending_date: "",
+            tech_used: [],
             url: "",
+            duration: "",
         });
         form.clearErrors();
         setEditingProject(null);
@@ -64,9 +148,11 @@ const Projects = () => {
             image: null,
             video: null,
             description: project.description || "",
-            duration: project.duration || "",
-            tech_used: project.tech_used || "",
+            starting_date: project.starting_date || "",
+            ending_date: project.ending_date || "",
+            tech_used: project.tech_used ? project.tech_used.split(',').map(item => item.trim()) : [],
             url: project.url || "",
+            duration: project.duration || "",
         });
         form.clearErrors();
         
@@ -77,7 +163,7 @@ const Projects = () => {
         if (project.video) {
             setVideoPreview(`/assets/videos/projects/${project.video}`);
         }
-        
+
         // Scroll to form
         document.getElementById('projectForm')?.scrollIntoView({ behavior: 'smooth' });
     };
@@ -110,14 +196,40 @@ const Projects = () => {
         }
     };
 
+    const calculateDuration = (startDate, endDate) => {
+        if (!startDate || !endDate) return "";
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        if (isNaN(start) || isNaN(end) || end < start) return "";
+
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const months = Math.floor(diffDays / 30);
+        const days = diffDays % 30;
+
+        let duration = "";
+        if (months > 0) duration += `${months} month${months > 1 ? 's' : ''}`;
+        if (days > 0) duration += `${months > 0 ? ', ' : ''}${days} day${days > 1 ? 's' : ''}`;
+        return duration || "0 days";
+    };
+
+    useEffect(() => {
+        const duration = calculateDuration(form.data.starting_date, form.data.ending_date);
+        form.setData('duration', duration);
+    }, [form.data.starting_date, form.data.ending_date]);
+
     const handleSubmit = (e) => {
         e.preventDefault();
         
+        // Send tech_used as an array (no join needed since backend expects array)
+        const formData = { ...form.data };
+
         if (editingProject) {
             // Update existing project
             form.post(route("projects.update", editingProject.id), {
                 forceFormData: true,
                 _method: 'PUT',
+                data: formData,
                 onSuccess: () => {
                     resetForm();
                     showAlert("Project updated successfully!");
@@ -130,6 +242,7 @@ const Projects = () => {
             // Create new project
             form.post(route("projects.store"), {
                 forceFormData: true,
+                data: formData,
                 onSuccess: () => {
                     resetForm();
                     showAlert("Project added successfully!");
@@ -207,14 +320,17 @@ const Projects = () => {
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Project Type *
                                     </label>
-                                    <input
-                                        type="text"
+                                    <select
                                         value={form.data.type}
                                         onChange={(e) => form.setData('type', e.target.value)}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        placeholder="e.g., Web Development, Mobile App"
                                         required
-                                    />
+                                    >
+                                        <option value="" disabled>Select project type</option>
+                                        <option value="Website">Website</option>
+                                        <option value="Creative">Creative</option>
+                                        <option value="Reel">Reel</option>
+                                    </select>
                                     {form.errors.type && (
                                         <p className="mt-1 text-sm text-red-600">{form.errors.type}</p>
                                     )}
@@ -238,40 +354,48 @@ const Projects = () => {
                                     )}
                                 </div>
 
-                                {/* Duration */}
+                                {/* Starting Date */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Duration *
+                                        Starting Date *
                                     </label>
                                     <input
-                                        type="text"
-                                        value={form.data.duration}
-                                        onChange={(e) => form.setData('duration', e.target.value)}
+                                        type="date"
+                                        value={form.data.starting_date}
+                                        onChange={(e) => form.setData('starting_date', e.target.value)}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        placeholder="e.g., 3 months, 6 weeks"
                                         required
                                     />
-                                    {form.errors.duration && (
-                                        <p className="mt-1 text-sm text-red-600">{form.errors.duration}</p>
+                                    {form.errors.starting_date && (
+                                        <p className="mt-1 text-sm text-red-600">{form.errors.starting_date}</p>
+                                    )}
+                                </div>
+
+                                {/* Ending Date */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Ending Date *
+                                    </label>
+                                    <input
+                                        type="date"
+                                        value={form.data.ending_date}
+                                        onChange={(e) => form.setData('ending_date', e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        required
+                                    />
+                                    {form.errors.ending_date && (
+                                        <p className="mt-1 text-sm text-red-600">{form.errors.ending_date}</p>
                                     )}
                                 </div>
 
                                 {/* Technologies Used */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Technologies Used *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={form.data.tech_used}
-                                        onChange={(e) => form.setData('tech_used', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        placeholder="e.g., React, Laravel, MySQL"
-                                        required
+                                <div className="md:col-span-2">
+                                    <SingleInputArray
+                                        form={form}
+                                        field="tech_used"
+                                        label="Technologies Used *"
+                                        placeholder="Type a technology and press Enter or Add"
                                     />
-                                    {form.errors.tech_used && (
-                                        <p className="mt-1 text-sm text-red-600">{form.errors.tech_used}</p>
-                                    )}
                                 </div>
 
                                 {/* Project URL */}
@@ -312,7 +436,7 @@ const Projects = () => {
                                 {/* Image Upload */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Project Image
+                                        Project Image (Optional)
                                     </label>
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-center w-full">
@@ -360,7 +484,7 @@ const Projects = () => {
                                 {/* Video Upload */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Project Video
+                                        Project Video (Optional)
                                     </label>
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-center w-full">
@@ -490,7 +614,7 @@ const Projects = () => {
                                             </div>
                                             <div className="flex items-center gap-2 text-sm text-gray-600">
                                                 <Code className="h-4 w-4" />
-                                                <span>Tech: {project.tech_used}</span>
+                                                <span>Tech: {project.tech_used.join(', ')}</span>
                                             </div>
                                             {project.url && (
                                                 <div className="flex items-center gap-2 text-sm">

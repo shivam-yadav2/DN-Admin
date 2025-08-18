@@ -31,22 +31,13 @@ import {
 import Layout from "@/Layouts/Layout";
 
 const Services = ({ services }) => {
-    console.log(services); // Debug to verify data
+    const { flash, errors } = usePage().props;
 
     // Form for adding a service
-    const { flash } = usePage().props; // Access flash messages
-    const { data, setData, post, errors, reset } = useForm({
+    const { data, setData, post, processing, reset } = useForm({
         name: "",
         description: "",
         image: null,
-    });
-
-    // Form for adding a sub-service
-    const subServiceForm = useForm({
-        name: "",
-        description: "",
-        image: null,
-        service_id: null,
     });
 
     // Form for updating a service
@@ -56,22 +47,24 @@ const Services = ({ services }) => {
         image: null,
     });
 
-    // Form for deleting a service
-    const deleteForm = useForm({});
+    // console.log(updateForm);
 
-    // Form for deleting a sub-service
-    const deleteSubServiceForm = useForm({});
+    // Form for adding a sub-service
+    const subServiceForm = useForm({
+        name: "",
+        description: "",
+        image: null,
+        service_id: null,
+    });
 
-    // State for modals
+    // State for modals and selected items
     const [selectedService, setSelectedService] = useState(null);
-    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+    const [isAddSubServiceModalOpen, setIsAddSubServiceModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isDeleteSubServiceModalOpen, setIsDeleteSubServiceModalOpen] = useState(false);
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-    const [isAddSubServiceModalOpen, setIsAddSubServiceModalOpen] =
-        useState(false);
-    const [isDeleteSubServiceModalOpen, setIsDeleteSubServiceModalOpen] =
-        useState(false);
     const [selectedImage, setSelectedImage] = useState("");
     const [serviceToDelete, setServiceToDelete] = useState(null);
     const [subServiceToDelete, setSubServiceToDelete] = useState(null);
@@ -81,36 +74,63 @@ const Services = ({ services }) => {
     // Handle add service form submission
     const handleAddService = (e) => {
         e.preventDefault();
-        post(route("services.store"), {
+        const formData = new FormData();
+        if (data.image) formData.append("image", data.image);
+        formData.append("name", data.name);
+        formData.append("description", data.description);
+
+        post(route("service.store"), {
+            data: formData,
+            forceFormData: true,
             onSuccess: () => {
                 setIsAddModalOpen(false);
-                reset(); // Clear form
+                reset();
+                const fileInput = document.querySelector('input[name="image"]');
+                if (fileInput) fileInput.value = '';
             },
             preserveState: true,
         });
     };
 
-    // Handle update modal
+    // Handle update service
     const openUpdateModal = (service) => {
         setSelectedService(service);
         updateForm.setData({
             name: service.name,
             description: service.description,
-            image: null, // Reset image to null for updates (user can re-upload)
+            image: null,
         });
         setIsUpdateModalOpen(true);
     };
 
     const handleUpdate = (e) => {
         e.preventDefault();
-        updateForm.post(route("services.update", selectedService.id), {
+        const formData = new FormData();
+        if (updateForm.data.image) formData.append("image", updateForm.data.image);
+        formData.append("name", updateForm.data.name);
+        formData.append("description", updateForm.data.description);
+
+        updateForm.put(route("service.update", selectedService.id), {
+            data: formData,
+            forceFormData: true,
             onSuccess: () => {
                 setIsUpdateModalOpen(false);
                 setSelectedService(null);
                 updateForm.reset();
+                const fileInput = document.querySelector('input[name="image"]');
+                if (fileInput) fileInput.value = '';
             },
             preserveState: true,
         });
+    };
+
+    // Handle cancel update
+    const handleCancelUpdate = () => {
+        setIsUpdateModalOpen(false);
+        setSelectedService(null);
+        updateForm.reset();
+        const fileInput = document.querySelector('input[name="image"]');
+        if (fileInput) fileInput.value = '';
     };
 
     // Handle add sub-service
@@ -127,29 +147,40 @@ const Services = ({ services }) => {
 
     const handleAddSubService = (e) => {
         e.preventDefault();
-        subServiceForm.post(route("subservices.store"), {
+        const formData = new FormData();
+        if (subServiceForm.data.image) formData.append("image", subServiceForm.data.image);
+        formData.append("name", subServiceForm.data.name);
+        formData.append("description", subServiceForm.data.description);
+        formData.append("service_id", subServiceForm.data.service_id);
+
+        subServiceForm.post(route("subservice.store"), {
+            data: formData,
+            forceFormData: true,
             onSuccess: () => {
                 setIsAddSubServiceModalOpen(false);
                 subServiceForm.reset();
                 setCurrentServiceId(null);
+                const fileInput = document.querySelector('input[name="image"]');
+                if (fileInput) fileInput.value = '';
             },
             preserveState: true,
         });
     };
 
-    // Handle delete confirmation (service)
+    // Handle delete service
     const confirmDelete = (service) => {
+            console.log(service);
         setServiceToDelete(service);
         setIsDeleteModalOpen(true);
     };
 
     const handleDelete = () => {
-        deleteForm.delete(route("services.destroy", serviceToDelete.id), {
+        updateForm.delete(route("service.destroy", serviceToDelete.id), {
             onSuccess: () => {
                 setIsDeleteModalOpen(false);
                 setServiceToDelete(null);
             },
-            preserveState: true,
+           
         });
     };
 
@@ -161,17 +192,13 @@ const Services = ({ services }) => {
     };
 
     const handleDeleteSubService = () => {
-        deleteSubServiceForm.delete(
-            route("subservices.destroy", subServiceToDelete.id),
-            {
-                onSuccess: () => {
-                    setIsDeleteSubServiceModalOpen(false);
-                    setSubServiceToDelete(null);
-                    setCurrentServiceId(null);
-                },
-                preserveState: true,
-            }
-        );
+        subServiceForm.delete(route("subservice.destroy", subServiceToDelete.id), {
+            onSuccess: () => {
+                setIsDeleteSubServiceModalOpen(false);
+                setSubServiceToDelete(null);
+                setCurrentServiceId(null);
+            },
+        });
     };
 
     // Handle image popup
@@ -182,12 +209,8 @@ const Services = ({ services }) => {
 
     // Toggle sub-services
     const toggleSubServices = (serviceId) => {
-        setExpandedServiceId(
-            expandedServiceId === serviceId ? null : serviceId
-        );
+        setExpandedServiceId(expandedServiceId === serviceId ? null : serviceId);
     };
-
-    console.log(services)
 
     return (
         <Layout>
@@ -232,7 +255,7 @@ const Services = ({ services }) => {
                         </div>
                     </div>
 
-                    {/* Success Message */}
+                    {/* Flash Message */}
                     {flash?.message && (
                         <div className="mb-6 p-4 bg-green-100 text-green-800 rounded-lg">
                             {flash.message}
@@ -246,8 +269,7 @@ const Services = ({ services }) => {
                                 Services Overview
                             </h2>
                             <p className="text-gray-600 mt-1">
-                                Manage all your services and their
-                                sub-categories
+                                Manage all your services and their sub-categories
                             </p>
                         </div>
 
@@ -274,9 +296,7 @@ const Services = ({ services }) => {
                                         <React.Fragment key={service.id}>
                                             <TableRow
                                                 className={`transition-all duration-200 hover:bg-blue-50/50 ${
-                                                    index % 2 === 0
-                                                        ? "bg-white"
-                                                        : "bg-gray-50/30"
+                                                    index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
                                                 }`}
                                             >
                                                 <TableCell className="py-6">
@@ -291,11 +311,7 @@ const Services = ({ services }) => {
                                                 </TableCell>
                                                 <TableCell className="py-6">
                                                     <button
-                                                        onClick={() =>
-                                                            openImageModal(
-                                                                service.image
-                                                            )
-                                                        }
+                                                        onClick={() => openImageModal(service.image)}
                                                         className="group relative overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105"
                                                     >
                                                         <img
@@ -313,11 +329,7 @@ const Services = ({ services }) => {
                                                         <Button
                                                             variant="outline"
                                                             size="sm"
-                                                            onClick={() =>
-                                                                openUpdateModal(
-                                                                    service
-                                                                )
-                                                            }
+                                                            onClick={() => openUpdateModal(service)}
                                                             className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100 hover:border-green-300 transition-all duration-200"
                                                         >
                                                             <Edit3 className="w-4 h-4 mr-1" />
@@ -326,11 +338,7 @@ const Services = ({ services }) => {
                                                         <Button
                                                             variant="outline"
                                                             size="sm"
-                                                            onClick={() =>
-                                                                confirmDelete(
-                                                                    service
-                                                                )
-                                                            }
+                                                            onClick={() => confirmDelete(service)}
                                                             className="bg-red-50 border-red-200 text-red-700 hover:bg-red-100 hover:border-red-300 transition-all duration-200"
                                                         >
                                                             <Trash2 className="w-4 h-4 mr-1" />
@@ -339,15 +347,10 @@ const Services = ({ services }) => {
                                                         <Button
                                                             variant="outline"
                                                             size="sm"
-                                                            onClick={() =>
-                                                                toggleSubServices(
-                                                                    service.id
-                                                                )
-                                                            }
+                                                            onClick={() => toggleSubServices(service.id)}
                                                             className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 hover:border-blue-300 transition-all duration-200"
                                                         >
-                                                            {expandedServiceId ===
-                                                            service.id ? (
+                                                            {expandedServiceId === service.id ? (
                                                                 <>
                                                                     <EyeOff className="w-4 h-4 mr-1" />
                                                                     Hide
@@ -362,44 +365,26 @@ const Services = ({ services }) => {
                                                     </div>
                                                 </TableCell>
                                             </TableRow>
-                                            {expandedServiceId ===
-                                                service.id && (
+                                            {expandedServiceId === service.id && (
                                                 <TableRow>
-                                                    <TableCell
-                                                        colSpan={4}
-                                                        className="bg-gradient-to-r from-blue-50 to-indigo-50 p-0"
-                                                    >
+                                                    <TableCell colSpan={4} className="bg-gradient-to-r from-blue-50 to-indigo-50 p-0">
                                                         <div className="p-8 border-t border-blue-100">
                                                             <div className="flex justify-between items-center mb-6">
                                                                 <div>
                                                                     <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
                                                                         <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                                                        Sub-Services
-                                                                        for{" "}
-                                                                        {
-                                                                            service.name
-                                                                        }
+                                                                        Sub-Services for {service.name}
                                                                     </h3>
                                                                     <p className="text-gray-600 mt-1">
-                                                                        Manage
-                                                                        specialized
-                                                                        services
-                                                                        under
-                                                                        this
-                                                                        category
+                                                                        Manage specialized services under this category
                                                                     </p>
                                                                 </div>
                                                                 <Button
-                                                                    onClick={() =>
-                                                                        openAddSubServiceModal(
-                                                                            service.id
-                                                                        )
-                                                                    }
+                                                                    onClick={() => openAddSubServiceModal(service.id)}
                                                                     className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
                                                                 >
                                                                     <Plus className="w-4 h-4 mr-2" />
-                                                                    Add
-                                                                    Sub-Service
+                                                                    Add Sub-Service
                                                                 </Button>
                                                             </div>
 
@@ -408,8 +393,7 @@ const Services = ({ services }) => {
                                                                     <TableHeader>
                                                                         <TableRow className="bg-gray-50">
                                                                             <TableHead className="font-semibold text-gray-700">
-                                                                                Sub-Service
-                                                                                Title
+                                                                                Sub-Service Title
                                                                             </TableHead>
                                                                             <TableHead className="font-semibold text-gray-700">
                                                                                 Description
@@ -420,75 +404,42 @@ const Services = ({ services }) => {
                                                                         </TableRow>
                                                                     </TableHeader>
                                                                     <TableBody>
-                                                                        {service.subservices.map(
-                                                                            (
-                                                                                subService,
-                                                                                subIndex
-                                                                            ) => (
-                                                                                <TableRow
-                                                                                    key={
-                                                                                        subService.id
-                                                                                    }
-                                                                                    className={`transition-all duration-200 hover:bg-blue-50/50 ${
-                                                                                        subIndex %
-                                                                                            2 ===
-                                                                                        0
-                                                                                            ? "bg-white"
-                                                                                            : "bg-gray-50/30"
-                                                                                    }`}
-                                                                                >
-                                                                                    <TableCell className="py-4">
-                                                                                        <div className="font-medium text-gray-800">
-                                                                                            {
-                                                                                                subService.name
-                                                                                            }
-                                                                                        </div>
-                                                                                    </TableCell>
-                                                                                    <TableCell className="py-4">
-                                                                                        <div className="text-gray-600">
-                                                                                            {
-                                                                                                subService.description
-                                                                                            }
-                                                                                        </div>
-                                                                                    </TableCell>
-                                                                                    <TableCell className="py-4 text-center">
-                                                                                        <Button
-                                                                                            variant="outline"
-                                                                                            size="sm"
-                                                                                            onClick={() =>
-                                                                                                confirmDeleteSubService(
-                                                                                                    service.id,
-                                                                                                    subService
-                                                                                                )
-                                                                                            }
-                                                                                            className="bg-red-50 border-red-200 text-red-700 hover:bg-red-100 hover:border-red-300 transition-all duration-200"
-                                                                                        >
-                                                                                            <Trash2 className="w-4 h-4 mr-1" />
-                                                                                            Delete
-                                                                                        </Button>
-                                                                                    </TableCell>
-                                                                                </TableRow>
-                                                                            )
-                                                                        )}
-                                                                        {service
-                                                                            .subservices
-                                                                            .length ===
-                                                                            0 && (
+                                                                        {service.subservices.map((subService, subIndex) => (
+                                                                            <TableRow
+                                                                                key={subService.id}
+                                                                                className={`transition-all duration-200 hover:bg-blue-50/50 ${
+                                                                                    subIndex % 2 === 0 ? "bg-white" : "bg-gray-50/30"
+                                                                                }`}
+                                                                            >
+                                                                                <TableCell className="py-4">
+                                                                                    <div className="font-medium text-gray-800">
+                                                                                        {subService.name}
+                                                                                    </div>
+                                                                                </TableCell>
+                                                                                <TableCell className="py-4">
+                                                                                    <div className="text-gray-600">
+                                                                                        {subService.description}
+                                                                                    </div>
+                                                                                </TableCell>
+                                                                                <TableCell className="py-4 text-center">
+                                                                                    <Button
+                                                                                        variant="outline"
+                                                                                        size="sm"
+                                                                                        onClick={() =>
+                                                                                            confirmDeleteSubService(service.id, subService)
+                                                                                        }
+                                                                                        className="bg-red-50 border-red-200 text-red-700 hover:bg-red-100 hover:border-red-300 transition-all duration-200"
+                                                                                    >
+                                                                                        <Trash2 className="w-4 h-4 mr-1" />
+                                                                                        Delete
+                                                                                    </Button>
+                                                                                </TableCell>
+                                                                            </TableRow>
+                                                                        ))}
+                                                                        {service.subservices.length === 0 && (
                                                                             <TableRow>
-                                                                                <TableCell
-                                                                                    colSpan={
-                                                                                        3
-                                                                                    }
-                                                                                    className="py-8 text-center text-gray-500"
-                                                                                >
-                                                                                    No
-                                                                                    sub-services
-                                                                                    available.
-                                                                                    Add
-                                                                                    one
-                                                                                    to
-                                                                                    get
-                                                                                    started.
+                                                                                <TableCell colSpan={3} className="py-8 text-center text-gray-500">
+                                                                                    No sub-services available. Add one to get started.
                                                                                 </TableCell>
                                                                             </TableRow>
                                                                         )}
@@ -507,10 +458,7 @@ const Services = ({ services }) => {
                     </div>
 
                     {/* Add Service Modal */}
-                    <Dialog
-                        open={isAddModalOpen}
-                        onOpenChange={setIsAddModalOpen}
-                    >
+                    <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
                         <DialogContent className="sm:max-w-md">
                             <DialogHeader>
                                 <DialogTitle className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
@@ -518,93 +466,57 @@ const Services = ({ services }) => {
                                     Add New Service
                                 </DialogTitle>
                             </DialogHeader>
-                            <form
-                                onSubmit={handleAddService}
-                                encType="multipart/form-data"
-                            >
+                            <form onSubmit={handleAddService} encType="multipart/form-data">
                                 <div className="space-y-6 py-4">
                                     <div className="space-y-2">
-                                        <Label
-                                            htmlFor="name"
-                                            className="text-sm font-semibold text-gray-700"
-                                        >
+                                        <Label htmlFor="name" className="text-sm font-semibold text-gray-700">
                                             Service Name
                                         </Label>
                                         <Input
                                             id="name"
                                             value={data.name}
-                                            onChange={(e) =>
-                                                setData("name", e.target.value)
-                                            }
+                                            onChange={(e) => setData("name", e.target.value)}
                                             className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${
-                                                errors.name
-                                                    ? "border-red-500"
-                                                    : ""
+                                                errors.name ? "border-red-500" : ""
                                             }`}
                                             placeholder="Enter service name"
                                         />
                                         {errors.name && (
-                                            <p className="text-red-500 text-sm">
-                                                {errors.name}
-                                            </p>
+                                            <p className="text-red-500 text-sm">{errors.name}</p>
                                         )}
                                     </div>
                                     <div className="space-y-2">
-                                        <Label
-                                            htmlFor="description"
-                                            className="text-sm font-semibold text-gray-700"
-                                        >
+                                        <Label htmlFor="description" className="text-sm font-semibold text-gray-700">
                                             Description
                                         </Label>
                                         <Input
                                             id="description"
                                             value={data.description}
-                                            onChange={(e) =>
-                                                setData(
-                                                    "description",
-                                                    e.target.value
-                                                )
-                                            }
+                                            onChange={(e) => setData("description", e.target.value)}
                                             className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${
-                                                errors.description
-                                                    ? "border-red-500"
-                                                    : ""
+                                                errors.description ? "border-red-500" : ""
                                             }`}
                                             placeholder="Enter service description"
                                         />
                                         {errors.description && (
-                                            <p className="text-red-500 text-sm">
-                                                {errors.description}
-                                            </p>
+                                            <p className="text-red-500 text-sm">{errors.description}</p>
                                         )}
                                     </div>
                                     <div className="space-y-2">
-                                        <Label
-                                            htmlFor="image"
-                                            className="text-sm font-semibold text-gray-700"
-                                        >
+                                        <Label htmlFor="image" className="text-sm font-semibold text-gray-700">
                                             Service Image
                                         </Label>
                                         <Input
                                             id="image"
                                             type="file"
                                             accept="image/*"
-                                            onChange={(e) =>
-                                                setData(
-                                                    "image",
-                                                    e.target.files[0]
-                                                )
-                                            }
+                                            onChange={(e) => setData("image", e.target.files[0])}
                                             className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${
-                                                errors.image
-                                                    ? "border-red-500"
-                                                    : ""
+                                                errors.image ? "border-red-500" : ""
                                             }`}
                                         />
                                         {errors.image && (
-                                            <p className="text-red-500 text-sm">
-                                                {errors.image}
-                                            </p>
+                                            <p className="text-red-500 text-sm">{errors.image}</p>
                                         )}
                                     </div>
                                 </div>
@@ -619,6 +531,7 @@ const Services = ({ services }) => {
                                     </Button>
                                     <Button
                                         type="submit"
+                                        disabled={processing}
                                         className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
                                     >
                                         Add Service
@@ -629,10 +542,7 @@ const Services = ({ services }) => {
                     </Dialog>
 
                     {/* Update Service Modal */}
-                    <Dialog
-                        open={isUpdateModalOpen}
-                        onOpenChange={setIsUpdateModalOpen}
-                    >
+                    <Dialog open={isUpdateModalOpen} onOpenChange={setIsUpdateModalOpen}>
                         <DialogContent className="sm:max-w-md">
                             <DialogHeader>
                                 <DialogTitle className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
@@ -640,102 +550,61 @@ const Services = ({ services }) => {
                                     Update Service
                                 </DialogTitle>
                             </DialogHeader>
-                            <form
-                                onSubmit={handleUpdate}
-                                encType="multipart/form-data"
-                            >
+                            <form onSubmit={handleUpdate} encType="multipart/form-data">
                                 <div className="space-y-6 py-4">
                                     <div className="space-y-2">
-                                        <Label
-                                            htmlFor="name"
-                                            className="text-sm font-semibold text-gray-700"
-                                        >
+                                        <Label htmlFor="name" className="text-sm font-semibold text-gray-700">
                                             Service Name
                                         </Label>
                                         <Input
                                             id="name"
                                             value={updateForm.data.name}
-                                            onChange={(e) =>
-                                                updateForm.setData(
-                                                    "name",
-                                                    e.target.value
-                                                )
-                                            }
+                                            onChange={(e) => updateForm.setData("name", e.target.value)}
                                             className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${
-                                                updateForm.errors.name
-                                                    ? "border-red-500"
-                                                    : ""
+                                                updateForm.errors.name ? "border-red-500" : ""
                                             }`}
                                             placeholder="Enter service name"
                                         />
                                         {updateForm.errors.name && (
-                                            <p className="text-red-500 text-sm">
-                                                {updateForm.errors.name}
-                                            </p>
+                                            <p className="text-red-500 text-sm">{updateForm.errors.name}</p>
                                         )}
                                     </div>
                                     <div className="space-y-2">
-                                        <Label
-                                            htmlFor="description"
-                                            className="text-sm font-semibold text-gray-700"
-                                        >
+                                        <Label htmlFor="description" className="text-sm font-semibold text-gray-700">
                                             Description
                                         </Label>
                                         <Input
                                             id="description"
                                             value={updateForm.data.description}
-                                            onChange={(e) =>
-                                                updateForm.setData(
-                                                    "description",
-                                                    e.target.value
-                                                )
-                                            }
+                                            onChange={(e) => updateForm.setData("description", e.target.value)}
                                             className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${
-                                                updateForm.errors.description
-                                                    ? "border-red-500"
-                                                    : ""
+                                                updateForm.errors.description ? "border-red-500" : ""
                                             }`}
                                             placeholder="Enter service description"
                                         />
                                         {updateForm.errors.description && (
-                                            <p className="text-red-500 text-sm">
-                                                {updateForm.errors.description}
-                                            </p>
+                                            <p className="text-red-500 text-sm">{updateForm.errors.description}</p>
                                         )}
                                     </div>
                                     <div className="space-y-2">
-                                        <Label
-                                            htmlFor="image"
-                                            className="text-sm font-semibold text-gray-700"
-                                        >
+                                        <Label htmlFor="image" className="text-sm font-semibold text-gray-700">
                                             Service Image (Optional)
                                         </Label>
                                         <Input
                                             id="image"
                                             type="file"
                                             accept="image/*"
-                                            onChange={(e) =>
-                                                updateForm.setData(
-                                                    "image",
-                                                    e.target.files[0]
-                                                )
-                                            }
+                                            onChange={(e) => updateForm.setData("image", e.target.files[0])}
                                             className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${
-                                                updateForm.errors.image
-                                                    ? "border-red-500"
-                                                    : ""
+                                                updateForm.errors.image ? "border-red-500" : ""
                                             }`}
                                         />
                                         {updateForm.errors.image && (
-                                            <p className="text-red-500 text-sm">
-                                                {updateForm.errors.image}
-                                            </p>
+                                            <p className="text-red-500 text-sm">{updateForm.errors.image}</p>
                                         )}
                                         {selectedService?.image && (
                                             <div className="mt-2">
-                                                <p className="text-sm text-gray-600">
-                                                    Current Image:
-                                                </p>
+                                                <p className="text-sm text-gray-600">Current Image:</p>
                                                 <img
                                                     src={selectedService.image}
                                                     alt="Current service"
@@ -749,15 +618,14 @@ const Services = ({ services }) => {
                                     <Button
                                         variant="outline"
                                         type="button"
-                                        onClick={() =>
-                                            setIsUpdateModalOpen(false)
-                                        }
+                                        onClick={handleCancelUpdate}
                                         className="border-gray-300 hover:bg-gray-50"
                                     >
                                         Cancel
                                     </Button>
                                     <Button
                                         type="submit"
+                                        disabled={processing}
                                         className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
                                     >
                                         Save Changes
@@ -768,10 +636,7 @@ const Services = ({ services }) => {
                     </Dialog>
 
                     {/* Add Sub-Service Modal */}
-                    <Dialog
-                        open={isAddSubServiceModalOpen}
-                        onOpenChange={setIsAddSubServiceModalOpen}
-                    >
+                    <Dialog open={isAddSubServiceModalOpen} onOpenChange={setIsAddSubServiceModalOpen}>
                         <DialogContent className="sm:max-w-md">
                             <DialogHeader>
                                 <DialogTitle className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
@@ -779,102 +644,57 @@ const Services = ({ services }) => {
                                     Add Sub-Service
                                 </DialogTitle>
                             </DialogHeader>
-                            <form
-                                onSubmit={handleAddSubService}
-                                encType="multipart/form-data"
-                            >
+                            <form onSubmit={handleAddSubService} encType="multipart/form-data">
                                 <div className="space-y-6 py-4">
                                     <div className="space-y-2">
-                                        <Label
-                                            htmlFor="name"
-                                            className="text-sm font-semibold text-gray-700"
-                                        >
+                                        <Label htmlFor="name" className="text-sm font-semibold text-gray-700">
                                             Sub-Service Name
                                         </Label>
                                         <Input
                                             id="name"
                                             value={subServiceForm.data.name}
-                                            onChange={(e) =>
-                                                subServiceForm.setData(
-                                                    "name",
-                                                    e.target.value
-                                                )
-                                            }
+                                            onChange={(e) => subServiceForm.setData("name", e.target.value)}
                                             className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${
-                                                subServiceForm.errors.name
-                                                    ? "border-red-500"
-                                                    : ""
+                                                subServiceForm.errors.name ? "border-red-500" : ""
                                             }`}
                                             placeholder="Enter sub-service name"
                                         />
                                         {subServiceForm.errors.name && (
-                                            <p className="text-red-500 text-sm">
-                                                {subServiceForm.errors.name}
-                                            </p>
+                                            <p className="text-red-500 text-sm">{subServiceForm.errors.name}</p>
                                         )}
                                     </div>
                                     <div className="space-y-2">
-                                        <Label
-                                            htmlFor="description"
-                                            className="text-sm font-semibold text-gray-700"
-                                        >
+                                        <Label htmlFor="description" className="text-sm font-semibold text-gray-700">
                                             Description
                                         </Label>
                                         <Input
                                             id="description"
-                                            value={
-                                                subServiceForm.data.description
-                                            }
-                                            onChange={(e) =>
-                                                subServiceForm.setData(
-                                                    "description",
-                                                    e.target.value
-                                                )
-                                            }
+                                            value={subServiceForm.data.description}
+                                            onChange={(e) => subServiceForm.setData("description", e.target.value)}
                                             className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${
-                                                subServiceForm.errors
-                                                    .description
-                                                    ? "border-red-500"
-                                                    : ""
+                                                subServiceForm.errors.description ? "border-red-500" : ""
                                             }`}
                                             placeholder="Enter sub-service description"
                                         />
                                         {subServiceForm.errors.description && (
-                                            <p className="text-red-500 text-sm">
-                                                {
-                                                    subServiceForm.errors
-                                                        .description
-                                                }
-                                            </p>
+                                            <p className="text-red-500 text-sm">{subServiceForm.errors.description}</p>
                                         )}
                                     </div>
                                     <div className="space-y-2">
-                                        <Label
-                                            htmlFor="image"
-                                            className="text-sm font-semibold text-gray-700"
-                                        >
+                                        <Label htmlFor="image" className="text-sm font-semibold text-gray-700">
                                             Sub-Service Image (Optional)
                                         </Label>
                                         <Input
                                             id="image"
                                             type="file"
                                             accept="image/*"
-                                            onChange={(e) =>
-                                                subServiceForm.setData(
-                                                    "image",
-                                                    e.target.files[0]
-                                                )
-                                            }
+                                            onChange={(e) => subServiceForm.setData("image", e.target.files[0])}
                                             className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${
-                                                subServiceForm.errors.image
-                                                    ? "border-red-500"
-                                                    : ""
+                                                subServiceForm.errors.image ? "border-red-500" : ""
                                             }`}
                                         />
                                         {subServiceForm.errors.image && (
-                                            <p className="text-red-500 text-sm">
-                                                {subServiceForm.errors.image}
-                                            </p>
+                                            <p className="text-red-500 text-sm">{subServiceForm.errors.image}</p>
                                         )}
                                     </div>
                                 </div>
@@ -882,15 +702,14 @@ const Services = ({ services }) => {
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        onClick={() =>
-                                            setIsAddSubServiceModalOpen(false)
-                                        }
+                                        onClick={() => setIsAddSubServiceModalOpen(false)}
                                         className="border-gray-300 hover:bg-gray-50"
                                     >
                                         Cancel
                                     </Button>
                                     <Button
                                         type="submit"
+                                        disabled={processing}
                                         className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
                                     >
                                         Add Sub-Service
@@ -901,10 +720,7 @@ const Services = ({ services }) => {
                     </Dialog>
 
                     {/* Delete Confirmation Modal (Service) */}
-                    <Dialog
-                        open={isDeleteModalOpen}
-                        onOpenChange={setIsDeleteModalOpen}
-                    >
+                    <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
                         <DialogContent className="sm:max-w-md">
                             <DialogHeader>
                                 <DialogTitle className="text-2xl font-semibold text-red-600 flex items-center gap-2">
@@ -915,9 +731,7 @@ const Services = ({ services }) => {
                             <div className="py-4">
                                 <p className="text-gray-600">
                                     Are you sure you want to delete{" "}
-                                    <span className="font-semibold text-gray-800">
-                                        "{serviceToDelete?.name}"
-                                    </span>
+                                    <span className="font-semibold text-gray-800">"{serviceToDelete?.name}"</span>
                                     ? This action cannot be undone.
                                 </p>
                             </div>
@@ -932,6 +746,7 @@ const Services = ({ services }) => {
                                 <Button
                                     variant="destructive"
                                     onClick={handleDelete}
+                                    disabled={processing}
                                     className="bg-red-600 hover:bg-red-700"
                                 >
                                     Delete Service
@@ -941,10 +756,7 @@ const Services = ({ services }) => {
                     </Dialog>
 
                     {/* Delete Sub-Service Modal */}
-                    <Dialog
-                        open={isDeleteSubServiceModalOpen}
-                        onOpenChange={setIsDeleteSubServiceModalOpen}
-                    >
+                    <Dialog open={isDeleteSubServiceModalOpen} onOpenChange={setIsDeleteSubServiceModalOpen}>
                         <DialogContent className="sm:max-w-md">
                             <DialogHeader>
                                 <DialogTitle className="text-2xl font-semibold text-red-600 flex items-center gap-2">
@@ -955,18 +767,14 @@ const Services = ({ services }) => {
                             <div className="py-4">
                                 <p className="text-gray-600">
                                     Are you sure you want to delete{" "}
-                                    <span className="font-semibold text-gray-800">
-                                        "{subServiceToDelete?.name}"
-                                    </span>
+                                    <span className="font-semibold text-gray-800">"{subServiceToDelete?.name}"</span>
                                     ? This action cannot be undone.
                                 </p>
                             </div>
                             <DialogFooter className="gap-2">
                                 <Button
                                     variant="outline"
-                                    onClick={() =>
-                                        setIsDeleteSubServiceModalOpen(false)
-                                    }
+                                    onClick={() => setIsDeleteSubServiceModalOpen(false)}
                                     className="border-gray-300 hover:bg-gray-50"
                                 >
                                     Cancel
@@ -974,6 +782,7 @@ const Services = ({ services }) => {
                                 <Button
                                     variant="destructive"
                                     onClick={handleDeleteSubService}
+                                    disabled={processing}
                                     className="bg-red-600 hover:bg-red-700"
                                 >
                                     Delete Sub-Service
@@ -983,10 +792,7 @@ const Services = ({ services }) => {
                     </Dialog>
 
                     {/* Image Modal */}
-                    <Dialog
-                        open={isImageModalOpen}
-                        onOpenChange={setIsImageModalOpen}
-                    >
+                    <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
                         <DialogContent className="sm:max-w-2xl">
                             <DialogHeader>
                                 <DialogTitle className="text-2xl font-semibold text-gray-800 flex items-center gap-2">

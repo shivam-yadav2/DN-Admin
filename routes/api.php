@@ -94,9 +94,9 @@ Route::delete('/delete_career/{id}', [CareerController::class, 'destroy']);
 
 //Our Team routes
 Route::post('insert',[our_teamcontroller::class,'store']);
-Route::delete('delete_ourteam/{id}',[our_teamcontroller::class,'delete_ourteam']);
-Route::post('update_ourteam/{id}',[our_teamcontroller::class,'update_ourteam']);
-Route::get('show_ourteam',[our_teamcontroller::class,'show_ourteam']);
+Route::delete('delete_ourteam/{id}',[our_teamcontroller::class,'delete']);
+Route::post('update_ourteam/{id}',[our_teamcontroller::class,'update']);
+Route::get('show_ourteam',[our_teamcontroller::class,'index']);
 
 //Package Routes
 Route::post('post_package', [packagecontroller::class,'store']);
@@ -130,6 +130,7 @@ Route::delete('/delete_project/{id}', [ProjectController::class, 'destroy']);
 
 //Frontend API Route
 Route::get('getblog',[ApiController::class,'getblog']);
+Route::get('blogdetail',[ApiController::class,'getblogbyid']);
 Route::get('getcareer', [ApiController::class, 'getcareer']);
 Route::get('getcontactdetail', [ApiController::class, 'getcontactdetail']);
 Route::get('getcreatives', [ApiController::class, 'getcreatives']);
@@ -145,7 +146,7 @@ Route::get('gethomeabout', [ApiController::class, 'gethomeabout']);
 // Route::get('getservice', [ApiController::class, 'getservice']);
 Route::get('getsubservice', [ApiController::class, 'getsubservice']);
 Route::get('careerdetail/{id}', [ApiController::class, 'careerdetail']);
-Route::get('blogdetail/{id}', [ApiController::class, 'getblogdetail']);
+Route::get('blogdetail', [ApiController::class, 'getblogdetail']);
 
 
 //Seo Service Routes
