@@ -185,12 +185,13 @@ public function careerdetail($id){
 
 }
 
-public function getblogdetail($id){
-    $blogdetail=Blog::find($id);
+public function getblogdetail(Request $request){
+    $url = $request->query('url');
+    $blogdetail=Blog::where('url',$url)->first();
     return response()->json([
         'data'=> $blogdetail,
         'msg'=>"Getting data successfully",
     ]);
 }
 
-}
+} 
