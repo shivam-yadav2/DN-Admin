@@ -82,6 +82,9 @@ class HomeAboutController extends Controller
                         ->with('error', 'Only JPG, JPEG, PNG, or WEBP formats allowed.')
                          ->withInput();
                 }
+            
+                 // Save relative path in DB
+                $imageName = 'assets/images/homeAbout/' . $imageName;
 
             // Create new home about record
             $homeAbout = HomeAbout::create([
@@ -157,7 +160,7 @@ class HomeAboutController extends Controller
                     $destinationPath = 'assets/images/homeAbout';
 
                     // Create directory if it doesn't exist
-                    if (!file_exists($destinationPath)) 
+                    if (!file_exists(public_path($destinationPath))) 
                         {
                             mkdir($destinationPath, 0755, true);
                         }
@@ -166,12 +169,12 @@ class HomeAboutController extends Controller
                         {
                             // Convert to WebP
                             $img = $manager->read($image->getRealPath())->toWebp(80);
-                            $img->save($destinationPath . '/' . $timestampName);
+                            $img->save(public_path($destinationPath . '/' . $timestampName));
                         }
                     elseif ($originalExtension === 'webp') 
                         {
                             // Save WebP as-is
-                            $image->move($destinationPath, $timestampName);
+                            $image->move(public_path($destinationPath, $timestampName));
                         } 
                     else 
                         {
@@ -188,7 +191,7 @@ class HomeAboutController extends Controller
              'tag'          => $request->tag ?? $homeAbout->tag,
             'heading'       => $request->heading ?? $homeAbout->heading,
             'sub_heading'   => $request->sub_heading ?? $homeAbout->sub_heading,
-            'image'         => $request->hasFile('image') ? 'assets/images/homeAbout/' . $imageName: $homeAbout->image,
+            'image'         => $imageName,
             'content'       => $request->content ?? $homeAbout->content,
             'button_text'   => $request->button_text ?? $homeAbout->button_text,
             'button_url'    => $request->button_url ?? $homeAbout->button_url
@@ -213,11 +216,10 @@ class HomeAboutController extends Controller
         $homeAbout = HomeAbout::findOrFail($id);
 
         try {
-            // Delete image file
-            $filePath = $homeAbout->image;
-            if (file_exists($filePath)) {
-                unlink($filePath);
-            }
+           // Delete image file if exists
+        if ($homeAbout->image && file_exists(public_path($homeAbout->image))) {
+            unlink(public_path($homeAbout->image));
+        }
 
             // Delete the DB record
             $homeAbout->delete();

@@ -15,7 +15,7 @@ class packagecontroller extends Controller
     protected $imageManager;
 
     public function __construct()
-    {
+     {
         // ✅ Initialize ImageManager with GD driver
         $this->imageManager = new ImageManager(new Driver());
     }
@@ -23,8 +23,8 @@ class packagecontroller extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'heading'           => 'required',
-            'img'               => 'required|image|mimes:jpeg,jpg,png,webp|max:2048|dimensions:max_width:200,max_height:200',
+            'heading'           => 'required|string|max:255',
+            'img'               => 'required|image|mimes:jpeg,jpg,png,webp|max:512|dimensions:max_width:200,max_height:200',
             'price'             => 'required|string|max:255',
             'description'       => 'required|string|max:255',
             'target_audience'   => 'required|string|max:255',
@@ -43,20 +43,30 @@ class packagecontroller extends Controller
         if ($request->hasFile('img')) {
             $image = $request->file('img');
             $imagename = time() . '.webp'; // force convert to webp
-            $path = ('assets/images/package/' . $imagename);
+            $path = 'assets/images/package/' ;
+
+                // ✅ Ensure directory exists
+             if (!file_exists(public_path($path)))
+                 {
+                    mkdir(public_path($path), 0777, true);
+                }
 
             // ✅ v3: Resize and convert to webp
             $this->imageManager->read($image)
                 ->cover(200, 200)   // replaces fit() in v3
                 ->toWebp(90)
-                ->save($path);
+                ->save(public_path($path. $imagename));
+
+
+             // Save relative path in DB
+                $imagename = 'assets/images/package/' . $imagename;
 
             $data = packages::create([
-                'img' => 'assets/images/package/' . $imagename,
-                'heading' => $request->heading,
-                'price' => $request->price,
-                'description' => $request->description,
-                'target_audience' => $request->target_audience,
+                'img'               => $imagename,
+                'heading'           => $request->heading,
+                'price'             => $request->price,
+                'description'       => $request->description,
+                'target_audience'   => $request->target_audience,
             ]);
 
             return back()->with([
@@ -70,7 +80,7 @@ class packagecontroller extends Controller
     {
         $validator = Validator::make($request->all(), [
             'heading'           => 'sometimes|required',
-            'img'               => 'sometimes|required|image|mimes:jpeg,jpg,png,webp|max:2048|dimensions:max_width:200,max_height:200',
+            'img'               => 'nullable|image|mimes:jpeg,jpg,png,webp|max:512|dimensions:max_width:200,max_height:200',
             'price'             => 'sometimes|required',
             'description'       => 'sometimes|required',
             'target_audience'   => 'sometimes|required',
@@ -92,32 +102,55 @@ class packagecontroller extends Controller
             ], 404);
         }
 
-        $imagename = null;
+          // ✅ Default: keep old image
+        $imagename = $info->img;
 
-        if ($request->hasFile('img')) {
-            $image = $request->file('img');
-            $imagename = time() . '.webp'; // force convert to webp
-            $path = public_path('assets/images/package/' . $imagename);
+        if ($request->hasFile('img'))
+            {
+                 // Delete old image if exists
+                if ($info->img && file_exists(public_path($info->img)))
+                 {
+                    unlink(public_path($info->img));
+                 }
 
-            // ✅ v3: Resize and convert to webp
-            $this->imageManager->read($image)
-                ->cover(200, 200)
-                ->toWebp(90)
-                ->save($path);
+                $image = $request->file('img');
+                $imagename = time() . '.webp'; // force convert to webp
+                $path = 'assets/images/package/';
+
+                 // Create directory if it doesn't exist
+                if (!file_exists(public_path($path))) 
+                    {
+                        mkdir($path, 0755, true);
+                    }
+
+                // ✅ v3: Resize and convert to webp
+                $this->imageManager->read($image)
+                    ->cover(200, 200)
+                    ->toWebp(90)
+                    ->save(public_path($path . $imagename));
+
+                // Save relative path in DB
+                $imagename = 'assets/images/package/' . $imagename;
+            }
+            //  dd($imagename);
 
             $info->update([
-                'img'               => 'assets/images/package/' .  $imagename,
-                'heading'           => $request->heading,
-                'price'             => $request->price,
-                'description'       => $request->description,
-                'target_audience'   => $request->target_audience,
+                'img'               =>  $imagename,
+                'heading'           => $request->heading ?? $info->heading,
+                'price'             => $request->price ?? $info->price,
+                'description'       => $request->description ?? $info->description,
+                'target_audience'   => $request->target_audience ?? $info->target_audience,
             ]);
 
-            return back()->with([
+        //     return back()->with([
+        //     'message' => 'Package updated successfully!',
+        //     'type' => 'success'
+        // ]);
+            return response()->json([
             'message' => 'Package updated successfully!',
             'type' => 'success'
         ]);
-        }
+        
     }
 
     public function index()
