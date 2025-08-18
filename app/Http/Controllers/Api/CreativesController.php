@@ -27,10 +27,16 @@ class CreativesController extends Controller
      //Store a new creative
     public function store(Request $request)
     {
-        $request->validate([
+         $validator = Validator::make($request->all(),[
             'images'    => 'required|array',
             'images.*'  => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
+
+         if ($validator->fails()) {
+                return response()->json([
+                'errors' => $validator->errors()->all()
+            ], 422);
+        }
 
         if (!$request->hasFile('images')) {
             return response()->json(['message' => 'Image file is required.'], 400);

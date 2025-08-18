@@ -14,7 +14,7 @@ class Service extends Model
         'image' ,
         'is_deleted'  
     ];
-    public $timestamps = false;
+    public $timestamps = true;
 
     public function subservices()
     {
