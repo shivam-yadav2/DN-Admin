@@ -327,9 +327,9 @@ const Projects = () => {
                                         required
                                     >
                                         <option value="" disabled>Select project type</option>
-                                        <option value="Website">Website</option>
-                                        <option value="Creative">Creative</option>
-                                        <option value="Reel">Reel</option>
+                                        <option value="website">Website</option>
+                                        <option value="creatives">Creative</option>
+                                        <option value="reel">Reel</option>
                                     </select>
                                     {form.errors.type && (
                                         <p className="mt-1 text-sm text-red-600">{form.errors.type}</p>
@@ -561,7 +561,7 @@ const Projects = () => {
                                     {project.image && (
                                         <div className="relative h-48 bg-gray-100">
                                             <img
-                                                src={`/assets/images/projects/${project.image}`}
+                                                src={`${project.image}`}
                                                 alt={project.title}
                                                 className="w-full h-full object-cover"
                                             />
@@ -635,10 +635,10 @@ const Projects = () => {
                                         {project.video && (
                                             <div className="mt-4">
                                                 <video
-                                                    src={`/assets/videos/projects/${project.video}`}
+                                                    src={`${project.video}`}
                                                     className="w-full h-32 object-cover rounded-lg"
                                                     controls
-                                                    poster={project.image ? `/assets/images/projects/${project.image}` : undefined}
+                                                    poster={project.image ? `${project.image}` : undefined}
                                                 />
                                             </div>
                                         )}

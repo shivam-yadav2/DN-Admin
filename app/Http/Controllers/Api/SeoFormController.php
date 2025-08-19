@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\SEO_Form;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
-use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver
+use Intervention\Image\Drivers\Gd\Driver as GdDriver; // Import GD driver
 use Inertia\Inertia;
 
 class SeoFormController extends Controller

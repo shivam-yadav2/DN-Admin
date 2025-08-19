@@ -2,22 +2,22 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\ServiceController;
-use App\Http\Controllers\API\SubServiceController;
-use App\Http\Controllers\API\EnquiryController;
-use App\Http\Controllers\API\HomeAboutController;
-use App\Http\Controllers\API\CreativesController;
-use App\Http\Controllers\API\FAQController;
-use App\Http\Controllers\API\HeroController;
-use App\Http\Controllers\API\CareerController;
-use App\Http\Controllers\API\BlogController;
-use App\Http\Controllers\API\ContactDetailController;
-use App\Http\Controllers\api\our_teamcontroller;
-use App\Http\Controllers\api\packagecontroller;
-use App\Http\Controllers\api\vision_missioncontroller;
-use App\Http\Controllers\API\TechnologyController;
-use App\Http\Controllers\API\TagController;
-use App\Http\Controllers\API\ProjectController;
+use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\SubServiceController;
+use App\Http\Controllers\Api\EnquiryController;
+use App\Http\Controllers\Api\HomeAboutController;
+use App\Http\Controllers\Api\CreativesController;
+use App\Http\Controllers\Api\FAQController;
+use App\Http\Controllers\Api\HeroController;
+use App\Http\Controllers\Api\CareerController;
+use App\Http\Controllers\Api\BlogController;
+use App\Http\Controllers\Api\ContactDetailController;
+use App\Http\Controllers\Api\our_teamcontroller;
+use App\Http\Controllers\Api\packagecontroller;
+use App\Http\Controllers\Api\vision_missioncontroller;
+use App\Http\Controllers\Api\TechnologyController;
+use App\Http\Controllers\Api\TagController;
+use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Api\SeoHighlightController;                                                                                                                                                                                                                                                                                                                                                                            
 use App\Http\Controllers\Api\SeoFormController;                                                                                                                                                                                                                                                                                                                                                                            
@@ -38,99 +38,99 @@ Route::get('/test', function () {
 });
 
 // Service routes
-Route::get('/get_service', [ServiceController::class, 'index']);
-Route::post('/post_service', [ServiceController::class, 'store']);
-Route::post('/update_service/{id}', [ServiceController::class, 'update']);
-Route::delete('/delete_service/{id}', [ServiceController::class, 'destroy']);
+// Route::get('/get_service', [ServiceController::class, 'index']);
+// Route::post('/post_service', [ServiceController::class, 'store']);
+// Route::post('/update_service/{id}', [ServiceController::class, 'update']);
+// Route::delete('/delete_service/{id}', [ServiceController::class, 'destroy']);
 
 // SubService routes
-Route::get('/get_subservice', [SubServiceController::class, 'index']);
-Route::post('/post_subservice', [SubServiceController::class, 'store']);
-Route::get('/get_subserviceId/{serviceId}', [SubServiceController::class, 'getByServiceId']);
-Route::delete('/delete_subservice/{id}', [SubServiceController::class, 'destroy']);
+// Route::get('/get_subservice', [SubServiceController::class, 'index']);
+// Route::post('/post_subservice', [SubServiceController::class, 'store']);
+// Route::get('/get_subserviceId/{serviceId}', [SubServiceController::class, 'getByServiceId']);
+// Route::delete('/delete_subservice/{id}', [SubServiceController::class, 'destroy']);
 
 // Enquiry routes
-Route::get('/get_enquiry', [EnquiryController::class, 'index']);
-Route::post('/post_enquiry', [EnquiryController::class, 'store']);
-Route::delete('/delete_enquiry/{id}', [EnquiryController::class, 'destroy']);
-Route::put('/update_enquiryStatus/{id}', [EnquiryController::class, 'updateStaus']);
+// Route::get('/get_enquiry', [EnquiryController::class, 'index']);
+// Route::post('/post_enquiry', [EnquiryController::class, 'store']);
+// Route::delete('/delete_enquiry/{id}', [EnquiryController::class, 'destroy']);
+// Route::put('/update_enquiryStatus/{id}', [EnquiryController::class, 'updateStaus']);
 
 // Vision and Mission routes
-Route::post('add-vision',[vision_missioncontroller::class,'store']);
-Route::get('show-vision',[vision_missioncontroller::class,'show']);
-Route::post('/updatevision/{id}',[vision_missioncontroller::class,'updatevision']);
-Route::delete('/deletevision/{id}',[vision_missioncontroller::class,'deletevision']);
+// Route::post('add-vision',[vision_missioncontroller::class,'store']);
+// Route::get('show-vision',[vision_missioncontroller::class,'show']);
+// Route::post('/updatevision/{id}',[vision_missioncontroller::class,'updatevision']);
+// Route::delete('/deletevision/{id}',[vision_missioncontroller::class,'deletevision']);
 
 // Technology routes
-Route::get('/get_technology', [TechnologyController::class, 'index']);
-Route::post('/post_technology', [TechnologyController::class, 'store']);
-Route::post('/update_technology/{id}', [TechnologyController::class, 'update']);
-Route::delete('/delete_technology/{id}', [TechnologyController::class, 'delete']);
+// Route::get('/get_technology', [TechnologyController::class, 'index']);
+// Route::post('/post_technology', [TechnologyController::class, 'store']);
+// Route::post('/update_technology/{id}', [TechnologyController::class, 'update']);
+// Route::delete('/delete_technology/{id}', [TechnologyController::class, 'delete']);
 
 // HomeAbout routes
-Route::get('/get_home_about', [HomeAboutController::class, 'index']);
-Route::post('/post_home_about', [HomeAboutController::class, 'store']);
-Route::post('/update_home_about/{id}', [HomeAboutController::class, 'update']);
-Route::delete('/delete_home_about/{id}', [HomeAboutController::class, 'destroy']);
+// Route::get('/get_home_about', [HomeAboutController::class, 'index']);
+// Route::post('/post_home_about', [HomeAboutController::class, 'store']);
+// Route::post('/update_home_about/{id}', [HomeAboutController::class, 'update']);
+// Route::delete('/delete_home_about/{id}', [HomeAboutController::class, 'destroy']);
 
 // Creatives routes
-Route::get('/get_creatives', [CreativesController::class, 'index']);
-Route::post('/post_creatives', [CreativesController::class, 'store']);
-Route::delete('/delete_creatives/{id}', [CreativesController::class, 'destroy']);
+//  Route::get('/get_creatives', [CreativesController::class, 'index']);
+// Route::post('/post_creatives', [CreativesController::class, 'store']);
+// Route::delete('/delete_creatives/{id}', [CreativesController::class, 'destroy']);
 
 // FAQ routes
-Route::get('/get_faq', [FAQController::class, 'index']);
-Route::post('/post_faq', [FAQController::class, 'store']);
-Route::put('/update_faq/{id}', [FAQController::class, 'update']);
-Route::delete('/delete_faq/{id}', [FAQController::class, 'destroy']);
+// Route::get('/get_faq', [FAQController::class, 'index']);
+// Route::post('/post_faq', [FAQController::class, 'store']);
+// Route::put('/update_faq/{id}', [FAQController::class, 'update']);
+// Route::delete('/delete_faq/{id}', [FAQController::class, 'destroy']);
 
 //Hero Routes
-Route::get('/get_hero', [HeroController::class, 'index']);
-Route::post('/post_hero', [HeroController::class, 'store']);
-Route::put('/update_hero/{id}', [HeroController::class, 'update']);
-Route::delete('/delete_hero/{id}', [HeroController::class, 'destroy']);
+// Route::get('/get_hero', [HeroController::class, 'index']);
+// Route::post('/post_hero', [HeroController::class, 'store']);
+// Route::put('/update_hero/{id}', [HeroController::class, 'update']);
+// Route::delete('/delete_hero/{id}', [HeroController::class, 'destroy']);
 
 //Career Routes
-Route::get('/get_career', [CareerController::class, 'index']);
-Route::post('/post_career', [CareerController::class, 'store']);
-Route::put('/update_career/{id}', [CareerController::class, 'update']);
-Route::delete('/delete_career/{id}', [CareerController::class, 'destroy']);
+// Route::get('/get_career', [CareerController::class, 'index']);
+// Route::post('/post_career', [CareerController::class, 'store']);
+// Route::put('/update_career/{id}', [CareerController::class, 'update']);
+// Route::delete('/delete_career/{id}', [CareerController::class, 'destroy']);
 
 //Our Team routes
-Route::post('insert',[our_teamcontroller::class,'store']);
-Route::delete('delete_ourteam/{id}',[our_teamcontroller::class,'delete']);
-Route::post('update_ourteam/{id}',[our_teamcontroller::class,'update']);
-Route::get('show_ourteam',[our_teamcontroller::class,'index']);
+// Route::post('insert',[our_teamcontroller::class,'store']);
+// Route::delete('delete_ourteam/{id}',[our_teamcontroller::class,'delete']);
+// Route::post('update_ourteam/{id}',[our_teamcontroller::class,'update']);
+// Route::get('show_ourteam',[our_teamcontroller::class,'index']);
 
 //Package Routes
-Route::post('post_package', [packagecontroller::class,'store']);
-Route::post('update_package/{id}', [packagecontroller::class,'update']);
-Route::get('get_package', [packagecontroller::class,'index']);
-Route::delete('delete_package/{id}', [packagecontroller::class,'destroy']);
+// Route::post('post_package', [packagecontroller::class,'store']);
+// Route::post('update_package/{id}', [packagecontroller::class,'update']);
+// Route::get('get_package', [packagecontroller::class,'index']);
+// Route::delete('delete_package/{id}', [packagecontroller::class,'destroy']);
 
 //Blog Routes
-Route::get('/get_blog', [BlogController::class, 'index']);
-Route::post('/post_blog', [BlogController::class, 'store']);
-Route::post('/update_blog/{id}', [BlogController::class, 'update']);
-Route::delete('/delete_blog/{id}', [BlogController::class, 'destroy']);
+//      Route::get('/get_blog', [BlogController::class, 'index']);
+// Route::post('/post_blog', [BlogController::class, 'store']);
+// Route::post('/update_blog/{id}', [BlogController::class, 'update']);
+// Route::delete('/delete_blog/{id}', [BlogController::class, 'destroy']);
 
 //Contact Detail Routes
-Route::get('/get_contact', [ContactDetailController::class, 'index']);
-Route::post('/post_contact', [ContactDetailController::class, 'store']);
-Route::post('/update_contact/{id}', [ContactDetailController::class, 'update']);
-Route::delete('/delete_contact/{id}', [ContactDetailController::class, 'destroy']);
+// Route::get('/get_contact', [ContactDetailController::class, 'index']);
+// Route::post('/post_contact', [ContactDetailController::class, 'store']);
+// Route::post('/update_contact/{id}', [ContactDetailController::class, 'update']);
+// Route::delete('/delete_contact/{id}', [ContactDetailController::class, 'destroy']);
 
 //Tag Routes
-Route::get('/get_tag', [TagController::class, 'index']);
-Route::post('/post_tag', [TagController::class, 'store']);
-Route::post('/update_tag/{id}', [TagController::class, 'update']);
-Route::delete('/delete_tag/{id}', [TagController::class, 'destroy']);
+// Route::get('/get_tag', [TagController::class, 'index']);
+// Route::post('/post_tag', [TagController::class, 'store']);
+// Route::post('/update_tag/{id}', [TagController::class, 'update']);
+// Route::delete('/delete_tag/{id}', [TagController::class, 'destroy']);
 
 // Project Routes
-Route::get('/get_project', [ProjectController::class, 'index']);
-Route::post('/post_project', [ProjectController::class, 'store']);
-Route::post('/update_project/{id}', [ProjectController::class, 'update']);
-Route::delete('/delete_project/{id}', [ProjectController::class, 'destroy']);
+// Route::get('/get_project', [ProjectController::class, 'index']);
+// Route::post('/post_project', [ProjectController::class, 'store']);
+// Route::post('/update_project/{id}', [ProjectController::class, 'update']);
+// Route::delete('/delete_project/{id}', [ProjectController::class, 'destroy']);
 
 //Frontend API Route
 Route::get('getblog',[ApiController::class,'getblog']);
@@ -147,56 +147,26 @@ Route::get('gettag', [ApiController::class, 'gettag']);
 Route::get('gettechnlogies', [ApiController::class, 'gettechnlogies']);
 Route::get('getvision_mission', [ApiController::class, 'getvision_mission']);
 Route::get('gethomeabout', [ApiController::class, 'gethomeabout']);
-// Route::get('getservice', [ApiController::class, 'getservice']);
+Route::get('get_service', [ApiController::class, 'get_service']);
 Route::get('getsubservice', [ApiController::class, 'getsubservice']);
 Route::get('careerdetail/{id}', [ApiController::class, 'careerdetail']);
-Route::get('getseohighlight', [ApiController::class, 'seohighlight']);
-Route::get('getseoform', [ApiController::class, 'seoform']);
-Route::get('getseoservice', [ApiController::class, 'seoservice']);
-Route::get('seoseoprocess', [ApiController::class, 'seoprocess']);
-Route::get('getseo_optimization', [ApiController::class, 'seo_optimization']);
-Route::get('getseostrategy', [ApiController::class, 'seo_strategy']);
-Route::get('getseodigital', [ApiController::class, 'seo_digital']);
-Route::get('get_index', [ApiController::class, 'index_project']);
-
-//Seo Highlight Routes
-Route::get('/get_seo', [SeoHighlightController::class, 'index']);
-Route::post('/post_seo', [SeoHighlightController::class, 'store']);
-Route::post('/update_seo/{id}', [SeoHighlightController::class, 'update']);
-Route::delete('delete_seo/{id}', [SeoHighlightController::class, 'destroy']);
-
-//Seo Form Routes
-Route::get('/get_seoform', [SeoFormController::class, 'index']);
-Route::post('/post_seoform', [SeoFormController::class, 'store']);
-Route::post('/update_seoform/{id}', [SeoFormController::class, 'update']);
+Route::get('blogdetail', [ApiController::class, 'getblogdetail']);
 
 
 //Seo Service Routes
-Route::get('/get_seoservice', [SeoServiceController::class, 'index']);
-Route::post('/post_seoservice', [SeoServiceController::class, 'store']);
-Route::post('/update_seoservice/{id}', [SeoServiceController::class, 'update']);
-Route::delete('delete_seoservice/{id}', [SeoServiceController::class, 'destroy']);
+// Route::get('/get_seoservice', [SeoServiceController::class, 'index']);
+// Route::post('/post_seoservice', [SeoServiceController::class, 'store']);
+// Route::post('/update_seoservice/{id}', [SeoServiceController::class, 'update']);
+// Route::delete('delete_seoservice/{id}', [SeoServiceController::class, 'destroy']);
 
-//Seo Process Routes
-Route::get('/get_seoprocess', [SeoProcessController::class, 'index']);
-Route::post('/post_seoprocess', [SeoProcessController::class, 'store']);
-Route::post('/update_seoprocess/{id}', [SeoProcessController::class, 'update']);
-Route::delete('delete_seoprocess/{id}', [SeoProcessController::class, 'destroy']);
+//Seo Form Routes
+// Route::get('/get_seoform', [SeoFormController::class, 'index']);
+// Route::post('/post_seoform', [SeoFormController::class, 'store']);
+// Route::post('/update_seoform/{id}', [SeoFormController::class, 'update']);
 
-//Seo Optimization Routes
-Route::get('/get_seo_optimization', [SeoOptimizationtController::class, 'index']);
-Route::post('/post_seo_optimization', [SeoOptimizationController::class, 'store']);
-Route::post('/update_seo_optimization/{id}', [SeoOptimizationController::class, 'update']);
-Route::delete('delete_seo_optimization/{id}', [SeoOptimizationController::class, 'destroy']);
 
-//Seo Strategy Routes
-Route::get('/get_seostrategy', [SeoStrategyController::class, 'index']);
-Route::post('/post_seostrategy', [SeoStrategyController::class, 'store']);
-Route::post('/update_seostrategy/{id}', [SeoStrategyController::class, 'update']);
-Route::delete('delete_seostrategy/{id}', [SeoStrategyController::class, 'destroy']);
-
-//Seo Digital Solutions Routes
-Route::get('/get_seodigital', [SeoDigitalController::class, 'index']);
-Route::post('/post_seodigital', [SeoDigitalController::class, 'store']);
-Route::post('/update_seodigital/{id}', [SeoDigitalController::class, 'update']);
-Route::delete('delete_seodigital/{id}', [SeoDigitalController::class, 'destroy']);
+//Seo Highlight Routes
+// Route::get('/get_seo', [SeoHighlightController::class, 'index']);
+// Route::post('/post_seo', [SeoHighlightController::class, 'store']);
+// Route::post('/update_seo/{id}', [SeoHighlightController::class, 'update']);
+// Route::delete('delete_seo/{id}', [SeoHighlightController::class, 'destroy']);

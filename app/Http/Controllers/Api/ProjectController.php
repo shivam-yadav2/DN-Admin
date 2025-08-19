@@ -48,7 +48,7 @@ class ProjectController extends Controller
         // }
 
          $imageName = null;
-        $videoName = null; 
+         $videoName = null;
         if($request->hasFile('image'))
         {
              // Process the uploaded file

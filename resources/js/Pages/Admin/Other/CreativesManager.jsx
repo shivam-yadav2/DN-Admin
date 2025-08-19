@@ -33,7 +33,7 @@ const CreativesManager = ({ creatives = [], success, error }) => {
             newPreviews.push({
               file,
               url: e.target.result,
-              isLandscape,
+              isLandscape:true,
               width: img.width,
               height: img.height,
               size: file.size,
