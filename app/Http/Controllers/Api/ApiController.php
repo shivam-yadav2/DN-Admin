@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -20,6 +20,15 @@ use App\Models\SubService;
 use App\Models\Tag;
 use App\Models\Technology;
 use App\Models\vision_mission;
+use App\Models\Seo_Highlight;
+use App\Models\Seo_Form;
+use App\Models\Seo_Service;
+use App\Models\Seo_Process;
+use App\Models\Seo_Optimization;
+use App\Models\Seo_Strategy;
+use App\Models\Seo_Digital;
+use Illuminate\Support\Facades\DB;
+
 
 class ApiController extends Controller
 {
@@ -201,4 +210,88 @@ public function getblogdetail(Request $request){
     ]);
 }
 
+    //Seo Highllights
+     public function seohighlight()
+    {
+        $seo = SEO_Highlight::all();
+         return response()->json([
+            'message' => 'Getting data successfully.',
+            'data' => $seo,
+        ], 200);
+    }
+
+    //Seo Form
+     public function seoform()
+    {
+        $forms = SEO_Form::all();
+         return response()->json([
+            'message' => 'Getting data successfully.',
+            'data' => $forms,
+        ], 200);
+    }
+
+    //Seo Service
+    public function seoservice()
+    {
+         $seo_services = Seo_Service::all();
+         return response()->json([
+            'message' => 'Getting data successfully.',
+            'data' => $seo_services,
+        ], 200);
+    }
+
+    //Seo Process
+    public function seoprocess()
+    {
+         $seo_processes = Seo_Process::all();
+         return response()->json([
+            'message' => 'Getting data successfully.',
+            'data' => $seo_processes,
+        ], 200);
+    }
+
+    //Seo optimization
+    public function seo_optimization()
+    {
+         $seo_optimizations = Seo_Optimization::all();
+          return response()->json([
+            'message' => 'Getting data successfully.',
+            'data' => $seo_optimizations,
+        ], 200);
+    }
+
+    //Seo Strategy
+    public function seo_strategy()
+    {
+        $seo_strategies = Seo_Strategy::all();
+        return response()->json([
+            'message' => 'Getting data successfully.',
+            'data' => $seo_strategies,
+        ], 200);
+    }
+
+    //Seo Digital Solutions
+    public function seo_digital()
+    {
+        $seo_digitals = Seo_Digital::all();
+        return response()->json([
+            'message' => 'Getting data successfully.',
+            'data' => $seo_digitals,
+        ], 200);
+    }
+
+     // To fetch creatives, reels, website
+    public function index_project()
+    {
+        $creatives = DB::table('projects')->where('type', 'creatives')->get();
+        $reels     = DB::table('projects')->where('type', 'reel')->get();
+        $websites  = DB::table('projects')->where('type', 'website')->get();
+
+        return response()->json([
+            'message'   => 'Getting data successfully',
+            'creatives' => $creatives,
+            'reels'     => $reels,
+            'websites'  => $websites,
+        ], 200);
+    }
 } 

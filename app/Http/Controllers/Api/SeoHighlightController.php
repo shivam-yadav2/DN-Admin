@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\SEO_Highlight;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
-use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver
+use Intervention\Image\Drivers\Gd\Driver as GdDriver; // Import GD driver
 
 class SeoHighlightController extends Controller
 {
@@ -42,10 +42,7 @@ class SeoHighlightController extends Controller
 
                 $manager = new ImageManager(new GdDriver());
 
-                // $timestampName = time() . '.webp'; // Generate a unique file name
-                // $imageName = $timestampName;
-
-                  // Assign filename properly
+                 // Assign filename properly
                 $imageName = time() . '.webp'; 
                 $destinationPath = 'assets/images/seo';
 
@@ -60,11 +57,11 @@ class SeoHighlightController extends Controller
                     $img = $manager->read($image->getRealPath())->toWebp(80);
                     $img->save($destinationPath . '/' . $imageName);
                 }
-                elseif ($originalExtension === 'webp') 
-                {
-                    // Save webp image directly
-                    $image->move($destinationPath, $imageName);
-                } 
+                // elseif ($originalExtension === 'webp') 
+                // {
+                //     // Save webp image directly
+                //     $image->move($destinationPath, $imageName);
+                // } 
                 else 
                 {
                     return response()->json(['message' => 'Only JPG, JPEG, PNG or WEBP formats allowe'], 400);
@@ -110,7 +107,7 @@ class SeoHighlightController extends Controller
         // Validate request
         $validator = Validator::make($request->all(), [
             
-            'image'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:512',
             'heading'       => 'sometimes|required|string|max:255',
             'description'   => 'sometimes|required|string|max:1000',
             
@@ -161,12 +158,12 @@ class SeoHighlightController extends Controller
                     // $imageName = $timestampName;
                 } 
             
-                elseif ($originalExtension === 'webp')
-                {
-                    // Save WebP as-is
-                    $image->move($destinationPath, $timestampName);
-                    // $imageName = $timestampName;
-                } 
+                // elseif ($originalExtension === 'webp')
+                // {
+                //     // Save WebP as-is
+                //     $image->move($destinationPath, $timestampName);
+                //     // $imageName = $timestampName;
+                // } 
                  else 
                 {
                     // Return if unsupported format

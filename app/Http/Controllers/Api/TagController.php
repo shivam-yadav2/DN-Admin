@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Tag;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
-use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver for image processing
+use Intervention\Image\Drivers\Gd\Driver as GdDriver; // Import GD driver for image processing
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 class TagController extends Controller
@@ -72,12 +72,12 @@ class TagController extends Controller
             $img->save($destinationPath . '/' . $imageName);
             // $imageName = $timestampName;
         }    
-        elseif ($originalExtension === 'webp') 
-        {
-            // Save WebP as-is
-            $image->move($destinationPath, $imageName);
-            // $imageName = $timestampName;
-        } 
+        // elseif ($originalExtension === 'webp') 
+        // {
+        //     // Save WebP as-is
+        //     $image->move($destinationPath, $imageName);
+        //     // $imageName = $timestampName;
+        // } 
         else 
         {
             // Return if unsupported format
@@ -168,12 +168,12 @@ class TagController extends Controller
                     // $imageName = $timestampName;
                 } 
             
-                elseif ($originalExtension === 'webp')
-                {
-                    // Save WebP as-is
-                    $image->move($destinationPath, $timestampName);
-                    // $imageName = $timestampName;
-                } 
+                // elseif ($originalExtension === 'webp')
+                // {
+                //     // Save WebP as-is
+                //     $image->move($destinationPath, $timestampName);
+                //     // $imageName = $timestampName;
+                // } 
                  else 
                 {
                     // Return if unsupported format

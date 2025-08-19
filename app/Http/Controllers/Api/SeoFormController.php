@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\SEO_Form;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
-use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver
+use Intervention\Image\Drivers\Gd\Driver as GdDriver; // Import GD driver
 
 
 class SeoFormController extends Controller
@@ -67,11 +67,11 @@ class SeoFormController extends Controller
                     $img = $manager->read($image->getRealPath())->toWebp(80);
                     $img->save($destinationPath . '/' . $imageName);
                 }
-                elseif ($originalExtension === 'webp') 
-                {
-                    // Save webp image directly
-                    $image->move($destinationPath, $imageName);
-                } 
+                // elseif ($originalExtension === 'webp') 
+                // {
+                //     // Save webp image directly
+                //     $image->move($destinationPath, $imageName);
+                // } 
                 else 
                 {
                     return response()->json(['message' => 'Only JPG, JPEG, PNG or WEBP formats allowed'], 400);
@@ -176,12 +176,12 @@ class SeoFormController extends Controller
                     // $imageName = $timestampName;
                 } 
             
-                elseif ($originalExtension === 'webp')
-                {
-                    // Save WebP as-is
-                    $image->move($destinationPath, $timestampName);
-                    // $imageName = $timestampName;
-                } 
+                // elseif ($originalExtension === 'webp')
+                // {
+                //     // Save WebP as-is
+                //     $image->move($destinationPath, $timestampName);
+                //     // $imageName = $timestampName;
+                // } 
                  else 
                 {
                     // Return if unsupported format

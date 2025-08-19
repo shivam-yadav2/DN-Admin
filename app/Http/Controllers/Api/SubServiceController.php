@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\SubService; // SubService model
 use Inertia\Intertia;
 use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\GD\Driver as GdDriver;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 use Illuminate\Support\Facades\Validator;
 
 class SubServiceController extends Controller
@@ -80,12 +80,12 @@ class SubServiceController extends Controller
                         $img->save($destinationPath . '/' . $imageName);
                         // $imageName = $timestampName;
                     } 
-                elseif ($originalExtension === 'webp') 
-                    {
-                        // Save WebP as-is
-                        $image->move($destinationPath, $imageName);
-                        // $imageName = $timestampName;
-                    } 
+                // elseif ($originalExtension === 'webp') 
+                //     {
+                //         // Save WebP as-is
+                //         $image->move($destinationPath, $imageName);
+                //         // $imageName = $timestampName;
+                //     } 
                 else 
                     {
                         // Return if unsupported format

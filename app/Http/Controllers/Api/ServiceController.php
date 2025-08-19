@@ -9,7 +9,7 @@ use Inertia\Inertia;
 use App\Models\SubService; // SubService model
 // use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\GD\Driver as GdDriver;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 use Illuminate\Support\Facades\Validator;
 
 class ServiceController extends Controller
@@ -93,12 +93,12 @@ class ServiceController extends Controller
                         $img->save($destinationPath . '/' . $imageName);
                         // $imageName = $timestampName;
                     } 
-                elseif ($originalExtension === 'webp') 
-                    {
-                        // Save WebP as-is
-                        $image->move($destinationPath, $imageName);
-                        // $imageName = $timestampName;
-                    } 
+                // elseif ($originalExtension === 'webp') 
+                //     {
+                //         // Save WebP as-is
+                //         $image->move($destinationPath, $imageName);
+                //         // $imageName = $timestampName;
+                //     } 
                 else 
                     {
                         // Return if unsupported format
@@ -179,12 +179,12 @@ class ServiceController extends Controller
                 $img->save(public_path($destinationPath . '/' . $timestampName));
                 // $imageName = $timestampName;
             } 
-            elseif ($originalExtension === 'webp')
-            {
-                // Save WebP as-is
-                $image->move(public_path($destinationPath, $timestampName));
-                // $imageName = $timestampName;
-            }   
+            // elseif ($originalExtension === 'webp')
+            // {
+            //     // Save WebP as-is
+            //     $image->move(public_path($destinationPath, $timestampName));
+            //     // $imageName = $timestampName;
+            // }   
             else 
             {
                 // Return if unsupported format

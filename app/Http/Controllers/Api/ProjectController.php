@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Project;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
-use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver
+use Intervention\Image\Drivers\Gd\Driver as GdDriver; // Import GD driver
 use Inertia\Inertia;
 
 class ProjectController extends Controller
@@ -48,6 +48,7 @@ class ProjectController extends Controller
         // }
 
          $imageName = null;
+        $videoName = null; 
         if($request->hasFile('image'))
         {
              // Process the uploaded file
@@ -74,11 +75,11 @@ class ProjectController extends Controller
                 $img = $manager->read($image->getRealPath())->toWebp(80);
                 $img->save($destinationPath . '/' . $imageName);
             }
-            elseif ($originalExtension === 'webp') 
-            {
-                // Save webp image directly
-                $image->move($destinationPath, $imageName);
-            } 
+            // elseif ($originalExtension === 'webp') 
+            // {
+            //     // Save webp image directly
+            //     $image->move($destinationPath, $imageName);
+            // } 
             else 
             {
                 return response()->json(['message' => 'Only JPG, JPEG, PNG or WEBP formats allowe'], 400);
@@ -203,12 +204,12 @@ class ProjectController extends Controller
                     $img->save(public_path($destinationPath . '/' . $timestampName));
                 } 
             
-                elseif ($originalExtension === 'webp')
-                {
-                    // Save WebP as-is
-                    $image->move(public_path($destinationPath), $timestampName);
-                    // $imageName = $timestampName;
-                } 
+                // elseif ($originalExtension === 'webp')
+                // {
+                //     // Save WebP as-is
+                //     $image->move(public_path($destinationPath), $timestampName);
+                //     // $imageName = $timestampName;
+                // } 
                  else 
                 {
                     // Return if unsupported format

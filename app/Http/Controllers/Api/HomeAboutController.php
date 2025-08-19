@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\HomeAbout; // HomeAbout model
 // use Inertia\Inertia; // Import Inertia for rendering views
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
-use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver for image processing
+use Intervention\Image\Drivers\Gd\Driver as GdDriver; // Import GD driver for image processing
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Illuminate\Validation\ValidationException;
@@ -71,11 +71,11 @@ class HomeAboutController extends Controller
                     $img = $manager->read($image->getRealPath())->toWebp(80);
                     $img->save($destinationPath . '/' . $imageName);
                 }
-            elseif ($originalExtension === 'webp') 
-                {
-                    // Save WebP as-is
-                    $image->move($destinationPath, $imageName);
-                }
+            // elseif ($originalExtension === 'webp') 
+            //     {
+            //         // Save WebP as-is
+            //         $image->move($destinationPath, $imageName);
+            //     }
             else 
                 {
                     return redirect()->back()
@@ -171,11 +171,11 @@ class HomeAboutController extends Controller
                             $img = $manager->read($image->getRealPath())->toWebp(80);
                             $img->save(public_path($destinationPath . '/' . $timestampName));
                         }
-                    elseif ($originalExtension === 'webp') 
-                        {
-                            // Save WebP as-is
-                            $image->move(public_path($destinationPath, $timestampName));
-                        } 
+                    // elseif ($originalExtension === 'webp') 
+                    //     {
+                    //         // Save WebP as-is
+                    //         $image->move(public_path($destinationPath, $timestampName));
+                    //     } 
                     else 
                         {
                             return redirect()->back()

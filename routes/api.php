@@ -18,10 +18,14 @@ use App\Http\Controllers\api\vision_missioncontroller;
 use App\Http\Controllers\API\TechnologyController;
 use App\Http\Controllers\API\TagController;
 use App\Http\Controllers\API\ProjectController;
-use App\Http\Controllers\API\ApiController;
-use App\Http\Controllers\API\SeoHighlightController;                                                                                                                                                                                                                                                                                                                                                                            
-use App\Http\Controllers\API\SeoFormController;                                                                                                                                                                                                                                                                                                                                                                            
+use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\Api\SeoHighlightController;                                                                                                                                                                                                                                                                                                                                                                            
+use App\Http\Controllers\Api\SeoFormController;                                                                                                                                                                                                                                                                                                                                                                            
 use App\Http\Controllers\Api\SeoServiceController;                                                                                                                                                                                                                                                                                                                                                                            
+use App\Http\Controllers\Api\SeoProcessController;                                                                                                                                                                                                                                                                                                                                                                            
+use App\Http\Controllers\Api\SeoOptimizationController;                                                                                                                                                                                                                                                                                                                                                                            
+use App\Http\Controllers\Api\SeoStrategyController;                                                                                                                                                                                                                                                                                                                                                                            
+use App\Http\Controllers\Api\SeoDigitalController;                                                                                                                                                                                                                                                                                                                                                                            
 
 
 Route::get('/user', function (Request $request) {
@@ -146,7 +150,25 @@ Route::get('gethomeabout', [ApiController::class, 'gethomeabout']);
 // Route::get('getservice', [ApiController::class, 'getservice']);
 Route::get('getsubservice', [ApiController::class, 'getsubservice']);
 Route::get('careerdetail/{id}', [ApiController::class, 'careerdetail']);
-Route::get('blogdetail', [ApiController::class, 'getblogdetail']);
+Route::get('getseohighlight', [ApiController::class, 'seohighlight']);
+Route::get('getseoform', [ApiController::class, 'seoform']);
+Route::get('getseoservice', [ApiController::class, 'seoservice']);
+Route::get('seoseoprocess', [ApiController::class, 'seoprocess']);
+Route::get('getseo_optimization', [ApiController::class, 'seo_optimization']);
+Route::get('getseostrategy', [ApiController::class, 'seo_strategy']);
+Route::get('getseodigital', [ApiController::class, 'seo_digital']);
+Route::get('get_index', [ApiController::class, 'index_project']);
+
+//Seo Highlight Routes
+Route::get('/get_seo', [SeoHighlightController::class, 'index']);
+Route::post('/post_seo', [SeoHighlightController::class, 'store']);
+Route::post('/update_seo/{id}', [SeoHighlightController::class, 'update']);
+Route::delete('delete_seo/{id}', [SeoHighlightController::class, 'destroy']);
+
+//Seo Form Routes
+Route::get('/get_seoform', [SeoFormController::class, 'index']);
+Route::post('/post_seoform', [SeoFormController::class, 'store']);
+Route::post('/update_seoform/{id}', [SeoFormController::class, 'update']);
 
 
 //Seo Service Routes
@@ -155,14 +177,26 @@ Route::post('/post_seoservice', [SeoServiceController::class, 'store']);
 Route::post('/update_seoservice/{id}', [SeoServiceController::class, 'update']);
 Route::delete('delete_seoservice/{id}', [SeoServiceController::class, 'destroy']);
 
-//Seo Form Routes
-Route::get('/get_seoform', [SeoFormController::class, 'index']);
-Route::post('/post_seoform', [SeoFormController::class, 'store']);
-Route::post('/update_seoform/{id}', [SeoFormController::class, 'update']);
+//Seo Process Routes
+Route::get('/get_seoprocess', [SeoProcessController::class, 'index']);
+Route::post('/post_seoprocess', [SeoProcessController::class, 'store']);
+Route::post('/update_seoprocess/{id}', [SeoProcessController::class, 'update']);
+Route::delete('delete_seoprocess/{id}', [SeoProcessController::class, 'destroy']);
 
+//Seo Optimization Routes
+Route::get('/get_seo_optimization', [SeoOptimizationtController::class, 'index']);
+Route::post('/post_seo_optimization', [SeoOptimizationController::class, 'store']);
+Route::post('/update_seo_optimization/{id}', [SeoOptimizationController::class, 'update']);
+Route::delete('delete_seo_optimization/{id}', [SeoOptimizationController::class, 'destroy']);
 
-//Seo Highlight Routes
-Route::get('/get_seo', [SeoHighlightController::class, 'index']);
-Route::post('/post_seo', [SeoHighlightController::class, 'store']);
-Route::post('/update_seo/{id}', [SeoHighlightController::class, 'update']);
-Route::delete('delete_seo/{id}', [SeoHighlightController::class, 'destroy']);
+//Seo Strategy Routes
+Route::get('/get_seostrategy', [SeoStrategyController::class, 'index']);
+Route::post('/post_seostrategy', [SeoStrategyController::class, 'store']);
+Route::post('/update_seostrategy/{id}', [SeoStrategyController::class, 'update']);
+Route::delete('delete_seostrategy/{id}', [SeoStrategyController::class, 'destroy']);
+
+//Seo Digital Solutions Routes
+Route::get('/get_seodigital', [SeoDigitalController::class, 'index']);
+Route::post('/post_seodigital', [SeoDigitalController::class, 'store']);
+Route::post('/update_seodigital/{id}', [SeoDigitalController::class, 'update']);
+Route::delete('delete_seodigital/{id}', [SeoDigitalController::class, 'destroy']);
