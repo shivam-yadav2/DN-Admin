@@ -526,81 +526,84 @@ const About = () => {
                 {/* Items List */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {homeAbouts.length > 0 ? (
-                        homeAbouts.map((item) => (
-                            <Card
-                                key={item.id}
-                                className="hover:shadow-lg transition-shadow"
-                            >
-                                <CardHeader className="pb-3">
-                                    <div className="flex justify-between items-start">
-                                        <Badge
-                                            variant="secondary"
-                                            className="bg-blue-100 text-blue-800 mb-2"
-                                        >
-                                            {item.tag}
-                                        </Badge>
-                                    </div>
-                                    {item.image && (
-                                        <div className="w-full h-48 mb-3">
-                                            <img
-                                                src={`/assets/images/homeAbout/${item.image}`}
-                                                alt={item.heading}
-                                                className="w-full h-full object-cover rounded-lg"
-                                            />
-                                        </div>
-                                    )}
-                                    <CardTitle className="text-lg">
-                                        {item.heading}
-                                    </CardTitle>
-                                    <CardDescription className="text-sm text-gray-600">
-                                        {item.sub_heading}
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-3">
-                                        <div className="flex items-start space-x-2">
-                                            <FileText className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
-                                            <p className="text-sm text-gray-600 line-clamp-3">
-                                                {item.content}
-                                            </p>
-                                        </div>
-
-                                        <div className="flex items-center space-x-2">
-                                            <Link className="w-4 h-4 text-gray-500" />
-                                            <a
-                                                href={item.button_url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-sm text-blue-600 hover:underline truncate"
+                        homeAbouts.map((item) => {
+                            console.log(item)
+                            return (
+                                <Card
+                                    key={item.id}
+                                    className="hover:shadow-lg transition-shadow"
+                                >
+                                    <CardHeader className="pb-3">
+                                        <div className="flex justify-between items-start">
+                                            <Badge
+                                                variant="secondary"
+                                                className="bg-blue-100 text-blue-800 mb-2"
                                             >
-                                                {item.button_text}
-                                            </a>
+                                                {item.tag}
+                                            </Badge>
                                         </div>
-
-                                        <div className="flex justify-end space-x-2 pt-3 border-t">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleEdit(item)}
-                                                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                                            >
-                                                <Edit className="w-4 h-4" />
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() =>
-                                                    handleDelete(item.id)
-                                                }
-                                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </Button>
+                                        {item.image && (
+                                            <div className="w-full h-48 mb-3">
+                                                <img
+                                                    src={`/assets/images/homeAbout/${item.image}`}
+                                                    alt={item.heading}
+                                                    className="w-full h-full object-cover rounded-lg"
+                                                />
+                                            </div>
+                                        )}
+                                        <CardTitle className="text-lg">
+                                            {item.heading}
+                                        </CardTitle>
+                                        <CardDescription className="text-sm text-gray-600">
+                                            {item.sub_heading}
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-3">
+                                            <div className="flex items-start space-x-2">
+                                                <FileText className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
+                                                <p className="text-sm text-gray-600 line-clamp-3">
+                                                    {item.content}
+                                                </p>
+                                            </div>
+    
+                                            <div className="flex items-center space-x-2">
+                                                <Link className="w-4 h-4 text-gray-500" />
+                                                <a
+                                                    href={item.button_url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-sm text-blue-600 hover:underline truncate"
+                                                >
+                                                    {item.button_text}
+                                                </a>
+                                            </div>
+    
+                                            <div className="flex justify-end space-x-2 pt-3 border-t">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => handleEdit(item)}
+                                                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                                >
+                                                    <Edit className="w-4 h-4" />
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() =>
+                                                        handleDelete(item.id)
+                                                    }
+                                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </Button>
+                                            </div>
                                         </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))
+                                    </CardContent>
+                                </Card>
+                            )
+                        })
                     ) : (
                         <div className="col-span-full">
                             <Card className="text-center py-12">

@@ -433,7 +433,7 @@ export default function HeroVideoPage({ videos }) {
                                                         preload="metadata"
                                                     >
                                                         <source
-                                                            src={`/assets/heros/${video.video_path}`}
+                                                            src={`${video.video_path}`}
                                                             type="video/mp4"
                                                         />
                                                         Your browser does not support the video tag.

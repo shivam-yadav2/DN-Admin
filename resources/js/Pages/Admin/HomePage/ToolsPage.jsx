@@ -265,7 +265,7 @@ export default function ToolsPage() {
                                                             <div className="relative">
                                                                 <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center shadow-inner">
                                                                     <img
-                                                                        src={`/assets/technology/${tool.img}`}
+                                                                        src={`${tool.img}`}
                                                                         alt={tool.heading}
                                                                         className="w-12 h-12 object-contain"
                                                                         onError={(e) => {

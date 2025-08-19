@@ -8,14 +8,16 @@ use App\Models\Seo_Service;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
 use Intervention\Image\Drivers\Gd\Driver as GdDriver; // Import GD driver
+use Inertia\Inertia;
 
 class SeoServiceController extends Controller
 {
     //Get data
     public function index()
     {
-        $seo_services = Seo_Service::all();
-        return response()->json($seo_services, 200);
+        return Inertia::render('Admin/SEO/Service', [
+            'seo_services' => Seo_Service::all(),
+        ]);
     }
 
     //Store data
@@ -88,10 +90,11 @@ class SeoServiceController extends Controller
            'features'       => $request->features,
          ]);
 
-         return response()->json([
-            'message' => 'Seo service created successfully.',
-            'data' => $seo_service,
-         ], 201);
+        //  return response()->json([
+        //     'message' => 'Seo service created successfully.',
+        //     'data' => $seo_service,
+        //  ], 201);
+        return redirect()->route('seo-services.index')->with('message', 'SEO service created successfully.');
     }
 
     //Update a seo servie
@@ -178,10 +181,11 @@ class SeoServiceController extends Controller
               'description'     => $request->description ?? $seo_service->description,
               'features'        => $request->features ?? $seo_service->features,
         ]);
-        return response()->json([
-            'message' => 'Seo service updated successfully.',
-            'data' => $seo_service,
-        ], 200);
+        // return response()->json([
+        //     'message' => 'Seo service updated successfully.',
+        //     'data' => $seo_service,
+        // ], 200);
+        return redirect()->route('seo-services.index')->with('message', 'SEO service updated successfully.');
     }
 
      // Delete a project
@@ -207,8 +211,9 @@ class SeoServiceController extends Controller
 
         $seo_service->delete();
 
-        return response()->json ([
-            'message' => 'Seo Service deleted successfully!',
-        ]);
+        // return response()->json ([
+        //     'message' => 'Seo Service deleted successfully!',
+        // ]);
+        return redirect()->route('seo-services.index')->with('message', 'SEO service deleted successfully.');
     }
 }

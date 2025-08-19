@@ -363,82 +363,83 @@ const TagManagement = () => {
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
-                                        {tags.map((tag) => (
-                                            <tr key={tag.id} className="hover:bg-gray-50">
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="flex items-center">
-                                                        <div className="flex-shrink-0 h-12 w-12">
-                                                            {tag.image ? (
-                                                                <img
-                                                                    className="h-12 w-12 rounded-lg object-cover"
-                                                                    src={`/assets/images/tags/${tag.image}`}
-                                                                    alt={tag.title}
-                                                                    onError={(e) => {
-                                                                        e.target.src = '/placeholder-image.jpg';
-                                                                    }}
-                                                                />
-                                                            ) : (
-                                                                <div className="h-12 w-12 rounded-lg bg-gray-300 flex items-center justify-center">
-                                                                    <Image className="h-6 w-6 text-gray-500" />
+                                        {tags.map((tag) => {
+                                            console.log(tag)    
+                                            return (
+                                                <tr key={tag.id} className="hover:bg-gray-50">
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        <div className="flex items-center">
+                                                            <div className="flex-shrink-0 h-12 w-12">
+                                                                {tag.image ? (
+                                                                    <img
+                                                                        className="h-12 w-12 rounded-lg object-cover"
+                                                                        src={`${tag.image}`}
+                                                                        alt={tag.title}
+                                                                        
+                                                                    />
+                                                                ) : (
+                                                                    <div className="h-12 w-12 rounded-lg bg-gray-300 flex items-center justify-center">
+                                                                        <Image className="h-6 w-6 text-gray-500" />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                            <div className="ml-4">
+                                                                <div className="text-sm font-medium text-gray-900">
+                                                                    {tag.title}
                                                                 </div>
-                                                            )}
-                                                        </div>
-                                                        <div className="ml-4">
-                                                            <div className="text-sm font-medium text-gray-900">
-                                                                {tag.title}
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <div className="text-sm text-blue-600 hover:text-blue-800">
-                                                        <a 
-                                                            href={tag.page_url} 
-                                                            target="_blank" 
-                                                            rel="noopener noreferrer"
-                                                            className="flex items-center gap-1"
-                                                        >
-                                                            <Globe className="h-4 w-4" />
-                                                            {truncateText(tag.page_url, 30)}
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    {tag.keyword ? (
-                                                        <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
-                                                            {truncateText(tag.keyword, 20)}
-                                                        </span>
-                                                    ) : (
-                                                        <span className="text-gray-400 text-sm">No keywords</span>
-                                                    )}
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <div className="text-sm text-gray-900 max-w-xs">
-                                                        {tag.description ? truncateText(tag.description, 50) : (
-                                                            <span className="text-gray-400">No description</span>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="text-sm text-blue-600 hover:text-blue-800">
+                                                            <a 
+                                                                href={tag.page_url} 
+                                                                target="_blank" 
+                                                                rel="noopener noreferrer"
+                                                                className="flex items-center gap-1"
+                                                            >
+                                                                <Globe className="h-4 w-4" />
+                                                                {truncateText(tag.page_url, 30)}
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        {tag.keyword ? (
+                                                            <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                                                                {truncateText(tag.keyword, 20)}
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-gray-400 text-sm">No keywords</span>
                                                         )}
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                    <div className="flex items-center space-x-3">
-                                                        <button
-                                                            onClick={() => handleEdit(tag)}
-                                                            className="text-blue-600 hover:text-blue-900 flex items-center gap-1"
-                                                        >
-                                                            <Edit className="h-4 w-4" />
-                                                            Edit
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleDelete(tag.id)}
-                                                            className="text-red-600 hover:text-red-900 flex items-center gap-1"
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                            Delete
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="text-sm text-gray-900 max-w-xs">
+                                                            {tag.description ? truncateText(tag.description, 50) : (
+                                                                <span className="text-gray-400">No description</span>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                        <div className="flex items-center space-x-3">
+                                                            <button
+                                                                onClick={() => handleEdit(tag)}
+                                                                className="text-blue-600 hover:text-blue-900 flex items-center gap-1"
+                                                            >
+                                                                <Edit className="h-4 w-4" />
+                                                                Edit
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDelete(tag.id)}
+                                                                className="text-red-600 hover:text-red-900 flex items-center gap-1"
+                                                            >
+                                                                <Trash2 className="h-4 w-4" />
+                                                                Delete
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })}
                                     </tbody>
                                 </table>
                             </div>

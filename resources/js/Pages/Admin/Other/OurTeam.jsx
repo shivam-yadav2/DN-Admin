@@ -52,7 +52,7 @@ const OurTeam = () => {
         
         // Set image preview for existing member
         if (member.img) {
-            setImagePreview(`/assets/images/our_team/${member.img}`);
+            setImagePreview(`${member.img}`);
         }
         
         // Scroll to form
@@ -348,7 +348,7 @@ const OurTeam = () => {
                                                             {member.img ? (
                                                                 <img
                                                                     className="h-12 w-12 rounded-full object-cover"
-                                                                    src={`/assets/images/our_team/${member.img}`}
+                                                                    src={`${member.img}`}
                                                                     alt={member.name}
                                                                 />
                                                             ) : (
