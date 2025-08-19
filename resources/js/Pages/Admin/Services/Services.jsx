@@ -32,6 +32,7 @@ import Layout from "@/Layouts/Layout";
 
 const Services = ({ services }) => {
     const { flash, errors } = usePage().props;
+    console.log(services);
 
     // Form for adding a service
     const { data, setData, post, processing, reset } = useForm({

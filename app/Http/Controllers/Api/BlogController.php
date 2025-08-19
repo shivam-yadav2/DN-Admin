@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Blog;
 use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\GD\Driver as GdDriver;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 class BlogController extends Controller

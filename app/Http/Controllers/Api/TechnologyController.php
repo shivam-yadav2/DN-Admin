@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\technology;
 use Intervention\Image\ImageManager;            //Ensure you have intervention image installed
-use Intervention\Image\Drivers\GD\Driver as GdDriver;       //Import GD driver for image proceesing
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;       //Import GD driver for image proceesing
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 

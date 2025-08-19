@@ -123,9 +123,9 @@ const About = () => {
     const handleSubmit = () => {
         if (editingItem) {
             // Update existing item
-            form.post(route("home-about.update", editingItem.id), {
+            form.put(route("home-about.update", editingItem.id), {
                 forceFormData: true,
-                _method: "put",
+                _method: "post",
                 onSuccess: () => {
                     resetForm();
                     showAlert("Home About updated successfully!");
@@ -545,7 +545,7 @@ const About = () => {
                                         {item.image && (
                                             <div className="w-full h-48 mb-3">
                                                 <img
-                                                    src={`/assets/images/homeAbout/${item.image}`}
+                                                    src={`${item.image}`}
                                                     alt={item.heading}
                                                     className="w-full h-full object-cover rounded-lg"
                                                 />

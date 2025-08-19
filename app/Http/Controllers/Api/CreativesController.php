@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Creative; 
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
-use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver for image processing
+use Intervention\Image\Drivers\Gd\Driver as GdDriver; // Import GD driver for image processing
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
@@ -58,43 +58,34 @@ class CreativesController extends Controller
               $extension = strtolower($imageFile->getClientOriginalExtension());
             
              //  If WebP, just check dimensions and move
-                if ($extension === 'webp')
-                {
-                    $image = $manager->read($imageFile);
-                    $width = $image->width();
-                    $height = $image->height();
+                // if ($extension === 'webp')
+                // {
+                //     $image = $manager->read($imageFile);
+                //     $width = $image->width();
+                //     $height = $image->height();
+                //     $filename = time() . '_' . uniqid() . '.webp';
+                //     $image->save(public_path($destinationPath . '/' . $filename));
 
-                    if ($width <= $height)
-                    {
-                        continue; // Skip portrait
-                    }
+                //     $creative = Creative::create
+                //     ([
+                //         'image' =>  'assets/images/creatives/' . $filename,
+                //     ]);
 
-                    $filename = time() . '_' . uniqid() . '.webp';
-                    $image->save($destinationPath . '/' . $filename);
-
-                    $creative = Creative::create
-                    ([
-                        'image' =>  'assets/images/creatives/' . $filename,
-                    ]);
-
-                    $uploaded[] = $creative;
-                    continue;
-                }
+                //     $uploaded[] = $creative;
+                //     continue;
+                // }
 
                 //Process jpg/png/jpeg
                 $image = $manager->read($imageFile);
                 $width = $image->width();
                 $height = $image->height();
 
-                 if ($width <= $height) 
-                {
-                    continue; // Skip portrait
-                }
+
 
                 $webpName = time() . '_' . uniqid() . '.webp';
                 $webpPath = $destinationPath . '/' . $webpName;
 
-                 $image->toWebp(80)->save($webpPath);
+                 $image->toWebp(90)->save($webpPath);
 
                 $creative = Creative::create([
                  'image' => 'assets/images/creatives/' . $webpName,

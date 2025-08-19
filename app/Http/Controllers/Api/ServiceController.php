@@ -9,7 +9,7 @@ use Inertia\Inertia;
 use App\Models\SubService; // SubService model
 // use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\GD\Driver as GdDriver;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 use Illuminate\Support\Facades\Validator;
 
 class ServiceController extends Controller
@@ -23,14 +23,14 @@ class ServiceController extends Controller
                 'id' => $service->id,
                 'name' => $service->name,
                 'description' => $service->description,
-                'image' => asset('assets/images/services/' . $service->image), // Assuming image is stored in public/assets/images
+                'image' => $service->image, // Assuming image is stored in public/assets/images
 
                 'subservices' => $service->subservices->map(function ($subService) {
                     return [
                         'id' => $subService->id,
                         'name' => $subService->name,
                         'description' => $subService->description,
-                        'image' => asset('assets/images/subservices/' . $subService->image), 
+                        'image' => $subService->image, 
                     ];
                 }),
             ];
@@ -48,7 +48,7 @@ class ServiceController extends Controller
         // Validate request
         $validator = Validator::make($request->all(),[
             'name'          => 'required|string|max:255|unique:services,name',
-            'description'   => 'required|string|max:255',
+            'description'   => 'required|string',
             'image'         => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 

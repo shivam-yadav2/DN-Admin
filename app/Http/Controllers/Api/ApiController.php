@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -23,6 +23,31 @@ use App\Models\vision_mission;
 
 class ApiController extends Controller
 {
+
+    public function get_service()
+    {
+    // Get all services with their subservices
+        $services = Service::with('subservices')->get()->map(function ($service) {
+            return [
+                'id' => $service->id,
+                'name' => $service->name,
+                'description' => $service->description,
+                'image' => asset($service->image), // Assuming image is stored in public/assets/images
+
+                'subservices' => $service->subservices->map(function ($subService) {
+                    return [
+                        'id' => $subService->id,
+                        'name' => $subService->name,
+                        'description' => $subService->description,
+                        'image' => asset($subService->image), 
+                    ];
+                }),
+            ];
+        });
+        return response()->json($services, 200);
+        // Render the React component with services data
+       
+    }
     public function getblog()
     {
          $blogs = Blog::all();

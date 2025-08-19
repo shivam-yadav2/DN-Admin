@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\HomeAbout; // HomeAbout model
 // use Inertia\Inertia; // Import Inertia for rendering views
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
-use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver for image processing
+use Intervention\Image\Drivers\Gd\Driver as GdDriver; // Import GD driver for image processing
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Illuminate\Validation\ValidationException;

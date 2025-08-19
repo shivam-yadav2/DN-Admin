@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\API\ApiController;
+use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -10,21 +10,21 @@ use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\EnquiryController;
 use App\Http\Controllers\Api\SubServiceController;
 use App\Http\Controllers\Api\TechnologyController;
-use App\Http\Controllers\API\FAQController;
+use App\Http\Controllers\Api\FAQController;
 use App\Http\Controllers\Api\HeroController;
 use App\Http\Controllers\Api\vision_missioncontroller;
-use App\Http\Controllers\API\CareerController;
-use App\Http\Controllers\API\BlogController;
-use App\Http\Controllers\API\ContactDetailController;
+use App\Http\Controllers\Api\CareerController;
+use App\Http\Controllers\Api\BlogController;
+use App\Http\Controllers\Api\ContactDetailController;
 use App\Http\Controllers\Api\our_teamcontroller;
-use App\Http\Controllers\API\HomeAboutController;
-use App\Http\Controllers\API\CreativesController;
+use App\Http\Controllers\Api\HomeAboutController;
+use App\Http\Controllers\Api\CreativesController;
 use App\Http\Controllers\Api\packagecontroller;
 use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\SeoServiceController;
-use App\Http\Controllers\API\SeoHighlightController;
-use App\Http\Controllers\API\SeoFormController;
+use App\Http\Controllers\Api\SeoHighlightController;
+use App\Http\Controllers\Api\SeoFormController;
 
 Route::get('/test', function () {
     return Inertia::render('Test');

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Project;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
-use Intervention\Image\Drivers\GD\Driver as GdDriver; // Import GD driver
+use Intervention\Image\Drivers\Gd\Driver as GdDriver; // Import GD driver
 use Inertia\Inertia;
 
 class ProjectController extends Controller
@@ -48,6 +48,7 @@ class ProjectController extends Controller
         // }
 
          $imageName = null;
+         $videoName = null;
         if($request->hasFile('image'))
         {
              // Process the uploaded file
