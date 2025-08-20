@@ -142,7 +142,7 @@ Route::get('getourteam', [ApiController::class, 'getourteam']);
 Route::get('getpackage', [ApiController::class, 'getpackage']);
 Route::get('getfaq', [ApiController::class, 'getfaq']);
 Route::get('gethero', [ApiController::class, 'gethero']);
-Route::get('getproject', [ApiController::class, 'getproject']);
+Route::get('getproject', [ApiController::class, 'index_project']);
 Route::get('gettag', [ApiController::class, 'gettag']);
 Route::get('gettechnlogies', [ApiController::class, 'gettechnlogies']);
 Route::get('getvision_mission', [ApiController::class, 'getvision_mission']);

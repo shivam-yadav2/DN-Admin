@@ -117,7 +117,7 @@ class ProjectController extends Controller
             }
 
             $timestampVideo = time() . '.' . $videoExtension;
-            $videoDestination = public_path('assets/videos/projects');
+            $videoDestination = ('assets/videos/projects');
             if (!file_exists($videoDestination)) mkdir($videoDestination, 0755, true);
 
             $video->move($videoDestination, $timestampVideo);

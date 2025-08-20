@@ -69,7 +69,7 @@ class TechnologyController extends Controller
         //     'message' => 'Technology created successfully',
         //     'data' => $technology,
         // ], 201);
-        return redirect()->route('tools.index')->with('message', 'Technology created successfully');
+        return redirect()->route('technologies.index')->with('message', 'Technology created successfully');
         
     }
 
@@ -96,10 +96,10 @@ class TechnologyController extends Controller
         // Delete record from DB
         $technology->delete();
 
-        return response()->json([
-            'message' => "Technology deleted successfully",
-        ], 200);
-        // return redirect()->back()->with('success', 'Technology Deleted successfully');
+        // return response()->json([
+        //     'message' => "Technology deleted successfully",
+        // ], 200);
+        return redirect()->route('technologies.index')->with('message', 'Technology Deleted successfully');
 
     }
 
