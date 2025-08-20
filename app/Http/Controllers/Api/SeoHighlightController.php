@@ -205,12 +205,9 @@ class SeoHighlightController extends Controller
         ], 404);
     }
 
-        // Delete associated files
-        if ($seo_highlight->image) {
-            $imagePath = public_path($seo_highlight->image);
-            if (file_exists($imagePath)) {
-                unlink($imagePath);
-            }
+          // Delete image file if exists
+        if ($seo_highlight->image && file_exists(public_path($seo_highlight->image))) {
+            unlink(public_path($seo_highlight->image));
         }
 
         $seo_highlight->delete();

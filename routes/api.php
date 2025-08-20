@@ -29,6 +29,11 @@ use App\Http\Controllers\Api\SeoProcessController;
 use App\Http\Controllers\Api\SeoOptimizationController;                                                                                                                                                                                                                                                                                                                                                                            
 use App\Http\Controllers\Api\SeoStrategyController;                                                                                                                                                                                                                                                                                                                                                                            
 use App\Http\Controllers\Api\SeoDigitalController;                                                                                                                                                                                                                                                                                                                                                                            
+use App\Http\Controllers\Api\DevCornerstoneController;                                                                                                                                                                                                                                                                                                                                                                            
+use App\Http\Controllers\Api\DevStepController;                                                                                                                                                                                                                                                                                                                                                                            
+use App\Http\Controllers\Api\DevCommerceController;                                                                                                                                                                                                                                                                                                                                                                            
+use App\Http\Controllers\Api\DevInnovationController;                                                                                                                                                                                                                                                                                                                                                                            
+use App\Http\Controllers\Api\DevMaintainController;                                                                                                                                                                                                                                                                                                                                                                            
 use App\Http\Controllers\Api\GoogleMediaController;                                                                                                                                                                                                                                                                                                                                                                            
 
 
@@ -156,24 +161,76 @@ Route::get('getsubservice', [ApiController::class, 'getsubservice']);
 Route::get('careerdetail/{id}', [ApiController::class, 'careerdetail']);
 Route::get('blogdetail', [ApiController::class, 'getblogdetail']);
 
-
-//Seo Service Routes
-// Route::get('/get_seoservice', [SeoServiceController::class, 'index']);
-// Route::post('/post_seoservice', [SeoServiceController::class, 'store']);
-// Route::post('/update_seoservice/{id}', [SeoServiceController::class, 'update']);
-// Route::delete('delete_seoservice/{id}', [SeoServiceController::class, 'destroy']);
+//Seo Highlight Routes
+Route::get('/get_seo', [SeoHighlightController::class, 'index']);
+Route::post('/post_seo', [SeoHighlightController::class, 'store']);
+Route::post('/update_seo/{id}', [SeoHighlightController::class, 'update']);
+Route::delete('delete_seo/{id}', [SeoHighlightController::class, 'destroy']);
 
 //Seo Form Routes
-// Route::get('/get_seoform', [SeoFormController::class, 'index']);
-// Route::post('/post_seoform', [SeoFormController::class, 'store']);
-// Route::post('/update_seoform/{id}', [SeoFormController::class, 'update']);
+Route::get('/get_seoform', [SeoFormController::class, 'index']);
+Route::post('/post_seoform', [SeoFormController::class, 'store']);
+Route::post('/update_seoform/{id}', [SeoFormController::class, 'update']);
 
+//Seo Service Routes
+Route::get('/get_seoservice', [SeoServiceController::class, 'index']);
+Route::post('/post_seoservice', [SeoServiceController::class, 'store']);
+Route::post('/update_seoservice/{id}', [SeoServiceController::class, 'update']);
+Route::delete('delete_seoservice/{id}', [SeoServiceController::class, 'destroy']);
 
-//Seo Highlight Routes
-// Route::get('/get_seo', [SeoHighlightController::class, 'index']);
-// Route::post('/post_seo', [SeoHighlightController::class, 'store']);
-// Route::post('/update_seo/{id}', [SeoHighlightController::class, 'update']);
-// Route::delete('delete_seo/{id}', [SeoHighlightController::class, 'destroy']);
+//Seo Process Routes
+Route::get('/get_seoprocess', [SeoProcessController::class, 'index']);
+Route::post('/post_seoprocess', [SeoProcessController::class, 'store']);
+Route::post('/update_seoprocess/{id}', [SeoProcessController::class, 'update']);
+Route::delete('delete_seoprocess/{id}', [SeoProcessController::class, 'destroy']);
+
+//Seo Optimization Routes
+Route::get('/get_seo_optimization', [SeoOptimizationController::class, 'index']);
+Route::post('/post_seo_optimization', [SeoOptimizationController::class, 'store']);
+Route::post('/update_seo_optimization/{id}', [SeoOptimizationController::class, 'update']);
+Route::delete('delete_seo_optimization/{id}', [SeoOptimizationController::class, 'destroy']);
+
+//Seo Strategy Routes
+Route::get('/get_seostrategy', [SeoStrategyController::class, 'index']);
+Route::post('/post_seostrategy', [SeoStrategyController::class, 'store']);
+Route::post('/update_seostrategy/{id}', [SeoStrategyController::class, 'update']);
+Route::delete('delete_seostrategy/{id}', [SeoStrategyController::class, 'destroy']);
+
+//Seo Digital Routes
+Route::get('/get_seodigital', [SeoDigitalController::class, 'index']);
+Route::post('/post_seodigital', [SeoDigitalController::class, 'store']);
+Route::post('/update_seodigital/{id}', [SeoDigitalController::class, 'update']);
+Route::delete('delete_seodigital/{id}', [SeoDigitalController::class, 'destroy']);
+
+//Development Cornerstones Routes
+Route::get('/get_devcornerstone', [DevCornerstoneController::class, 'index']);
+Route::post('/post_devcornerstone', [DevCornerstoneController::class, 'store']);
+Route::post('/update_devcornerstone/{id}', [DevCornerstoneController::class, 'update']);
+Route::delete('delete_devcornerstone/{id}', [DevCornerstoneController::class, 'destroy']);
+
+//Development Steps Routes
+Route::get('/get_devstep', [DevStepController::class, 'index']);
+Route::post('/post_devstep', [DevStepController::class, 'store']);
+Route::post('/update_devstep/{id}', [DevStepController::class, 'update']);
+Route::delete('delete_devstep/{id}', [DevStepController::class, 'destroy']);
+
+//Development Commerce Routes
+Route::get('/get_devcommerce', [DevCommerceController::class, 'index']);
+Route::post('/post_devcommerce', [DevCommerceController::class, 'store']);
+Route::post('/update_devcommerce/{id}', [DevCommerceController::class, 'update']);
+Route::delete('delete_devcommerce/{id}', [DevCommerceController::class, 'destroy']);
+
+//Development Innovation Routes
+Route::get('/get_devinnovation', [DevInnovationController::class, 'index']);
+Route::post('/post_devinnovation', [DevInnovationController::class, 'store']);
+Route::post('/update_devinnovation/{id}', [DevInnovationController::class, 'update']);
+Route::delete('delete_devinnovation/{id}', [DevInnovationController::class, 'destroy']);
+
+//Development Maintain Routes
+Route::get('/get_devmaintain', [DevMaintainController::class, 'index']);
+Route::post('/post_devmaintain', [DevMaintainController::class, 'store']);
+Route::post('/update_devmaintain/{id}', [DevMaintainController::class, 'update']);
+Route::delete('delete_devmaintain/{id}', [DevMaintainController::class, 'destroy']);
 
 
 

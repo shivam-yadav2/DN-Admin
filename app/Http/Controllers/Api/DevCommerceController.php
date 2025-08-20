@@ -4,39 +4,47 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Seo_Strategy;
+use App\Models\Dev_Commerce;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
 use Intervention\Image\Drivers\Gd\Driver as GdDriver; // Import GD driver
+use Inertia\Inertia;
 
-
-
-class SeoStrategyController extends Controller
+class DevCommerceController extends Controller
 {
-    //
-    //Get data
+     //Get data
     public function index()
     {
-        $seo_strategies = Seo_Strategy::all();
-        return response()->json($seo_strategies, 200);
+         $dev_commerces = Dev_Commerce::all();
+        return response()->json($dev_commerces, 200);
+
+        // return Inertia::render('Admin/SEO/Service', [
+        //     'seo_services' => Seo_Service::all(),
+        // ]);
     }
 
     //Store data
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'image'         => 'required|image|mimes:jpeg,png,jpg,gif|max:512',
+            'tag'           => 'required|string',
+            'image'         => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'heading'       => 'required|string|max:255',
             'description'   => 'required|string|max:1000',
+            'skills'        => 'required|array',
+            'label'         => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) 
             {
                 return response()->json([$validator->errors()->all()
-                ], 422);
+            ], 422);
             }
      
-    
+        // if (!$request->hasFile('image')) {
+        //     return response()->json(['message' => 'Image file is required'], 400);
+        // }
+
         if($request->hasFile('image'))
         {
             // Process the uploaded file
@@ -47,7 +55,7 @@ class SeoStrategyController extends Controller
 
             // Assign filename properly
             $imageName = time() . '.webp'; 
-            $destinationPath = 'assets/images/seo_strategy';
+            $destinationPath = 'assets/images/dev_commerce';
 
             // Create directory if it doesn't exist
             if (!file_exists($destinationPath)) {
@@ -71,37 +79,43 @@ class SeoStrategyController extends Controller
             }
 
             // Save relative path in DB
-            $imageName = 'assets/images/seo_strategy/' . $imageName;
-        }
+            $imageName = 'assets/images/dev_commerce/' . $imageName;
 
-        //Create a new seo service
-        $seo_strategy = Seo_Strategy::create([
+        }
+        //Create a new dev commerce
+        $dev_commerce = Dev_Commerce::create([
+            'tag'           => $request->tag,
            'image'          => $imageName,
            'heading'        => $request->heading,
            'description'    => $request->description,
-        ]);
+           'skills'         => $request->skills,
+           'label'          => $request->label,
+         ]);
 
          return response()->json([
-            'message' => 'Seo strategy created successfully.',
-            'data' => $seo_strategy,
+            'message' => 'Development commerce created successfully.',
+            'data' => $dev_commerce,
          ], 201);
+        // return redirect()->route('seo-services.index')->with('message', 'SEO service created successfully.');
     }
 
     //Update a seo servie
     public function update(Request $request, $id)
     {
-         $seo_strategy = Seo_Strategy::find($id);
+         $dev_commerce = Dev_Commerce::find($id);
 
-        if (!$seo_strategy) {
-            return response()->json(['message' => 'Seo Service not found'], 404);
+        if (!$dev_commerce) {
+            return response()->json(['message' => 'DEv Commerce not found'], 404);
         }
 
         $validator = Validator::make($request->all(), [
-            'image'         => 'nullable|image|mimes:jpeg,png,jpg,gif|max:512',
+            'tag'           => 'sometimes|required|string|max:255',
+            'image'         => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'heading'       => 'sometimes|required|string|max:255',
             'description'   => 'sometimes|required|string|max:1000',
+            'skills'        => 'sometimes|required|array',
+            'label'         => 'sometimes|required|string|max:255',
         ]);
-
         if ($validator->fails()) {
             return response()->json([
                 'errors' => $validator->errors()->all()
@@ -109,13 +123,13 @@ class SeoStrategyController extends Controller
         }
 
             // Default to old image
-            $imageName = $seo_strategy->image;
+                $imageName = $dev_commerce->image;
 
             // Process the uploaded file
          if ($request->hasFile('image')) 
             {
-                 if ($seo_strategy->image && file_exists(public_path($seo_strategy->image))) {
-                    unlink(public_path($seo_strategy->image));
+                 if ($dev_commerce->image && file_exists(public_path($dev_commerce->image))) {
+                    unlink(public_path($dev_commerce->image));
                 }
 
                 $image = $request->file('image'); // Get the uploaded file
@@ -125,7 +139,7 @@ class SeoStrategyController extends Controller
 
                 $timestampName = time() . '.webp'; // Generate a unique filename
 
-                $destinationPath = 'assets/images/seo_strategy'; // Define storage path
+                $destinationPath = 'assets/images/dev_commerce'; // Define storage path
 
                 // Create directory if it doesn't exist
                 if (!file_exists($destinationPath)) 
@@ -138,12 +152,14 @@ class SeoStrategyController extends Controller
                     // Convert JPG/PNG to WebP
                     $img = $manager->read($image->getRealPath())->toWebp(80); 
                     $img->save($destinationPath . '/' . $timestampName);
+                    // $imageName = $timestampName;
                 } 
             
                 // elseif ($originalExtension === 'webp')
                 // {
                 //     // Save WebP as-is
                 //     $image->move($destinationPath, $timestampName);
+                //     // $imageName = $timestampName;
                 // } 
                  else 
                 {
@@ -152,44 +168,48 @@ class SeoStrategyController extends Controller
                 }
 
                  // Save relative path in DB
-                $imageName = 'assets/images/seo_strategy/' . $timestampName;
+                $imageName = 'assets/images/dev_commerce/' . $timestampName;
             }
             // Update tag record
-        $seo_strategy->update([
-              'image'           => $imageName ?? $seo_strategy->image,
-              'heading'         => $request->heading ??  $seo_strategy->heading,
-              'description'     => $request->description ?? $seo_strategy->description,
-             
+        $dev_commerce->update([
+              'tag'             => $request->tag ?? $dev_commerce->tag,
+              'image'           => $imageName ?? $dev_commerce->image,
+              'heading'         => $request->heading ??  $dev_commerce->heading,
+              'description'     => $request->description ?? $dev_commerce->description,
+              'skills'          => $request->skills ?? $dev_commerce->skills,
+              'label'          => $request->label ?? $dev_commerce->label,
         ]);
-        
         return response()->json([
-            'message' => 'Seo strategy updated successfully.',
-            'data' => $seo_strategy,
+            'message' => 'Dev commerce updated successfully.',
+            'data' => $dev_commerce,
         ], 200);
+        // return redirect()->route('seo-services.index')->with('message', 'SEO service updated successfully.');
     }
 
      // Delete a project
     public function destroy($id)
     {
-        $seo_strategy = Seo_Strategy::find($id);
+        $dev_commerce = Dev_Commerce::find($id);
 
-        if (!$seo_strategy) 
+        if (!$dev_commerce) 
             {
                 return response()->json([
-                    'message' => 'Seo Strategy not found',
+                    'message' => 'Dev Commerce  not found',
                 
                 ], 404);
             }
 
+        // Delete associated files
           // Delete image file if exists
-        if ($seo_strategy->image && file_exists(public_path($seo_strategy->image))) {
-            unlink(public_path($seo_strategy->image));
+        if ($dev_commerce->image && file_exists(public_path($dev_commerce->image))) {
+            unlink(public_path($dev_commerce->image));
         }
 
-        $seo_strategy->delete();
+        $dev_commerce->delete();
 
         return response()->json ([
-            'message' => 'Seo strategy deleted successfully!',
+            'message' => 'Dev Commerce deleted successfully!',
         ]);
+        // return redirect()->route('seo-services.index')->with('message', 'SEO service deleted successfully.');
     }
 }
