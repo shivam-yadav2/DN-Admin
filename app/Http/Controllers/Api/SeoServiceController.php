@@ -201,14 +201,10 @@ class SeoServiceController extends Controller
                 ], 404);
             }
 
-        // Delete associated files
-        if ($seo_service->image) {
-            $imagePath = ('assets/images/seo-service/' . $seo_service->image);
-            if (file_exists($imagePath)) {
-                unlink($imagePath);
-            }
+          // Delete image file if exists
+        if ($seo_service->image && file_exists(public_path($seo_service->image))) {
+            unlink(public_path($seo_service->image));
         }
-
         $seo_service->delete();
 
         // return response()->json ([
