@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\API\GoogleCompaignsController;
+use App\Http\Controllers\API\GooglePpcController;
+use App\Http\Controllers\API\GraphicsLogoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ServiceController;
@@ -31,6 +34,7 @@ use App\Http\Controllers\Api\DevStepController;
 use App\Http\Controllers\Api\DevCommerceController;                                                                                                                                                                                                                                                                                                                                                                            
 use App\Http\Controllers\Api\DevInnovationController;                                                                                                                                                                                                                                                                                                                                                                            
 use App\Http\Controllers\Api\DevMaintainController;                                                                                                                                                                                                                                                                                                                                                                            
+use App\Http\Controllers\Api\GoogleMediaController;                                                                                                                                                                                                                                                                                                                                                                            
 
 
 Route::get('/user', function (Request $request) {
@@ -227,3 +231,33 @@ Route::get('/get_devmaintain', [DevMaintainController::class, 'index']);
 Route::post('/post_devmaintain', [DevMaintainController::class, 'store']);
 Route::post('/update_devmaintain/{id}', [DevMaintainController::class, 'update']);
 Route::delete('delete_devmaintain/{id}', [DevMaintainController::class, 'destroy']);
+
+
+
+// GoogleMediaController route
+
+Route::post('store',[GoogleMediaController::class,'store']);
+Route::get('index',[GoogleMediaController::class,'index']);
+Route::delete('destroy/{id}',[GoogleMediaController::class,'destroy']);
+Route::post('update/{id}',[GoogleMediaController::class,'update']);
+
+
+// GoogleCompaignsCOntroller routes
+Route::post('store',[GoogleCompaignsController::class,'store']);
+Route::get('index',[GoogleCompaignsController::class,'index']);
+Route::delete('destroy/{id}',[GoogleCompaignsController::class,'destroy']);
+Route::post('update/{id}',[GoogleCompaignsController::class,'update']);
+
+
+// GooglePPCController routes
+Route::post('store',[GooglePpcController::class,'store']);
+Route::get('index',[GooglePpcController::class,'index']);
+Route::delete('destroy/{id}',[GooglePpcController::class,'destroy']);
+Route::post('update/{id}',[GooglePpcController::class,'update']);
+
+ 
+//  GrahcsLogoController routes
+Route::post('store',[GraphicsLogoController::class,'store']);
+Route::get('index',[GraphicsLogoController::class,'index']);
+Route::delete('destroy/{id}',[GraphicsLogoController::class,'destroy']);
+Route::post('update/{id}',[GraphicsLogoController::class,'update']);
