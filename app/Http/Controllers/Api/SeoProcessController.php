@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Seo_Process;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class SeoProcessController extends Controller
 {
@@ -13,7 +14,10 @@ class SeoProcessController extends Controller
     public function index()
     {
         $seo_processes = Seo_Process::all();
-        return response()->json($seo_processes, 200);
+        return Inertia::render('Admin/SEO/SeoProcesses', [
+            'seo_processes' => $seo_processes,
+            'flash' => session('flash')
+        ]);
     }
 
     //Store data
@@ -37,10 +41,13 @@ class SeoProcessController extends Controller
            'description'    => $request->description,
         ]);
 
-         return response()->json([
-            'message' => 'Seo process created successfully.',
-            'data' => $seo_process,
-         ], 201);
+        //  return response()->json([
+        //     'message' => 'Seo process created successfully.',
+        //     'data' => $seo_process,
+        //  ], 201);
+
+         return redirect()->route('seo-processes.index')->with('message', 'Seo process created successfully');
+
     }
 
     //Updata a process
@@ -71,10 +78,8 @@ class SeoProcessController extends Controller
             'description' => $request->description ?? $seo_process->description,
         ]);
 
-        return response()->json([
-            'message' => 'Seo process updated successfully.',
-            'data' => $seo_process,
-        ], 200);
+        return redirect()->route('seo-processes.index')->with('message', 'Seo process updated successfully');
+
     }
     
 
@@ -85,17 +90,12 @@ class SeoProcessController extends Controller
 
         if (!$seo_process) 
             {
-                return response()->json([
-                    'message' => 'Seo process not found',
-                
-                ], 404);
+                return redirect()->route('seo-processes.index')->with('message', 'Seo process not found');
             }
 
         $seo_process->delete();
 
-        return response()->json ([
-            'message' => 'Seo process deleted successfully!',
-        ]);
+        return redirect()->route('seo-processes.index')->with('message', 'Seo process deleted successfully');
     }
 
 }

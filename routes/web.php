@@ -25,6 +25,7 @@ use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\SeoServiceController;
 use App\Http\Controllers\Api\SeoHighlightController;
 use App\Http\Controllers\Api\SeoFormController;
+use App\Http\Controllers\Api\SeoProcessController;
 
 Route::get('/test', function () {
     return Inertia::render('Test');
@@ -94,5 +95,6 @@ Route::resource('projects', ProjectController::class);
 Route::resource('seo-services', SeoServiceController::class)->names('seo-services');
 Route::resource('seo-highlights', SeoHighlightController::class)->names('seo-highlights');
 Route::resource('seo-forms', SeoFormController::class)->names('seo-forms');
+Route::resource('seo-processes', SeoProcessController::class)->names('seo-processes');
 
 require __DIR__.'/auth.php';
