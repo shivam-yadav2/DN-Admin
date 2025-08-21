@@ -162,10 +162,10 @@ class ApiController extends Controller
     public function gettag()
     {
         $tags = Tag::all();
-      return response()->json([
-        'data'=>$tags,
-        'msg'=>"getting data successfully",
-      ]);
+        return response()->json([
+            'data'=>$tags,
+            'msg'=>"getting data successfully",
+        ]);
     }
   
     public function gettechnlogies()
@@ -210,30 +210,29 @@ class ApiController extends Controller
             ];
         });
 
-    return response()->json([
-        'data'=>$subServices,
-        'msg'=>"Getting data successfully",
-    ]);
-}
-
-public function careerdetail($id){
-        $careerdetail=Career::find($id);
-         return response()->json([
-            'data'=>$careerdetail,
+        return response()->json([
+            'data'=>$subServices,
             'msg'=>"Getting data successfully",
-         ]);
+        ]);
+    }
 
+    public function careerdetail($id)
+    {
+            $careerdetail=Career::find($id);
+            return response()->json([
+                'data'=>$careerdetail,
+                'msg'=>"Getting data successfully",
+            ]);
+    }
 
-}
-
-public function getblogdetail(Request $request){
-    $url = $request->query('url');
-    $blogdetail=Blog::where('url',$url)->first();
-    return response()->json([
-        'data'=> $blogdetail,
-        'msg'=>"Getting data successfully",
-    ]);
-}
+    public function getblogdetail(Request $request){
+        $url = $request->query('url');
+        $blogdetail=Blog::where('url',$url)->first();
+        return response()->json([
+            'data'=> $blogdetail,
+            'msg'=>"Getting data successfully",
+        ]);
+    }
 
     //Seo Highllights
      public function seohighlight()
@@ -317,6 +316,85 @@ public function getblogdetail(Request $request){
             'creatives' => $creatives,
             'reels'     => $reels,
             'websites'  => $websites,
+        ], 200);
+    }
+
+    //Dev Cornerstones
+    public function dev_cornerstone()
+    {
+        $dev_cornerstone = Dev_Cornerstone::all();
+        return response()->json([
+            'message' => 'Getting data sucessfully',
+            'data'   => $dev_conrerstone,
+        ], 200);
+    }
+
+    //Dev Step
+    public function dev_step()
+    {
+        $dev_steps = Dev_Step::all();
+        return response()->json([
+            'message' => 'Getting data sucessfully',
+            'data'   => $dev_steps,
+        ], 200);
+    }
+
+    //Dev Commerce
+    public function dev_commerce()
+    {
+        $dev_commerce = Dev_Commerce::all();
+        return response()->json([
+            'message' => 'Getting data sucessfully',
+            'data'   => $dev_commerce,
+        ], 200);
+    }
+
+    //Dev Maintenance
+    public function dev_maintain()
+    {
+        $dev_maintain = Dev_Maintain::all();
+        return response()->json([
+            'message' => 'Getting data sucessfully',
+            'data'   => $dev_maintain,
+        ], 200);
+    }
+
+    //Dev Innovation
+    public function dev_innovation()
+    {
+        $dev_innovation = Dev_Innovation::all();
+        return response()->json([
+            'message' => 'Getting data sucessfully',
+            'data'   => $dev_innovation,
+        ], 200);
+    }
+
+    //SMM Benefits
+    public function smm_benefit()
+    {
+        $sm_benefit = Sm_Benefit::all();
+        return response()->json([
+            'message' => 'Getting data sucessfully',
+            'data'   => $sm_benefit,
+        ], 200);
+    }
+
+    //SMM Facebook
+    public function smm_facebookt()
+    {
+        $sm_facebook = Sm_Facebook::all();
+        return response()->json([
+            'message' => 'Getting data sucessfully',
+            'data'   => $sm_facebook,
+        ], 200);
+    }
+    //SMM Youtube
+    public function smm_youtube()
+    {
+        $sm_youtube = Sm_Youtube::all();
+        return response()->json([
+            'message' => 'Getting data sucessfully',
+            'data'   => $sm_youtube,
         ], 200);
     }
 } 

@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\GoogleCompaignsController;
 use App\Http\Controllers\API\GooglePpcController;
 use App\Http\Controllers\API\GraphicsLogoController;
+use App\Http\Controllers\API\SocialServiceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ServiceController;
@@ -35,6 +36,9 @@ use App\Http\Controllers\Api\DevCommerceController;
 use App\Http\Controllers\Api\DevInnovationController;                                                                                                                                                                                                                                                                                                                                                                            
 use App\Http\Controllers\Api\DevMaintainController;                                                                                                                                                                                                                                                                                                                                                                            
 use App\Http\Controllers\Api\GoogleMediaController;                                                                                                                                                                                                                                                                                                                                                                            
+use App\Http\Controllers\Api\SmmFacebookController;                                                                                                                                                                                                                                                                                                                                                                            
+use App\Http\Controllers\Api\SmmYoutubeController;                                                                                                                                                                                                                                                                                                                                                                            
+use App\Http\Controllers\Api\SmmBenefitController;                                                                                                                                                                                                                                                                                                                                                                            
 
 
 Route::get('/user', function (Request $request) {
@@ -160,6 +164,22 @@ Route::get('get_service', [ApiController::class, 'get_service']);
 Route::get('getsubservice', [ApiController::class, 'getsubservice']);
 Route::get('careerdetail/{id}', [ApiController::class, 'careerdetail']);
 Route::get('blogdetail', [ApiController::class, 'getblogdetail']);
+Route::get('getseohighlight', [ApiController::class, 'seohighlight']);
+Route::get('getseoform', [ApiController::class, 'seoform']);
+Route::get('getseoservice', [ApiController::class, 'seoservice']);
+Route::get('getseoprocess', [ApiController::class, 'seoprocess']);
+Route::get('getseo_optimization', [ApiController::class, 'seo_optimization']);
+Route::get('getseostrategy', [ApiController::class, 'seo_strategy']);
+Route::get('getseodigital', [ApiController::class, 'seo_digital']);
+Route::get('get_index', [ApiController::class, 'index_project']);
+Route::get('getdev_cornerstone', [ApiController::class, 'dev_cornerstone']);
+Route::get('getdevstep', [ApiController::class, 'dev_step']);
+Route::get('getdev_commerce', [ApiController::class, 'dev_commere']);
+Route::get('getdev_maintain', [ApiController::class, 'dev_maintain']);
+Route::get('getdev_innovation', [ApiController::class, 'dev_innovation']);
+Route::get('getsmmbenefit', [ApiController::class, 'smm_benefit']);
+Route::get('getsmmyoutube', [ApiController::class, 'smm_youtube']);
+Route::get('getsmmfacebook', [ApiController::class, 'smm_facebook']);
 
 //Seo Highlight Routes
 Route::get('/get_seo', [SeoHighlightController::class, 'index']);
@@ -232,6 +252,24 @@ Route::post('/post_devmaintain', [DevMaintainController::class, 'store']);
 Route::post('/update_devmaintain/{id}', [DevMaintainController::class, 'update']);
 Route::delete('delete_devmaintain/{id}', [DevMaintainController::class, 'destroy']);
 
+//SMM Facebook Routes
+Route::get('/get_smmfacebook', [SmmFacebookController::class, 'index']);
+Route::post('/post_smmfacebook', [SmmFacebookController::class, 'store']);
+Route::post('/update_smmfacebook/{id}', [SmmFacebookController::class, 'update']);
+Route::delete('delete_smmfacebook/{id}', [SmmFacebookController::class, 'destroy']);
+
+//SMM Youtube Routes
+Route::get('/get_smmyoutube', [SmmYoutubeController::class, 'index']);
+Route::post('/post_smmyoutube', [SmmYoutubeController::class, 'store']);
+Route::post('/update_smmyoutube/{id}', [SmmYoutubeController::class, 'update']);
+Route::delete('delete_smmyoutube/{id}', [SmmYoutubeController::class, 'destroy']);
+
+//SMM Benefits Routes
+Route::get('/get_smmbenefit', [SmmBenefitController::class, 'index']);
+Route::post('/post_smmbenefit', [SmmBenefitController::class, 'store']);
+Route::post('/update_smmbenefit/{id}', [SmmBenefitController::class, 'update']);
+Route::delete('delete_smmbenefit/{id}', [SmmBenefitController::class, 'destroy']);
+
 
 
 // GoogleMediaController route
@@ -261,3 +299,10 @@ Route::post('store',[GraphicsLogoController::class,'store']);
 Route::get('index',[GraphicsLogoController::class,'index']);
 Route::delete('destroy/{id}',[GraphicsLogoController::class,'destroy']);
 Route::post('update/{id}',[GraphicsLogoController::class,'update']);
+
+
+//  SocialServiceController routes
+Route::post('store',[SocialServiceController::class,'store']);
+Route::get('index',[SocialServiceController::class,'index']);
+Route::delete('destroy/{id}',[SocialServiceController::class,'destroy']);
+Route::post('update/{id}',[SocialServiceController::class,'update']);

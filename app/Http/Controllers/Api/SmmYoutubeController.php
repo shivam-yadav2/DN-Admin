@@ -4,29 +4,26 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Seo_Service;
+use App\Models\Sm_Youtube;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
 use Intervention\Image\Drivers\Gd\Driver as GdDriver; // Import GD driver
-use Inertia\Inertia;
 
-class SeoServiceController extends Controller
+class SmmYoutubeController extends Controller
 {
-    //Get data
+     //Get data
     public function index()
     {
-        return Inertia::render('Admin/SEO/Service', [
-            'seo_services' => Seo_Service::all(),
-        ]);
+         $sm_youtube = Sm_Youtube::all();
+        return response()->json($sm_youtube, 200);
     }
 
     //Store data
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'image'         => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image'         => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
             'heading'       => 'required|string|max:255',
-            'subheading'    => 'required|string|max:255',
             'description'   => 'required|string|max:1000',
             'features'      => 'required|array',
         ]);
@@ -37,10 +34,6 @@ class SeoServiceController extends Controller
             ], 422);
             }
      
-        // if (!$request->hasFile('image')) {
-        //     return response()->json(['message' => 'Image file is required'], 400);
-        // }
-
         if($request->hasFile('image'))
         {
             // Process the uploaded file
@@ -54,7 +47,7 @@ class SeoServiceController extends Controller
 
             // Assign filename properly
             $imageName = time() . '.webp'; 
-            $destinationPath = 'assets/images/seo_service';
+            $destinationPath = 'assets/images/smm_youtube';
 
             // Create directory if it doesn't exist
             if (!file_exists($destinationPath)) {
@@ -78,36 +71,35 @@ class SeoServiceController extends Controller
             }
 
             // Save relative path in DB
-            $imageName = 'assets/images/seo_service/' . $imageName;
+            $imageName = 'assets/images/smm_youtube/' . $imageName;
 
         }
         //Create a new seo service
-        $seo_service = Seo_Service::create([
+        $sm_youtube = Sm_Youtube::create([
            'image'          => $imageName,
            'heading'        => $request->heading,
-           'subheading'     => $request->subheading,
            'description'    => $request->description,
            'features'       => $request->features,
          ]);
 
-        //  return response()->json([
-        //     'message' => 'Seo service created successfully.',
-        //     'data' => $seo_service,
-        //  ], 201);
-        return redirect()->route('seo-services.index')->with('message', 'SEO service created successfully.');
+         return response()->json([
+            'message' => 'Youtube marketing service created successfully.',
+            'data' => $sm_youtube,
+         ], 201);
+        // return redirect()->route('seo-services.index')->with('message', 'SEO service created successfully.');
     }
 
     //Update a seo servie
     public function update(Request $request, $id)
     {
-         $seo_service = Seo_Service::find($id);
+         $sm_youtube = Sm_Youtube::find($id);
 
-        if (!$seo_service) {
-            return response()->json(['message' => 'Seo Service not found'], 404);
+        if (!$sm_youtube) {
+            return response()->json(['message' => 'Youtube marketing service not found'], 404);
         }
 
         $validator = Validator::make($request->all(), [
-            'image'         => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image'         => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'heading'       => 'sometimes|required|string|max:255',
             'subheading'    => 'sometimes|required|string|max:255',
             'description'   => 'sometimes|required|string|max:1000',
@@ -120,18 +112,13 @@ class SeoServiceController extends Controller
         }
 
             // Default to old image
-                $imageName = $seo_service->image;
+                $imageName = $sm_youtube->image;
 
             // Process the uploaded file
          if ($request->hasFile('image')) 
             {
-                // $oldImagePath = public_path('assets/images/projects/' . $seo_service->image);
-                // if (file_exists($oldImagePath)) 
-                //     {
-                //         unlink($oldImagePath);
-                //     }
-                 if ($seo_service->image && file_exists(public_path($seo_service->image))) {
-                    unlink(public_path($seo_service->image));
+                 if ($sm_youtube->image && file_exists(public_path($sm_youtube->image))) {
+                    unlink(public_path($sm_youtube->image));
                 }
 
                 $image = $request->file('image'); // Get the uploaded file
@@ -141,7 +128,7 @@ class SeoServiceController extends Controller
 
                 $timestampName = time() . '.webp'; // Generate a unique filename
 
-                $destinationPath = 'assets/images/seo_service'; // Define storage path
+                $destinationPath = 'assets/images/smm_youtube'; // Define storage path
 
                 // Create directory if it doesn't exist
                 if (!file_exists($destinationPath)) 
@@ -170,46 +157,47 @@ class SeoServiceController extends Controller
                 }
 
                  // Save relative path in DB
-                $imageName = 'assets/images/seo_service
-                /' . $timestampName;
+                $imageName = 'assets/images/smm_youtube/' . $timestampName;
             }
             // Update tag record
-        $seo_service->update([
-              'image'           => $imageName ?? $seo_service->image,
-              'heading'         => $request->heading ??  $seo_service->heading,
-              'subheading'      => $request->subheading ?? $seo_service->subheading,
-              'description'     => $request->description ?? $seo_service->description,
-              'features'        => $request->features ?? $seo_service->features,
+        $sm_youtube->update([
+              'image'           => $imageName ?? $sm_youtube->image,
+              'heading'         => $request->heading ??  $sm_youtube->heading,
+              'description'     => $request->description ?? $sm_youtube->description,
+              'features'        => $request->features ?? $sm_youtube->features,
         ]);
-        // return response()->json([
-        //     'message' => 'Seo service updated successfully.',
-        //     'data' => $seo_service,
-        // ], 200);
-        return redirect()->route('seo-services.index')->with('message', 'SEO service updated successfully.');
+
+        return response()->json([
+            'message' => 'Youtube marketing service updated successfully.',
+            'data' => $sm_youtube,
+        ], 200);
+        // return redirect()->route('seo-services.index')->with('message', 'SEO service updated successfully.');
     }
 
      // Delete a project
     public function destroy($id)
     {
-        $seo_service = Seo_Service::find($id);
+        $sm_youtube = Sm_Youtube::find($id);
 
-        if (!$seo_service) 
+        if (!$sm_youtube) 
             {
                 return response()->json([
-                    'message' => 'Seo Service not found',
+                    'message' => 'Youtube marketing service not found',
                 
                 ], 404);
             }
 
           // Delete image file if exists
-        if ($seo_service->image && file_exists(public_path($seo_service->image))) {
-            unlink(public_path($seo_service->image));
+        if ($sm_youtube->image && file_exists(public_path($sm_youtube->image))) {
+            unlink(public_path($sm_youtube->image));
         }
-        $seo_service->delete();
+        $sm_youtube->delete();
 
-        // return response()->json ([
-        //     'message' => 'Seo Service deleted successfully!',
-        // ]);
-        return redirect()->route('seo-services.index')->with('message', 'SEO service deleted successfully.');
+        return response()->json ([
+            'message' => 'Youtube marketing service deleted successfully!',
+        ]);
+
+        // return redirect()->route('seo-services.index')->with('message', 'SEO service deleted successfully.');
     }
+
 }
