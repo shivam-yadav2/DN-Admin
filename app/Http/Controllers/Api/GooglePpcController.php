@@ -17,9 +17,12 @@ class GooglePpcController extends Controller
     {
         $googlePpc = Google_Ppc::orderBy('created_at', 'desc')->get();
         
-        return response()->json([
-            'data'=> $googlePpc,
-            'msg'=>"Get data successfully",
+        // return response()->json([
+        //     'data'=> $googlePpc,
+        //     'msg'=>"Get data successfully",
+        // ]);
+        return Inertia::render('Admin/Google/GooglePpc', [
+            'googlePpc' => $googlePpc,
         ]);
         // return Inertia::render('Admin/Other/GoogleCompaigns', [
         //     'googleCompaigns' => $googleCompaigns,
@@ -52,11 +55,13 @@ class GooglePpcController extends Controller
         ]);
 
      
-        return response()->json([
-            'data'=> $googlePpc,
-            'message' => 'Google PPC services created successfully!',
-            'type' => 'success' ,
-        ]);
+        // return response()->json([
+        //     'data'=> $googlePpc,
+        //     'message' => 'Google PPC services created successfully!',
+        //     'type' => 'success' ,
+        // ]);
+        return redirect()->route('google-ppc.index')->with('success', 'Google PPC services created successfully!');
+
     }
 
     // Update an existing Google Campaign
@@ -87,12 +92,8 @@ class GooglePpcController extends Controller
             'heading'       => $request->heading,
             'description'   => $request->description,
         ]);
-
-        return response()->json([
-            'data'=>$googlePpc,
-            'msg'=>"Google PPC service Updated Successfully",
-            'type'=>'success',
-        ]);
+        return redirect()->route('google-ppc.index')->with('success', 'Google PPC service Updated Successfully');
+        
     }
 
     // Delete a Google Campaign
@@ -104,10 +105,7 @@ class GooglePpcController extends Controller
             return response()->json(['general' => 'Google PPC not found']);
         }
     $googlePpc->delete();
-
-        return response()->json([
-            'msg'=>"Data deleted successfully",
-            'type'=>"True",
-        ]);
+        return redirect()->route('google-ppc.index')->with('success', 'Data deleted successfully');
+        
     }
 }

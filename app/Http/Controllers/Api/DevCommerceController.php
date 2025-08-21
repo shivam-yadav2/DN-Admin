@@ -16,11 +16,14 @@ class DevCommerceController extends Controller
     public function index()
     {
          $dev_commerces = Dev_Commerce::all();
-        return response()->json($dev_commerces, 200);
+        // return response()->json($dev_commerces, 200);
 
         // return Inertia::render('Admin/SEO/Service', [
         //     'seo_services' => Seo_Service::all(),
         // ]);
+        return Inertia::render('Admin/Dev/DevCommerce', [
+            'devCommerces' => $dev_commerces,
+        ]);
     }
 
     //Store data
@@ -92,10 +95,7 @@ class DevCommerceController extends Controller
            'label'          => $request->label,
          ]);
 
-         return response()->json([
-            'message' => 'Development commerce created successfully.',
-            'data' => $dev_commerce,
-         ], 201);
+         return redirect()->route('dev-commerce.index')->with('success', 'Development commerce created successfully.');
         // return redirect()->route('seo-services.index')->with('message', 'SEO service created successfully.');
     }
 
@@ -179,10 +179,7 @@ class DevCommerceController extends Controller
               'skills'          => $request->skills ?? $dev_commerce->skills,
               'label'          => $request->label ?? $dev_commerce->label,
         ]);
-        return response()->json([
-            'message' => 'Dev commerce updated successfully.',
-            'data' => $dev_commerce,
-        ], 200);
+        return redirect()->route('dev-commerce.index')->with('success', 'Dev commerce updated successfully.');
         // return redirect()->route('seo-services.index')->with('message', 'SEO service updated successfully.');
     }
 
@@ -193,10 +190,7 @@ class DevCommerceController extends Controller
 
         if (!$dev_commerce) 
             {
-                return response()->json([
-                    'message' => 'Dev Commerce  not found',
-                
-                ], 404);
+                return redirect()->route('dev-commerce.index')->with('error', 'Dev Commerce  not found');
             }
 
         // Delete associated files
@@ -207,9 +201,7 @@ class DevCommerceController extends Controller
 
         $dev_commerce->delete();
 
-        return response()->json ([
-            'message' => 'Dev Commerce deleted successfully!',
-        ]);
+        return redirect()->route('dev-commerce.index')->with('success', 'Dev Commerce deleted successfully!');
         // return redirect()->route('seo-services.index')->with('message', 'SEO service deleted successfully.');
     }
 }

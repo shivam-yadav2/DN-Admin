@@ -26,6 +26,18 @@ use App\Http\Controllers\Api\SeoServiceController;
 use App\Http\Controllers\Api\SeoHighlightController;
 use App\Http\Controllers\Api\SeoFormController;
 use App\Http\Controllers\Api\SeoProcessController;
+use App\Http\Controllers\Api\SeoDigitalController;
+use App\Http\Controllers\Api\SeoOptimizationController;
+use App\Http\Controllers\Api\SeoStrategyController;
+use App\Http\Controllers\Api\DevCommerceController;
+use App\Http\Controllers\Api\DevCornerstoneController;
+use App\Http\Controllers\Api\DevInnovationController;
+use App\Http\Controllers\Api\DevMaintainController;
+use App\Http\Controllers\Api\DevStepController;
+use App\Http\Controllers\Api\GoogleCompaignsController;
+use App\Http\Controllers\Api\GooglePpcController;
+use App\Http\Controllers\Api\GoogleMediaController;
+use App\Http\Controllers\Api\GraphicsLogoController;
 
 Route::get('/test', function () {
     return Inertia::render('Test');
@@ -96,5 +108,17 @@ Route::resource('seo-services', SeoServiceController::class)->names('seo-service
 Route::resource('seo-highlights', SeoHighlightController::class)->names('seo-highlights');
 Route::resource('seo-forms', SeoFormController::class)->names('seo-forms');
 Route::resource('seo-processes', SeoProcessController::class)->names('seo-processes');
+Route::resource('seo-digital', SeoDigitalController::class)->names('seo-digital');
+Route::resource('seo-optimization', SeoOptimizationController::class)->names('seo-optimization');
+Route::resource('seo-strategy', SeoStrategyController::class)->names('seo-strategy');
+Route::resource('dev-commerce', DevCommerceController::class)->names('dev-commerce');
+Route::resource('dev-cornerstone', DevCornerstoneController::class);
+Route::resource('dev-innovation', DevInnovationController::class);
+Route::resource('dev-maintain', DevMaintainController::class);
+Route::resource('dev-step', DevStepController::class);
+Route::resource('google-campaigns', GoogleCompaignsController::class);
+Route::resource('google-ppc', GooglePpcController::class);
+Route::resource('google-media', GoogleMediaController::class);
+Route::resource('graphics-logo', GraphicsLogoController::class);
 
-require __DIR__.'/auth.php';
+require __DIR__ . "/auth.php";
