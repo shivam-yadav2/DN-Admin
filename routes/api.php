@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\GoogleCompaignsController;
 use App\Http\Controllers\API\GooglePpcController;
 use App\Http\Controllers\API\GraphicsLogoController;
+use App\Http\Controllers\API\SocialServiceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ServiceController;
@@ -298,3 +299,10 @@ Route::post('store',[GraphicsLogoController::class,'store']);
 Route::get('index',[GraphicsLogoController::class,'index']);
 Route::delete('destroy/{id}',[GraphicsLogoController::class,'destroy']);
 Route::post('update/{id}',[GraphicsLogoController::class,'update']);
+
+
+//  SocialServiceController routes
+Route::post('store',[SocialServiceController::class,'store']);
+Route::get('index',[SocialServiceController::class,'index']);
+Route::delete('destroy/{id}',[SocialServiceController::class,'destroy']);
+Route::post('update/{id}',[SocialServiceController::class,'update']);
