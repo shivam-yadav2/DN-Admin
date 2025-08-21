@@ -8,7 +8,7 @@ use App\Models\Sm_Benefit;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
 use Intervention\Image\Drivers\Gd\Driver as GdDriver; // Import GD driver
-
+use Inertia\Inertia;
 
 class SmmBenefitController extends Controller
 {
@@ -16,7 +16,10 @@ class SmmBenefitController extends Controller
     public function index()
     {
          $sm_benefit = Sm_Benefit::all();
-        return response()->json($sm_benefit, 200);
+        // return response()->json($sm_benefit, 200);
+        return Inertia::render('Admin/SMM/SmmBenefit', [
+            'smmBenefits' => $sm_benefit,
+        ]);
     }
 
     //Store data
@@ -81,10 +84,7 @@ class SmmBenefitController extends Controller
            'description'    => $request->description,
          ]);
 
-         return response()->json([
-            'message' => 'SMM benefit created successfully.',
-            'data' => $sm_benefit,
-         ], 201);
+         return redirect()->route('smm-benefit.index')->with('success', 'SMM benefit created successfully.');
         // return redirect()->route('seo-services.index')->with('message', 'SEO service created successfully.');
     }
 
@@ -165,10 +165,7 @@ class SmmBenefitController extends Controller
               'description'     => $request->description ?? $sm_benefit->description,
         ]);
 
-        return response()->json([
-            'message' => 'SMM benefit updated successfully.',
-            'data' => $sm_benefit,
-        ], 200);
+        return redirect()->route('smm-benefit.index')->with('success', 'SMM benefit updated successfully.');
         // return redirect()->route('seo-services.index')->with('message', 'SEO service updated successfully.');
     }
 
@@ -191,9 +188,7 @@ class SmmBenefitController extends Controller
         }
         $sm_benefit->delete();
 
-        return response()->json ([
-            'message' => 'SMM benefit deleted successfully!',
-        ]);
+        return redirect()->route('smm-benefit.index')->with('success', 'SMM benefit deleted successfully!');
 
         // return redirect()->route('seo-services.index')->with('message', 'SEO service deleted successfully.');
     }

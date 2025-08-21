@@ -304,6 +304,29 @@ const data = {
             icon: BookOpen,
         },
     ],
+    SMM: [
+        {
+            title: "Facebook",
+            url: "/smm-facebook",
+            icon: BookOpen,
+        },
+        {
+            title: "SMM Benefits",
+            url: "/smm-benefit",
+            icon: BookOpen,
+        },
+        {
+            title: "SMM Youtube",
+            url: "/smm-youtube",
+            icon: BookOpen,
+        },
+        {
+            title: "SMM Services",
+            url: "/social-service",
+            icon: BookOpen,
+        },
+        
+    ],
 };
 
 export function AppSidebar({ ...props }) {
@@ -320,6 +343,7 @@ export function AppSidebar({ ...props }) {
                 <NavProjects title="SEO Page" projects={data.SEO} />
                 <NavProjects title="Development Page" projects={data.Dev} />
                 <NavProjects title="Google Campaigns" projects={data.Google} />
+                <NavProjects title="Social Media Page" projects={data.SMM} />
                 <NavProjects title="Other Pages" projects={data.Other} />
             </SidebarContent>
             <SidebarFooter>

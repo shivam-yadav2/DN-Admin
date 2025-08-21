@@ -14,11 +14,10 @@ class SocialServiceController extends Controller
 {
     public function index()
     {
-        $SocialService = SocialService::orderBy('created_at', 'desc')->get();
-         return response()->json([
-            'data'=>$SocialService,
-            'msg'=>"Get data successfully",
-         ]);
+        $socialService = SocialService::orderBy('created_at', 'desc')->get();
+        return Inertia::render('Admin/SMM/SocialService', [
+            'socialServices' => $socialService,
+        ]);
 
         // return Inertia::render('Admin/Other/GoogleMedia', [
         //     'googleMedia' => $googleMedia,
@@ -50,12 +49,7 @@ class SocialServiceController extends Controller
             'description'   => $request->description,
         ]);
 
-     
-        return response()->json([
-            'data'=>$SocialService,
-            'message' =>'Social Media Service created successfully!',
-           'type' =>'success',
-        ]);
+        return redirect()->route('social-service.index')->with('success', 'Social Media Service created successfully.');
 
     }
     public function update(Request $request, $id)
@@ -87,34 +81,20 @@ class SocialServiceController extends Controller
           
         ]);
 
-       
-        return response()->json([
-            'data'=>$SocialService,
-            'message' => 'Social Media Service updated successfully!',
-            'type' => 'success'
-        ],200);
+        return redirect()->route('social-service.index')->with('success', 'Social Media Service updated successfully.');
     }
 
-    // Delete a Google Media
+    // Delete a Social Service record
     public function destroy($id)
     {
-        $SocialService = SocialService::find($id);
+        $socialService = SocialService::find($id);
 
-        if (!$SocialService) {
-            return redirect()->back()->withErrors(['general' => 'Services not found']);
+        if (!$socialService) {
+            return redirect()->route('social-service.index')->with('error', 'Social Media Service not found');
         }
 
+        $socialService->delete();
 
-        $SocialService->delete();
-
-        // return redirect()->back()->with('flash', [
-        //     'message' => 'Services deleted successfully!',
-        //     'type' => 'success'
-        // ]);
-
-        return response()->json([
-            'msg'=>"Record deleted successfully",
-            'type'=>'success',
-        ]);
+        return redirect()->route('social-service.index')->with('success', 'Social Media Service deleted successfully!');
     }
 }

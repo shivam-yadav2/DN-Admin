@@ -38,6 +38,10 @@ use App\Http\Controllers\Api\GoogleCompaignsController;
 use App\Http\Controllers\Api\GooglePpcController;
 use App\Http\Controllers\Api\GoogleMediaController;
 use App\Http\Controllers\Api\GraphicsLogoController;
+use App\Http\Controllers\Api\SmmBenefitController;
+use App\Http\Controllers\Api\SmmFacebookController;
+use App\Http\Controllers\Api\SmmYoutubeController;
+use App\Http\Controllers\Api\SocialServiceController;
 
 Route::get('/test', function () {
     return Inertia::render('Test');
@@ -120,5 +124,11 @@ Route::resource('google-campaigns', GoogleCompaignsController::class);
 Route::resource('google-ppc', GooglePpcController::class);
 Route::resource('google-media', GoogleMediaController::class);
 Route::resource('graphics-logo', GraphicsLogoController::class);
+Route::resource('smm-facebook', SmmFacebookController::class);
+Route::resource('smm-benefit', SmmBenefitController::class);
+
+Route::resource('smm-youtube', SmmYoutubeController::class);
+
+Route::resource('social-service', SocialServiceController::class);
 
 require __DIR__ . "/auth.php";
