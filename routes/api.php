@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\API\GoogleCompaignsController;
+use App\Http\Controllers\API\GooglePpcController;
+use App\Http\Controllers\API\GraphicsLogoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ServiceController;
@@ -31,6 +34,7 @@ use App\Http\Controllers\Api\DevStepController;
 use App\Http\Controllers\Api\DevCommerceController;                                                                                                                                                                                                                                                                                                                                                                            
 use App\Http\Controllers\Api\DevInnovationController;                                                                                                                                                                                                                                                                                                                                                                            
 use App\Http\Controllers\Api\DevMaintainController;                                                                                                                                                                                                                                                                                                                                                                            
+use App\Http\Controllers\Api\GoogleMediaController;                                                                                                                                                                                                                                                                                                                                                                            
 use App\Http\Controllers\Api\SmmFacebookController;                                                                                                                                                                                                                                                                                                                                                                            
 use App\Http\Controllers\Api\SmmYoutubeController;                                                                                                                                                                                                                                                                                                                                                                            
 use App\Http\Controllers\Api\SmmBenefitController;                                                                                                                                                                                                                                                                                                                                                                            
@@ -150,7 +154,7 @@ Route::get('getourteam', [ApiController::class, 'getourteam']);
 Route::get('getpackage', [ApiController::class, 'getpackage']);
 Route::get('getfaq', [ApiController::class, 'getfaq']);
 Route::get('gethero', [ApiController::class, 'gethero']);
-Route::get('getproject', [ApiController::class, 'getproject']);
+Route::get('getproject', [ApiController::class, 'index_project']);
 Route::get('gettag', [ApiController::class, 'gettag']);
 Route::get('gettechnlogies', [ApiController::class, 'gettechnlogies']);
 Route::get('getvision_mission', [ApiController::class, 'getvision_mission']);
@@ -264,3 +268,33 @@ Route::get('/get_smmbenefit', [SmmBenefitController::class, 'index']);
 Route::post('/post_smmbenefit', [SmmBenefitController::class, 'store']);
 Route::post('/update_smmbenefit/{id}', [SmmBenefitController::class, 'update']);
 Route::delete('delete_smmbenefit/{id}', [SmmBenefitController::class, 'destroy']);
+
+
+
+// GoogleMediaController route
+
+Route::post('store',[GoogleMediaController::class,'store']);
+Route::get('index',[GoogleMediaController::class,'index']);
+Route::delete('destroy/{id}',[GoogleMediaController::class,'destroy']);
+Route::post('update/{id}',[GoogleMediaController::class,'update']);
+
+
+// GoogleCompaignsCOntroller routes
+Route::post('store',[GoogleCompaignsController::class,'store']);
+Route::get('index',[GoogleCompaignsController::class,'index']);
+Route::delete('destroy/{id}',[GoogleCompaignsController::class,'destroy']);
+Route::post('update/{id}',[GoogleCompaignsController::class,'update']);
+
+
+// GooglePPCController routes
+Route::post('store',[GooglePpcController::class,'store']);
+Route::get('index',[GooglePpcController::class,'index']);
+Route::delete('destroy/{id}',[GooglePpcController::class,'destroy']);
+Route::post('update/{id}',[GooglePpcController::class,'update']);
+
+ 
+//  GrahcsLogoController routes
+Route::post('store',[GraphicsLogoController::class,'store']);
+Route::get('index',[GraphicsLogoController::class,'index']);
+Route::delete('destroy/{id}',[GraphicsLogoController::class,'destroy']);
+Route::post('update/{id}',[GraphicsLogoController::class,'update']);
