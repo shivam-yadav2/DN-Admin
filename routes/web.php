@@ -57,20 +57,20 @@ Route::get('/test', function () {
 
 // Route::post('/services/{id}', [ServiceController::class, 'destroy'])->name('services.destroy');
 
-Route::get('/', function () {
-    return Inertia::render('Admin/Dashboard');
-})->name('dashboard');
-Route::get('/enquiries', [EnquiryController::class, 'index'])->name('enquiries.index');
-Route::post('/enquiries', [EnquiryController::class, 'store'])->name('enquiries.store');
-Route::delete('/enquiries/{id}', [EnquiryController::class, 'destroy'])->name('enquiries.destroy');
-Route::post('/enquiries/{id}', [EnquiryController::class, 'updateStatus'])->name('enquiries.updateStatus');
+
 
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+
+Route::get('/', fn () => Inertia::render('Admin/Dashboard'))->name('dashboard');
+Route::get('/enquiries', [EnquiryController::class, 'index'])->name('enquiries.index');
+Route::post('/enquiries', [EnquiryController::class, 'store'])->name('enquiries.store');
+Route::delete('/enquiries/{id}', [EnquiryController::class, 'destroy'])->name('enquiries.destroy');
+Route::post('/enquiries/{id}', [EnquiryController::class, 'updateStatus'])->name('enquiries.updateStatus');
+
 
 // Home Page Routes 
 
@@ -78,13 +78,7 @@ Route::resource('hero-videos', HeroController::class)->names('hero');
 Route::resource('services', ServiceController::class)->names('service');
 Route::resource('subservices', SubServiceController::class)->names('subservice');
 
-// Route::get('/home_hero', function () {
-//     return Inertia::render('Admin/HomePage/Hero');
-// });
 
-// Route::get('/home_toolsandtechnologies', function () {
-//     return Inertia::render('Admin/HomePage/ToolsPage');
-// });
 
 Route::get('/technologies', [TechnologyController::class, 'index'])->name('technologies.index');
 Route::post('/technologies', [TechnologyController::class, 'store'])->name('technologies.store');
@@ -130,5 +124,9 @@ Route::resource('smm-benefit', SmmBenefitController::class);
 Route::resource('smm-youtube', SmmYoutubeController::class);
 
 Route::resource('social-service', SocialServiceController::class);
+
+});
+
+
 
 require __DIR__ . "/auth.php";

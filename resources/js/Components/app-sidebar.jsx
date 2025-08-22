@@ -130,7 +130,6 @@ const data = {
         },
     ],
     SEO: [
-       
         {
             title: "SEO Service",
             url: "/seo-services",
@@ -168,32 +167,31 @@ const data = {
         },
     ],
     Dev: [
-            {
-                title: "Dev Commerce",
-                url: "/dev-commerce",
-                icon: Frame,
-            },
-            {
-                title: "Dev Cornerstone",
-                url: "/dev-cornerstone",
-                icon: Frame,
-            },
-            {
-                title: "Dev Innovation",
-                url: "/dev-innovation",
-                icon: Frame,
-            },
-            {
-                title: "Dev Maintain",
-                url: "/dev-maintain",
-                icon: Frame,
-            },
-            {
-                title: "Dev Step",
-                url: "/dev-step",
-                icon: Frame,
-            },
-
+        {
+            title: "Dev Commerce",
+            url: "/dev-commerce",
+            icon: Frame,
+        },
+        {
+            title: "Dev Cornerstone",
+            url: "/dev-cornerstone",
+            icon: Frame,
+        },
+        {
+            title: "Dev Innovation",
+            url: "/dev-innovation",
+            icon: Frame,
+        },
+        {
+            title: "Dev Maintain",
+            url: "/dev-maintain",
+            icon: Frame,
+        },
+        {
+            title: "Dev Step",
+            url: "/dev-step",
+            icon: Frame,
+        },
     ],
     Pages: [
         {
@@ -248,7 +246,6 @@ const data = {
             url: "/projects",
             icon: BookOpen,
         },
-        
     ],
     Enquiry: [
         {
@@ -325,7 +322,6 @@ const data = {
             url: "/social-service",
             icon: BookOpen,
         },
-        
     ],
 };
 
@@ -333,10 +329,15 @@ export function AppSidebar({ ...props }) {
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
-                <TeamSwitcher teams={data.teams} />
+                {/* <TeamSwitcher teams={data.teams} /> */}
+                <div className="flex justify-center items-center border-b-2">
+                    <a href="/">
+                        <img src="/assets/logo.png" className="" alt="" />
+                    </a>
+                </div>
             </SidebarHeader>
             <SidebarContent>
-                <NavMain />
+                {/* <NavMain /> */}
                 <NavProjects title="Dashboard" projects={data.projects} />
                 <NavProjects title="Pages" projects={data.Pages} />
                 <NavProjects title="Home Page" projects={data.Enquiry} />
