@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Seo_Optimization;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class SeoOptimizationController extends Controller
 {
@@ -13,7 +14,10 @@ class SeoOptimizationController extends Controller
     public function index()
     {
         $seo_optimizations = Seo_Optimization::all();
-        return response()->json($seo_optimizations, 200);
+        // return response()->json($seo_optimizations, 200);
+        return Inertia::render('Admin/SEO/SeoOptimization', [
+            'seoOptimizations' => $seo_optimizations,
+        ]);
     }
 
     //Store data
@@ -37,10 +41,7 @@ class SeoOptimizationController extends Controller
            'description'    => $request->description,
         ]);
 
-         return response()->json([
-            'message' => 'Seo optimization created successfully.',
-            'data' => $seo_optimization,
-         ], 201);
+         return redirect()->route('seo-optimization.index')->with('success', 'Seo optimization created successfully.');
     }
 
     //Updata a process
@@ -71,10 +72,7 @@ class SeoOptimizationController extends Controller
             'description' => $request->description ?? $seo_optimization->description,
         ]);
 
-        return response()->json([
-            'message' => 'Seo optimization updated successfully.',
-            'data' => $seo_optimization,
-        ], 200);
+        return redirect()->route('seo-optimization.index')->with('success', 'Seo optimization updated successfully.');
     }
     
 
@@ -85,16 +83,11 @@ class SeoOptimizationController extends Controller
 
         if (!$seo_optimization) 
             {
-                return response()->json([
-                    'message' => 'Seo optimization not found',
-                
-                ], 404);
+                return redirect()->route('seo-optimization.index')->with('error', 'Seo optimization not found');
             }
 
         $seo_optimization->delete();
 
-        return response()->json ([
-            'message' => 'Seo optimization deleted successfully!',
-        ]);
+        return redirect()->route('seo-optimization.index')->with('success', 'Seo optimization deleted successfully!');
     }
 }

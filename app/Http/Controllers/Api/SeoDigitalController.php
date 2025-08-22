@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Seo_Digital;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class SeoDigitalController extends Controller
 {
@@ -13,7 +14,10 @@ class SeoDigitalController extends Controller
     public function index()
     {
         $seo_digitals = Seo_Digital::all();
-        return response()->json($seo_digitals, 200);
+        // return response()->json($seo_digitals, 200);
+        return Inertia::render('Admin/SEO/SeoDigital', [
+            'seoDigitals' => $seo_digitals,
+        ]);
     }
 
     //Store data
@@ -37,10 +41,7 @@ class SeoDigitalController extends Controller
            'description'    => $request->description,
         ]);
 
-         return response()->json([
-            'message' => 'Seo process created successfully.',
-            'data' => $seo_digital,
-         ], 201);
+         return redirect()->route('seo-digital.index')->with('success', 'Seo process created successfully.');
     }
 
     //Updata a process
@@ -71,10 +72,7 @@ class SeoDigitalController extends Controller
             'description' => $request->description ?? $seo_digital->description,
         ]);
 
-        return response()->json([
-            'message' => 'Seo process updated successfully.',
-            'data' => $seo_digital,
-        ], 200);
+        return redirect()->route('seo-digital.index')->with('success', 'Seo process updated successfully.');
     }
     
 
@@ -85,16 +83,11 @@ class SeoDigitalController extends Controller
 
         if (!$seo_digital) 
             {
-                return response()->json([
-                    'message' => 'Seo process not found',
-                
-                ], 404);
+                return redirect()->route('seo-digital.index')->with('error', 'Seo process not found');
             }
 
         $seo_digital->delete();
 
-        return response()->json ([
-            'message' => 'Seo process deleted successfully!',
-        ]);
+        return redirect()->route('seo-digital.index')->with('success', 'Seo process deleted successfully!');
     }
 }

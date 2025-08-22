@@ -8,14 +8,18 @@ use App\Models\Sm_Youtube;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
 use Intervention\Image\Drivers\Gd\Driver as GdDriver; // Import GD driver
+use Inertia\Inertia;
 
 class SmmYoutubeController extends Controller
 {
      //Get data
     public function index()
     {
-         $sm_youtube = Sm_Youtube::all();
-        return response()->json($sm_youtube, 200);
+         $smm_youtube = Sm_Youtube::all();
+        // return response()->json($sm_youtube, 200);
+        return Inertia::render('Admin/SMM/SmmYoutube', [
+            'smmYoutube' => $smm_youtube,
+        ]);
     }
 
     //Store data
@@ -82,11 +86,11 @@ class SmmYoutubeController extends Controller
            'features'       => $request->features,
          ]);
 
-         return response()->json([
-            'message' => 'Youtube marketing service created successfully.',
-            'data' => $sm_youtube,
-         ], 201);
-        // return redirect()->route('seo-services.index')->with('message', 'SEO service created successfully.');
+        //  return response()->json([
+        //     'message' => 'Youtube marketing service created successfully.',
+        //     'data' => $sm_youtube,
+        //  ], 201);
+        return redirect()->route('smm-youtube.index')->with('success', 'YouTube marketing service created successfully.');
     }
 
     //Update a seo servie
@@ -167,11 +171,12 @@ class SmmYoutubeController extends Controller
               'features'        => $request->features ?? $sm_youtube->features,
         ]);
 
-        return response()->json([
-            'message' => 'Youtube marketing service updated successfully.',
-            'data' => $sm_youtube,
-        ], 200);
+        // return response()->json([
+        //     'message' => 'Youtube marketing service updated successfully.',
+        //     'data' => $sm_youtube,
+        // ], 200);
         // return redirect()->route('seo-services.index')->with('message', 'SEO service updated successfully.');
+        return redirect()->route('smm-youtube.index')->with('success', 'YouTube marketing service updated successfully.');
     }
 
      // Delete a project
@@ -179,25 +184,17 @@ class SmmYoutubeController extends Controller
     {
         $sm_youtube = Sm_Youtube::find($id);
 
-        if (!$sm_youtube) 
-            {
-                return response()->json([
-                    'message' => 'Youtube marketing service not found',
-                
-                ], 404);
-            }
-
-          // Delete image file if exists
-        if ($sm_youtube->image && file_exists(public_path($sm_youtube->image))) {
-            unlink(public_path($sm_youtube->image));
+        if (!$smm_youtube) {
+            return redirect()->route('smm-youtube.index')->with('error', 'YouTube marketing service not found');
         }
-        $sm_youtube->delete();
 
-        return response()->json ([
-            'message' => 'Youtube marketing service deleted successfully!',
-        ]);
+        if ($smm_youtube->image && file_exists(public_path($smm_youtube->image))) {
+            unlink(public_path($smm_youtube->image));
+        }
 
-        // return redirect()->route('seo-services.index')->with('message', 'SEO service deleted successfully.');
+        $smm_youtube->delete();
+
+        return redirect()->route('smm-youtube.index')->with('success', 'YouTube marketing service deleted successfully!');
     }
 
 }

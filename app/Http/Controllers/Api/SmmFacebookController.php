@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Sm_Facebook;
 use Illuminate\Support\Facades\Validator;
-
+use Inertia\Inertia;
 
 class SmmFacebookController extends Controller
 {
@@ -14,7 +14,10 @@ class SmmFacebookController extends Controller
     public function index()
     {
         $sm_facebook = Sm_Facebook::all();
-        return response()->json($sm_facebook, 200);
+        // return response()->json($sm_facebook, 200);
+        return Inertia::render('Admin/SMM/SmmFacebook', [
+            'smmFacebook' => $sm_facebook,
+        ]);
     }
 
     //Store data
@@ -38,10 +41,7 @@ class SmmFacebookController extends Controller
            'description'    => $request->description,
         ]);
 
-         return response()->json([
-            'message' => 'Facebook marketing services created successfully.',
-            'data' => $sm_facebook,
-         ], 201);
+         return redirect()->route('smm-facebook.index')->with('success', 'Facebook marketing services created successfully.');
     }
 
     //Updata a process
@@ -72,10 +72,7 @@ class SmmFacebookController extends Controller
             'description' => $request->description ?? $sm_facebook->description,
         ]);
 
-        return response()->json([
-            'message' => 'Faceboook marketing service updated successfully.',
-            'data' => $sm_facebook,
-        ], 200);
+        return redirect()->route('smm-facebook.index')->with('success', 'Faceboook marketing service updated successfully.');
     }
     
 
@@ -94,8 +91,6 @@ class SmmFacebookController extends Controller
 
         $sm_facebook->delete();
 
-        return response()->json ([
-            'message' => 'Facebook marketing service deleted successfully!',
-        ]);
+        return redirect()->route('smm-facebook.index')->with('success', 'Facebook marketing service deleted successfully!');
     }
 }

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Dev_Maintain;
 use Illuminate\Support\Facades\Validator;
-
+use Inertia\Inertia;
 
 class DevMaintainController extends Controller
 {
@@ -14,7 +14,10 @@ class DevMaintainController extends Controller
     public function index()
     {
         $devmaintain = Dev_Maintain::all();
-        return response()->json($devmaintain, 200);
+        // return response()->json($devmaintain, 200);
+        return Inertia::render('Admin/Dev/DevMaintain', [
+            'devMaintains' => $devmaintain,
+        ]);
     }
 
     //Store data
@@ -44,10 +47,7 @@ class DevMaintainController extends Controller
            'features'        => $request->features,
         ]);
 
-         return response()->json([
-            'message' => 'Development maintain created successfully.',
-            'data' => $dev_maintain,
-         ], 201);
+         return redirect()->route('dev-maintain.index')->with('success', 'Development maintain created successfully.');
     }
 
     //Updata a process
@@ -84,10 +84,7 @@ class DevMaintainController extends Controller
             'features'   => $request->features ?? $dev_maintain->features,
         ]);
 
-        return response()->json([
-            'message' => 'Development maintain updated successfully.',
-            'data' => $dev_maintain,
-        ], 200);
+        return redirect()->route('dev-maintain.index')->with('success', 'Development maintain updated successfully.');
     }
     
 
@@ -98,16 +95,11 @@ class DevMaintainController extends Controller
 
         if (!$dev_maintain) 
             {
-                return response()->json([
-                    'message' => 'Development maintain not found',
-                
-                ], 404);
+                return redirect()->route('dev-maintain.index')->with('error', 'Development maintain not found');
             }
 
         $dev_maintain->delete();
 
-        return response()->json ([
-            'message' => 'Development maintain deleted successfully!',
-        ]);
+        return redirect()->route('dev-maintain.index')->with('success', 'Development maintain deleted successfully!');
     }
 }
