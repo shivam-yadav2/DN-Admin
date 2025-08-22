@@ -70,6 +70,8 @@ class EnquiryController extends Controller
             'service_id' => 'required|exists:services,id', // Assuming 'services' table has a 'name' column
             'subservice_id' => 'required|exists:subservices,id',
             'message' => 'nullable|string|max:500',
+            'addedBy'=>'nullable|string',
+            'source'=>'nullable|string',
         ]);
 
         // Create new enquiry record
