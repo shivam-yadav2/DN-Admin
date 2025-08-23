@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Dev_Innovation;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class DevInnovationController extends Controller
 {
@@ -13,7 +14,9 @@ class DevInnovationController extends Controller
     public function index()
     {
         $dev_innovations = Dev_Innovation::all();
-        return response()->json($dev_innovations, 200);
+        return Inertia::render('Admin/Dev/DevInnovation', [
+            'devInnovations' => $dev_innovations,
+        ]);
     }
 
     //Store data
@@ -41,10 +44,7 @@ class DevInnovationController extends Controller
            'features'       => $request->features,
         ]);
 
-         return response()->json([
-            'message' => 'Development innovation created successfully.',
-            'data' => $dev_innovation,
-         ], 201);
+         return redirect()->route('dev-innovation.index')->with('success', 'Development innovation created successfully.');
     }
 
     //Updata a process
@@ -61,7 +61,7 @@ class DevInnovationController extends Controller
             'heading'           =>  'sometimes|required|string|max:255',
             'sub_heading'       =>  'sometimes|required|string|max:255',
             'description'       =>  'sometimes|required|string|max:1000',
-            'features'          =>  'sometimes|required|string|max:1000',
+            'features'          =>  'sometimes|required|array',
         ]);
 
         if ($validator->fails()) {
@@ -78,10 +78,7 @@ class DevInnovationController extends Controller
             'description'   => $request->description ?? $dev_innovation->description,
         ]);
 
-        return response()->json([
-            'message' => 'Development innovation updated successfully.',
-            'data' => $dev_innovation,
-        ], 200);
+        return redirect()->route('dev-innovation.index')->with('success', 'Development innovation updated successfully.');
     }
     
 
@@ -92,16 +89,11 @@ class DevInnovationController extends Controller
 
         if (!$dev_innovation) 
             {
-                return response()->json([
-                    'message' => 'Development innovation not found',
-                
-                ], 404);
+                return redirect()->route('dev-innovation.index')->with('error', 'Development innovation not found');
             }
 
         $dev_innovation->delete();
 
-        return response()->json ([
-            'message' => 'Development innovation deleted successfully!',
-        ]);
+        return redirect()->route('dev-innovation.index')->with('success', 'Development innovation deleted successfully!');
     }
 }

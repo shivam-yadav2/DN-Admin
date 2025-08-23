@@ -16,14 +16,14 @@ class GoogleCompaignsController extends Controller
     {
         $googleCompaigns = Google_Compaigns::orderBy('created_at', 'desc')->get();
         
-        return response()->json([
-            'data'=> $googleCompaigns,
-            'msg'=>"Get data successfully",
-        ]);
-        // return Inertia::render('Admin/Other/GoogleCompaigns', [
-        //     'googleCompaigns' => $googleCompaigns,
-        //     'flash' => session('flash')
+        // return response()->json([
+        //     'data'=> $googleCompaigns,
+        //     'msg'=>"Get data successfully",
         // ]);
+        return Inertia::render('Admin/Google/GoogleCampaigns', [
+            'googleCampaigns' => $googleCompaigns,
+        ]);
+        
     }
 
     // POST a new Google Campaign
@@ -51,11 +51,7 @@ class GoogleCompaignsController extends Controller
         ]);
 
      
-        return response()->json([
-            'data'=> $googleCompaign,
-            'message' => 'Google Campaign created successfully!',
-            'type' => 'success' ,
-        ]);
+        return redirect()->route('google-campaigns.index')->with('success', 'Google Campaign created successfully!');
     }
 
     // Update an existing Google Campaign
@@ -87,11 +83,7 @@ class GoogleCompaignsController extends Controller
             'description'   => $request->description,
         ]);
 
-        return response()->json([
-            'data'=>$googleCompaign,
-            'msg'=>"Google compaign Updated Successfully",
-            'type'=>'success',
-        ]);
+        return redirect()->route('google-campaign.index')->with('success', 'Google Campaign updated successfully!');
     }
 
     // Delete a Google Campaign
@@ -104,9 +96,6 @@ class GoogleCompaignsController extends Controller
         }
     $googleCompaign->delete();
 
-        return response()->json([
-            'msg'=>"Data deleted successfully",
-            'type'=>"True",
-        ]);
+        return redirect()->route('google-campaigns.index')->with('success', 'Google Campaign deleted successfully!');
     }
 }

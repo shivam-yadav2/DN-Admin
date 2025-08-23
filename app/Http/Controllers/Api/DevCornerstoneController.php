@@ -6,14 +6,17 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Dev_Cornerstone;
 use Illuminate\Support\Facades\Validator;
-
+use Inertia\Inertia;
 class DevCornerstoneController extends Controller
 {
         //Get data
     public function index()
     {
         $dev_cornerstones = Dev_Cornerstone::all();
-        return response()->json($dev_cornerstones, 200);
+        // return response()->json($dev_cornerstones, 200);
+        return Inertia::render('Admin/Dev/DevCornerstone', [
+            'devCornerstones' => $dev_cornerstones,
+        ]);
     }
 
     //Store data
@@ -37,10 +40,7 @@ class DevCornerstoneController extends Controller
            'description'    => $request->description,
         ]);
 
-         return response()->json([
-            'message' => 'Development cornerstones created successfully.',
-            'data' => $dev_cornerstone,
-         ], 201);
+         return redirect()->route('dev-cornerstone.index')->with('success', 'Development cornerstones created successfully.');
     }
 
     //Updata a process
@@ -71,10 +71,7 @@ class DevCornerstoneController extends Controller
             'description' => $request->description ?? $dev_cornerstone->description,
         ]);
 
-        return response()->json([
-            'message' => 'Development cornerstone updated successfully.',
-            'data' => $dev_cornerstone,
-        ], 200);
+        return redirect()->route('dev-cornerstone.index')->with('success', 'Development cornerstone updated successfully.');
     }
     
 
@@ -85,16 +82,11 @@ class DevCornerstoneController extends Controller
 
         if (!$dev_cornerstone) 
             {
-                return response()->json([
-                    'message' => 'Development cornerstones not found',
-                
-                ], 404);
+                return redirect()->route('dev-cornerstone.index')->with('error', 'Development cornerstones not found');
             }
 
         $dev_cornerstone->delete();
 
-        return response()->json ([
-            'message' => 'Development cornerstone deleted successfully!',
-        ]);
+        return redirect()->route('dev-cornerstone.index')->with('success', 'Development cornerstone deleted successfully!');
     }
 }

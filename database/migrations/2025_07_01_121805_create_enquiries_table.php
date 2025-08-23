@@ -20,7 +20,9 @@ return new class extends Migration
             $table->foreignId('service_id')->constrained('services');            // Service of the enquiry
             $table->foreignId('subservice_id')->constrained('subservices');                   // SubService content of the enquiry
             $table->string('message')->nullable();          // Message content of the enquiry
-            $table->boolean('isDeleted')->default(false);       // Soft delete flag, default is 'false' (not deleted)
+            $table->boolean('isDeleted')->default(false); 
+           
+             // Soft delete flag, default is 'false' (not deleted)
             $table->enum('status',['new_lead','contacted','converted','lost'])->default('new_lead');                    // Status of the enquiry, default is false (not processed)
             $table->timestamps();
         });

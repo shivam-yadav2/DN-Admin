@@ -130,7 +130,6 @@ const data = {
         },
     ],
     SEO: [
-       
         {
             title: "SEO Service",
             url: "/seo-services",
@@ -144,6 +143,53 @@ const data = {
         {
             title: "SEO Form",
             url: "/seo-forms",
+            icon: Frame,
+        },
+        {
+            title: "SEO Process",
+            url: "/seo-processes",
+            icon: Frame,
+        },
+        {
+            title: "SEO Digital",
+            url: "/seo-digital",
+            icon: Frame,
+        },
+        {
+            title: "SEO optimization",
+            url: "/seo-optimization",
+            icon: Frame,
+        },
+        {
+            title: "SEO strategy",
+            url: "/seo-strategy",
+            icon: Frame,
+        },
+    ],
+    Dev: [
+        {
+            title: "Dev Commerce",
+            url: "/dev-commerce",
+            icon: Frame,
+        },
+        {
+            title: "Dev Cornerstone",
+            url: "/dev-cornerstone",
+            icon: Frame,
+        },
+        {
+            title: "Dev Innovation",
+            url: "/dev-innovation",
+            icon: Frame,
+        },
+        {
+            title: "Dev Maintain",
+            url: "/dev-maintain",
+            icon: Frame,
+        },
+        {
+            title: "Dev Step",
+            url: "/dev-step",
             icon: Frame,
         },
     ],
@@ -200,7 +246,6 @@ const data = {
             url: "/projects",
             icon: BookOpen,
         },
-        
     ],
     Enquiry: [
         {
@@ -233,6 +278,50 @@ const data = {
             url: "/creatives",
             icon: BookOpen,
         },
+        {
+            title: "Graphics Logo",
+            url: "/graphics-logo",
+            icon: BookOpen,
+        },
+    ],
+    Google: [
+        {
+            title: "Google Campaigns",
+            url: "/google-campaigns",
+            icon: BookOpen,
+        },
+        {
+            title: "Google Media",
+            url: "/google-media",
+            icon: BookOpen,
+        },
+        {
+            title: "Google PPC",
+            url: "/google-ppc",
+            icon: BookOpen,
+        },
+    ],
+    SMM: [
+        {
+            title: "Facebook",
+            url: "/smm-facebook",
+            icon: BookOpen,
+        },
+        {
+            title: "SMM Benefits",
+            url: "/smm-benefit",
+            icon: BookOpen,
+        },
+        {
+            title: "SMM Youtube",
+            url: "/smm-youtube",
+            icon: BookOpen,
+        },
+        {
+            title: "SMM Services",
+            url: "/social-service",
+            icon: BookOpen,
+        },
     ],
 };
 
@@ -240,14 +329,22 @@ export function AppSidebar({ ...props }) {
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
-                <TeamSwitcher teams={data.teams} />
+                {/* <TeamSwitcher teams={data.teams} /> */}
+                <div className="flex justify-center items-center border-b-2">
+                    <a href="/">
+                        <img src="/assets/logo.png" className="" alt="" />
+                    </a>
+                </div>
             </SidebarHeader>
             <SidebarContent>
-                <NavMain />
+                {/* <NavMain /> */}
                 <NavProjects title="Dashboard" projects={data.projects} />
                 <NavProjects title="Pages" projects={data.Pages} />
                 <NavProjects title="Home Page" projects={data.Enquiry} />
-                <NavProjects title="SEO" projects={data.SEO} />
+                <NavProjects title="SEO Page" projects={data.SEO} />
+                <NavProjects title="Development Page" projects={data.Dev} />
+                <NavProjects title="Google Campaigns" projects={data.Google} />
+                <NavProjects title="Social Media Page" projects={data.SMM} />
                 <NavProjects title="Other Pages" projects={data.Other} />
             </SidebarContent>
             <SidebarFooter>

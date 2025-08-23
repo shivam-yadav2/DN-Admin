@@ -8,7 +8,7 @@ use App\Models\Seo_Strategy;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManager; // Ensure you have Intervention Image installed
 use Intervention\Image\Drivers\Gd\Driver as GdDriver; // Import GD driver
-
+use Inertia\Inertia;
 
 
 class SeoStrategyController extends Controller
@@ -18,7 +18,10 @@ class SeoStrategyController extends Controller
     public function index()
     {
         $seo_strategies = Seo_Strategy::all();
-        return response()->json($seo_strategies, 200);
+        // return response()->json($seo_strategies, 200);
+        return Inertia::render('Admin/SEO/SeoStrategy', [
+            'seoStrategies' => $seo_strategies,
+        ]);
     }
 
     //Store data
@@ -81,10 +84,11 @@ class SeoStrategyController extends Controller
            'description'    => $request->description,
         ]);
 
-         return response()->json([
-            'message' => 'Seo strategy created successfully.',
-            'data' => $seo_strategy,
-         ], 201);
+        //  return response()->json([
+        //     'message' => 'Seo strategy created successfully.',
+        //     'data' => $seo_strategy,
+        //  ], 201);
+        return redirect()->route('seo-strategy.index')->with('success', 'Seo strategy created successfully.');
     }
 
     //Update a seo servie
@@ -162,10 +166,7 @@ class SeoStrategyController extends Controller
              
         ]);
         
-        return response()->json([
-            'message' => 'Seo strategy updated successfully.',
-            'data' => $seo_strategy,
-        ], 200);
+        return redirect()->route('seo-strategy.index')->with('success', 'Seo strategy updated successfully.');
     }
 
      // Delete a project
@@ -175,10 +176,7 @@ class SeoStrategyController extends Controller
 
         if (!$seo_strategy) 
             {
-                return response()->json([
-                    'message' => 'Seo Strategy not found',
-                
-                ], 404);
+                return redirect()->route('seo-strategy.index')->with('error', 'Seo Strategy not found');
             }
 
           // Delete image file if exists
@@ -188,8 +186,6 @@ class SeoStrategyController extends Controller
 
         $seo_strategy->delete();
 
-        return response()->json ([
-            'message' => 'Seo strategy deleted successfully!',
-        ]);
+        return redirect()->route('seo-strategy.index')->with('success', 'Seo strategy deleted successfully!');
     }
 }

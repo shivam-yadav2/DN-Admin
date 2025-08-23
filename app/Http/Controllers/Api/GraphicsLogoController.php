@@ -17,9 +17,12 @@ class GraphicsLogoController extends Controller
     {
         $graphic_logo = Graphics_logo::orderBy('created_at', 'desc')->get();
 
-        return response()->json([
-            'msg' => "Get data successfully",
-            'data' => $graphic_logo,
+        // return response()->json([
+        //     'msg' => "Get data successfully",
+        //     'data' => $graphic_logo,
+        // ]);
+        return Inertia::render('Admin/Other/GraphicsLogo', [
+            'graphicLogos' => $graphic_logo,
         ]);
         // return Inertia::render('Admin/Other/Projects', [
         //     'projects' => $projects,
@@ -89,10 +92,7 @@ class GraphicsLogoController extends Controller
         ]);
 
 
-        return response()->json([
-            'data' => $graphic,
-            'msg' => "Data Added Successfully",
-        ]);
+        return redirect()->route('graphics-logo.index')->with('success', 'Data Added Successfully');
     }
 
     // Update an existing project
@@ -163,11 +163,7 @@ class GraphicsLogoController extends Controller
 
         ]);
 
-        return response()->json([
-            'data' => $Graphics_logo,
-            'msg' => "Data Updated Successfully",
-            'type' => "success",
-        ]);
+        return redirect()->route('graphics-logo.index')->with('success', 'Data Updated Successfully');
     }
 
     // Delete a project
@@ -184,9 +180,6 @@ class GraphicsLogoController extends Controller
         //     unlink(public_path($graphic_logo->img));
         // }
         $graphic_logo->delete();
-        return response()->json([
-            'msg' => "record deleted successfully",
-            'type' => true,
-        ]);
+        return redirect()->route('graphics-logo.index')->with('success', 'record deleted successfully');
     }
 }

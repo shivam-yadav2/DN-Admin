@@ -52,22 +52,22 @@ Route::get('/test', function () {
 });
 
 // Service routes
-// Route::get('/get_service', [ServiceController::class, 'index']);
-// Route::post('/post_service', [ServiceController::class, 'store']);
-// Route::post('/update_service/{id}', [ServiceController::class, 'update']);
-// Route::delete('/delete_service/{id}', [ServiceController::class, 'destroy']);
+Route::get('/get_service', [ServiceController::class, 'index']);
+Route::post('/post_service', [ServiceController::class, 'store']);
+Route::post('/update_service/{id}', [ServiceController::class, 'update']);
+Route::delete('/delete_service/{id}', [ServiceController::class, 'destroy']);
 
 // SubService routes
-// Route::get('/get_subservice', [SubServiceController::class, 'index']);
-// Route::post('/post_subservice', [SubServiceController::class, 'store']);
-// Route::get('/get_subserviceId/{serviceId}', [SubServiceController::class, 'getByServiceId']);
-// Route::delete('/delete_subservice/{id}', [SubServiceController::class, 'destroy']);
+Route::get('/get_subservice', [SubServiceController::class, 'index']);
+Route::post('/post_subservice', [SubServiceController::class, 'store']);
+Route::get('/get_subserviceId/{serviceId}', [SubServiceController::class, 'getByServiceId']);
+Route::delete('/delete_subservice/{id}', [SubServiceController::class, 'destroy']);
 
 // Enquiry routes
-// Route::get('/get_enquiry', [EnquiryController::class, 'index']);
-// Route::post('/post_enquiry', [EnquiryController::class, 'store']);
-// Route::delete('/delete_enquiry/{id}', [EnquiryController::class, 'destroy']);
-// Route::put('/update_enquiryStatus/{id}', [EnquiryController::class, 'updateStaus']);
+Route::get('/get_enquiry', [EnquiryController::class, 'index']);
+Route::post('/post_enquiry', [EnquiryController::class, 'store']);
+Route::delete('/delete_enquiry/{id}', [EnquiryController::class, 'destroy']);
+Route::put('/update_enquiryStatus/{id}', [EnquiryController::class, 'updateStaus']);
 
 // Vision and Mission routes
 // Route::post('add-vision',[vision_missioncontroller::class,'store']);
@@ -117,10 +117,10 @@ Route::get('/test', function () {
 // Route::get('show_ourteam',[our_teamcontroller::class,'index']);
 
 //Blog Routes
-//      Route::get('/get_blog', [BlogController::class, 'index']);
-// Route::post('/post_blog', [BlogController::class, 'store']);
-// Route::post('/update_blog/{id}', [BlogController::class, 'update']);
-// Route::delete('/delete_blog/{id}', [BlogController::class, 'destroy']);
+     Route::get('/get_blog', [BlogController::class, 'index']);
+Route::post('/post_blog', [BlogController::class, 'store']);
+Route::post('/update_blog/{id}', [BlogController::class, 'update']);
+Route::delete('/delete_blog/{id}', [BlogController::class, 'destroy']);
 
 //Contact Detail Routes
 // Route::get('/get_contact', [ContactDetailController::class, 'index']);
@@ -287,7 +287,7 @@ Route::delete('destroy/{id}',[GooglePpcController::class,'destroy']);
 Route::post('update/{id}',[GooglePpcController::class,'update']);
 
  
-//  GrahcsLogoController routes
+//  GraphicsLogoController routes
 Route::post('store',[GraphicsLogoController::class,'store']);
 Route::get('index',[GraphicsLogoController::class,'index']);
 Route::delete('destroy/{id}',[GraphicsLogoController::class,'destroy']);

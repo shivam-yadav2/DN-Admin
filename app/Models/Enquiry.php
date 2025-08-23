@@ -16,7 +16,9 @@ class Enquiry extends Model
         'subservice_id',
         'message',
         'isDeleted',
-        'status'
+        'status',
+         'addedBy',
+         'source',
     ];
     public $timestamps = true; // Enable timestamps for created_at and updated_at
     protected $table = 'enquiries'; // Specify the table name if it differs

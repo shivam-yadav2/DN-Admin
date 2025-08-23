@@ -15,15 +15,9 @@ class GoogleMediaController extends Controller
     public function index()
     {
         $googleMedia = Google_Media::orderBy('created_at', 'desc')->get();
-         return response()->json([
-            'data'=>$googleMedia,
-            'msg'=>"Get data successfully",
-         ]);
-
-        // return Inertia::render('Admin/Other/GoogleMedia', [
-        //     'googleMedia' => $googleMedia,
-        //     'flash' => session('flash')
-        // ]);
+        return Inertia::render('Admin/Google/GoogleMedia', [
+            'googleMedia' => $googleMedia,
+        ]);
     }
 
     // POST a new Google Media
@@ -55,11 +49,7 @@ class GoogleMediaController extends Controller
             'benefit'       => $request->benefit,
         ]);
 
-        return redirect()->back()->with('flash', [
-            'message' => 'Google Media created successfully!',
-            'type' => 'success'
-
-        ]);
+        return redirect()->route('google-media.index')->with('success', 'Google Media created successfully!');
     }
 
     // Update an existing Google Media
@@ -98,10 +88,7 @@ class GoogleMediaController extends Controller
         ]);
 
        
-        return response()->json([
-            'message' => 'Google Media updated successfully!',
-            'type' => 'success'
-        ],200);
+        return redirect()->route('google-media.index')->with('success', 'Google Media updated successfully!');
     }
 
     // Delete a Google Media
@@ -116,9 +103,6 @@ class GoogleMediaController extends Controller
 
         $googleMedia->delete();
 
-        return redirect()->back()->with('flash', [
-            'message' => 'Google Media deleted successfully!',
-            'type' => 'success'
-        ]);
+        return redirect()->route('google-media.index')->with('success', 'Google Media deleted successfully!');
     }
 }
