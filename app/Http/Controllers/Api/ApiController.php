@@ -397,4 +397,26 @@ class ApiController extends Controller
             'data'   => $sm_youtube,
         ], 200);
     }
+
+    //Package 
+    // Show packages by ID or package_for
+    public function package($identifier)
+    {
+        // Treat as package_for name (like SEO, SMM, etc.)
+        $packages = Package::with('features')->where('package_for', $identifier)->get();
+
+        if ($packages->isEmpty()) {
+            return response()->json([
+                'message' => 'No package found.'
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Packages fetched successfully',
+            'data' => $packages
+        ], 200);
+    }
+
+
+
 } 

@@ -17,7 +17,6 @@ use App\Http\Controllers\Api\CareerController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\ContactDetailController;
 use App\Http\Controllers\Api\our_teamcontroller;
-use App\Http\Controllers\Api\packagecontroller;
 use App\Http\Controllers\Api\vision_missioncontroller;
 use App\Http\Controllers\Api\TechnologyController;
 use App\Http\Controllers\Api\TagController;
@@ -39,6 +38,8 @@ use App\Http\Controllers\Api\GoogleMediaController;
 use App\Http\Controllers\Api\SmmFacebookController;                                                                                                                                                                                                                                                                                                                                                                            
 use App\Http\Controllers\Api\SmmYoutubeController;                                                                                                                                                                                                                                                                                                                                                                            
 use App\Http\Controllers\Api\SmmBenefitController;                                                                                                                                                                                                                                                                                                                                                                            
+use App\Http\Controllers\Api\PackageController;                                                                                                                                                                                                                                                                                                                                                                        
+use App\Http\Controllers\Api\PackageFeatureController;                                                                                                                                                                                                                                                                                                                                                                            
 
 
 Route::get('/user', function (Request $request) {
@@ -115,12 +116,6 @@ Route::get('/test', function () {
 // Route::post('update_ourteam/{id}',[our_teamcontroller::class,'update']);
 // Route::get('show_ourteam',[our_teamcontroller::class,'index']);
 
-//Package Routes
-// Route::post('post_package', [packagecontroller::class,'store']);
-// Route::post('update_package/{id}', [packagecontroller::class,'update']);
-// Route::get('get_package', [packagecontroller::class,'index']);
-// Route::delete('delete_package/{id}', [packagecontroller::class,'destroy']);
-
 //Blog Routes
 //      Route::get('/get_blog', [BlogController::class, 'index']);
 // Route::post('/post_blog', [BlogController::class, 'store']);
@@ -180,6 +175,7 @@ Route::get('getdev_innovation', [ApiController::class, 'dev_innovation']);
 Route::get('getsmmbenefit', [ApiController::class, 'smm_benefit']);
 Route::get('getsmmyoutube', [ApiController::class, 'smm_youtube']);
 Route::get('getsmmfacebook', [ApiController::class, 'smm_facebook']);
+Route::get('getpackage', [ApiController::class, 'package']);
 
 //Seo Highlight Routes
 Route::get('/get_seo', [SeoHighlightController::class, 'index']);
@@ -270,10 +266,7 @@ Route::post('/post_smmbenefit', [SmmBenefitController::class, 'store']);
 Route::post('/update_smmbenefit/{id}', [SmmBenefitController::class, 'update']);
 Route::delete('delete_smmbenefit/{id}', [SmmBenefitController::class, 'destroy']);
 
-
-
 // GoogleMediaController route
-
 Route::post('store',[GoogleMediaController::class,'store']);
 Route::get('index',[GoogleMediaController::class,'index']);
 Route::delete('destroy/{id}',[GoogleMediaController::class,'destroy']);
@@ -306,3 +299,18 @@ Route::post('store',[SocialServiceController::class,'store']);
 Route::get('index',[SocialServiceController::class,'index']);
 Route::delete('destroy/{id}',[SocialServiceController::class,'destroy']);
 Route::post('update/{id}',[SocialServiceController::class,'update']);
+
+//Package Routes
+Route::get('get_package', [PackageController::class, 'index']);      // List all packages
+Route::post('post_package', [PackageController::class, 'store']);     // Create a package
+Route::get('show_package/{id}', [PackageController::class, 'show']);    // Show single package
+Route::post('update_package/{id}', [PackageController::class, 'update']);  // Update package
+Route::delete('delete_package/{id}', [PackageController::class, 'destroy']); // Delete package
+
+
+//Package Feature
+Route::get('get_packagefeature', [PackageFeatureController::class, 'index']);       // List all features
+Route::post('post_packagefeature', [PackageFeatureController::class, 'store']);      // Create a feature
+Route::get('show_packagefeature/{id}', [PackageFeatureController::class, 'show']);     // Show single feature
+Route::post('update_packagefeature/{id}', [PackageFeatureController::class, 'update']);   // Update feature
+Route::delete('delete_packagefeature/{id}', [PackageFeatureController::class, 'destroy']); // Delete feature

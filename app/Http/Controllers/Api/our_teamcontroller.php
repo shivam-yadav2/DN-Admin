@@ -78,10 +78,10 @@ class our_teamcontroller extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'designation' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:2048',
-            'joining_date' => 'required|date',
+            'name' => 'sometimes|required|string|max:255',
+            'designation' => 'sometimes|required|string|max:255',
+            'image' => 'sometimes|nullable|image|mimes:jpeg,jpg,png,webp|max:2048',
+            'joining_date' => 'sometimes|required|date',
         ]);
 
         if ($validator->fails()) {

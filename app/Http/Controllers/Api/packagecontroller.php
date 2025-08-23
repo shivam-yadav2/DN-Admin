@@ -3,192 +3,116 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\packages;
 use Illuminate\Http\Request;
+use App\Models\Package;
+use App\Models\Package_Feature;
 use Illuminate\Support\Facades\Validator;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
-use Inertia\Inertia;
 
-class packagecontroller extends Controller
+class PackageController extends Controller
 {
-    protected $imageManager;
-
-    public function __construct()
-     {
-        // ✅ Initialize ImageManager with GD driver
-        $this->imageManager = new ImageManager(new Driver());
-    }
-
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'heading'           => 'required|string|max:255',
-            'img'               => 'required|image|mimes:jpeg,jpg,png,webp|max:512|dimensions:max_width:200,max_height:200',
-            'price'             => 'required|string|max:255',
-            'description'       => 'required|string|max:255',
-            'target_audience'   => 'required|string|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'mesg' => "Validation failed",
-                'error' => $validator->errors()->all(),
-            ], 422);
-        }
-
-        $imagename = null;
-
-        if ($request->hasFile('img')) {
-            $image = $request->file('img');
-            $imagename = time() . '.webp'; // force convert to webp
-            $path = 'assets/images/package/' ;
-
-                // ✅ Ensure directory exists
-             if (!file_exists(public_path($path)))
-                 {
-                    mkdir(public_path($path), 0777, true);
-                }
-
-            // ✅ v3: Resize and convert to webp
-            $this->imageManager->read($image)
-                ->cover(200, 200)   // replaces fit() in v3
-                ->toWebp(90)
-                ->save(public_path($path. $imagename));
-
-
-             // Save relative path in DB
-                $imagename = 'assets/images/package/' . $imagename;
-
-            $data = packages::create([
-                'img'               => $imagename,
-                'heading'           => $request->heading,
-                'price'             => $request->price,
-                'description'       => $request->description,
-                'target_audience'   => $request->target_audience,
-            ]);
-
-            return back()->with([
-            'message' => 'Package added successfully!',
-            'type' => 'success'
-        ]);
-        }
-    }
-
-    public function update(Request $request, $id)
-    {
-        $validator = Validator::make($request->all(), [
-            'heading'           => 'sometimes|required',
-            'img'               => 'nullable|image|mimes:jpeg,jpg,png,webp|max:512|dimensions:max_width:200,max_height:200',
-            'price'             => 'sometimes|required',
-            'description'       => 'sometimes|required',
-            'target_audience'   => 'sometimes|required',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'mesg' => "Validation failed",
-                'error' => $validator->errors()->all(),
-            ], 422);
-        }
-
-        $info = packages::find($id);
-
-        if (!$info) {
-            return response()->json([
-                'mesg' => 'Package not found',
-            ], 404);
-        }
-
-          // ✅ Default: keep old image
-        $imagename = $info->img;
-
-        if ($request->hasFile('img'))
-            {
-                 // Delete old image if exists
-                if ($info->img && file_exists(public_path($info->img)))
-                 {
-                    unlink(public_path($info->img));
-                 }
-
-                $image = $request->file('img');
-                $imagename = time() . '.webp'; // force convert to webp
-                $path = 'assets/images/package/';
-
-                 // Create directory if it doesn't exist
-                if (!file_exists(public_path($path))) 
-                    {
-                        mkdir($path, 0755, true);
-                    }
-
-                // ✅ v3: Resize and convert to webp
-                $this->imageManager->read($image)
-                    ->cover(200, 200)
-                    ->toWebp(90)
-                    ->save(public_path($path . $imagename));
-
-                // Save relative path in DB
-                $imagename = 'assets/images/package/' . $imagename;
-            }
-            //  dd($imagename);
-
-            $info->update([
-                'img'               =>  $imagename,
-                'heading'           => $request->heading ?? $info->heading,
-                'price'             => $request->price ?? $info->price,
-                'description'       => $request->description ?? $info->description,
-                'target_audience'   => $request->target_audience ?? $info->target_audience,
-            ]);
-
-        //     return back()->with([
-        //     'message' => 'Package updated successfully!',
-        //     'type' => 'success'
-        // ]);
-            return response()->json([
-            'message' => 'Package updated successfully!',
-            'type' => 'success'
-        ]);
-        
-    }
-
+    // Get all packages with features
     public function index()
     {
-        $show = packages::all();
-        if ($show->isNotEmpty()) {
-            return response()->json([
-                'mesg' => $show,
-            ], 200);
-        } else {
-             return Inertia::render('Admin/Other/Package', [
-            'packages' => $show
-        ]);
-        }
+        $packages = Package::with('features')->get();
+        return response()->json($packages, 200);
     }
 
-    public function destroy($id)
+    // Store a new package with features
+    public function store(Request $request)
     {
-        $del = packages::find($id);
-        if (!$del) {
+        $validator = Validator::make($request->all(),[
+            'icon'                 => 'required|string',
+            'package_for'          =>  'required|in:SEO,SMM,SMP,Google_Ads,Development,Design',
+            'package_name'         => 'required|string',
+            'price'                => 'required|string',
+            'description'          => 'required|string',
+            'label'                => 'required|string',
+            'audience'             => 'required|string',
+        ]);
+
+        if ($validator->fails()) 
+            {
+                return response()->json([$validator->errors()->all()
+                ], 422);
+            }
+
+        // Create package
+        $package = Package::create([
+            'icon'              => $request->icon,
+            'package_for'       => $request->package_for,
+            'package_name'      => $request->package_name,
+            'price'             => $request->price,
+            'description'       => $request->description,
+            'label'             => $request->label,
+            'audience'          => $request->audience,
+        ]);
+
+
+        return response()->json([
+            'message' => 'Package created successfully',
+            'data' =>   $package,
+        ], 201);
+    }
+
+    // Show packages by ID or package_for
+    public function show($identifier)
+    {
+        // Treat as package_for name (like SEO, SMM, etc.)
+        $packages = Package::with('features')->where('package_for', $identifier)->get();
+
+        if ($packages->isEmpty()) {
             return response()->json([
-                'mesg' => 'Data not found',
+                'message' => 'No package found.'
             ], 404);
         }
 
-        // ✅ Optionally delete image file
-        if ($del->img) {
-            $imagePath = public_path('assets/images/package/' . $del->img);
-            if (file_exists($imagePath)) {
-                unlink($imagePath);
-            }
-        }
-
-        $del->delete();
-
-       return back()->with([
-            'message' => 'Package deleted successfully!',
-            'type' => 'success'
-        ]);
+        return response()->json([
+            'message' => 'Packages fetched successfully',
+            'data' => $packages
+        ], 200);
     }
+
+
+    // Update package and features
+    public function update(Request $request, $id)
+    {
+         $package = Package::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'icon'              => 'sometimes|string',
+            'package_for'      =>  'sometimes|in:SEO,SMM,SMO,Google_Ads,Development,Design',
+            'package_name'      => 'sometimes|string',
+            'price'             => 'sometimes|string',
+            'description'       => 'sometimes|string',
+            'label'             => 'sometimes|string',
+            'audience'          => 'sometimes|string',
+        ]);
+
+        $package->update([
+             'icon'              => $request->icon ?? $package->icon,
+            'package_for'       => $request->package_for ?? $package->package_for,
+            'package_name'      => $request->package_name ?? $package->package_name,
+            'price'             => $request->price ?? $package->price,
+            'description'       => $request->description ?? $package->description,
+            'label'             => $request->label ?? $package->label,
+            'audience'          => $request->audience ?? $package->audience,
+        ]);
+
+        return response()->json([
+            'message' => 'Package updated successfully',
+            'data' => $package
+        ], 200);
+    }
+
+    // Delete package with features
+    public function destroy($id)
+    {
+        $package = Package::findOrFail($id);
+        $package->delete();
+
+        return response()->json([
+            'message' => 'Package deleted successfully'
+        ], 200);
+    }
+
 }
