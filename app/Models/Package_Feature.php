@@ -11,7 +11,7 @@ class Package_Feature extends Model
         'feature_key',
         'feature_value',
     ];
-    protected $table = 'package_Features';
+    protected $table = 'package_features';
     public $timestamps = true; 
 
     public function package()

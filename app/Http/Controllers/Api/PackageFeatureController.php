@@ -50,10 +50,12 @@ class PackageFeatureController extends Controller
                 ]);
             }
 
-        return response()->json([
-            'message' => 'Features created successfully',
-            'data' => $inserted
-        ], 201);
+        // return response()->json([
+        //     'message' => 'Features created successfully',
+        //     'data' => $inserted
+        // ], 201);
+                return redirect()->route('packages.index')->with('message', 'Package Features added successfully');
+
     }
 
      // Show single feature
@@ -86,10 +88,12 @@ class PackageFeatureController extends Controller
             'feature_value' => $request->feature_value ?? $package->feature_value,
         ]);
 
-        return response()->json([
-            'message' => 'Feature updated successfully',
-            'data' => $package
-        ], 200);
+        // return response()->json([
+        //     'message' => 'Feature updated successfully',
+        //     'data' => $package
+        // ], 200);
+                return redirect()->route('packages.index')->with('message', 'Package Features updated successfully');
+
     }
 
     // Delete a feature
@@ -98,8 +102,9 @@ class PackageFeatureController extends Controller
         $feature = Package_Feature::findOrFail($id);
         $feature->delete();
 
-        return response()->json([
-            'message' => 'Feature deleted successfully'
-        ], 200);
+        // return response()->json([
+        //     'message' => 'Feature deleted successfully'
+        // ], 200);
+                return redirect()->route('packages.index')->with('message', 'Package Feature deleted successfully');
     }
 }

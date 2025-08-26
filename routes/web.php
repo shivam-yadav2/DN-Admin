@@ -42,23 +42,10 @@ use App\Http\Controllers\Api\SmmBenefitController;
 use App\Http\Controllers\Api\SmmFacebookController;
 use App\Http\Controllers\Api\SmmYoutubeController;
 use App\Http\Controllers\Api\SocialServiceController;
-
+use App\Http\Controllers\Api\PackageFeatureController;
 Route::get('/test', function () {
     return Inertia::render('Test');
 });
-
-// Route::get('/services', [ServiceController::class, 'index'])->name('services');
-
-// Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
-
-// Route::post('/subservices', [SubServiceController::class, 'store'])->name('subservices.store');
-
-// Route::post('/services/{id}', [ServiceController::class, 'update'])->name('services.update');
-
-// Route::post('/services/{id}', [ServiceController::class, 'destroy'])->name('services.destroy');
-
-
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -99,7 +86,6 @@ Route::resource('contact-details', ContactDetailController::class);
 Route::resource('our-team', our_teamcontroller::class);
 Route::resource('home-about', HomeAboutController::class);
 Route::resource('creatives', CreativesController::class);
-Route::resource('packages', packagecontroller::class);
 Route::resource('tags', TagController::class);
 Route::resource('projects', ProjectController::class);
 Route::resource('seo-services', SeoServiceController::class)->names('seo-services');
@@ -120,7 +106,11 @@ Route::resource('google-media', GoogleMediaController::class);
 Route::resource('graphics-logo', GraphicsLogoController::class);
 Route::resource('smm-facebook', SmmFacebookController::class);
 Route::resource('smm-benefit', SmmBenefitController::class);
-
+// Package Routes
+    Route::resource('packages', packageController::class);
+    
+    // Package Feature Routes
+    Route::resource('package-features', PackageFeatureController::class);
 Route::resource('smm-youtube', SmmYoutubeController::class);
 
 Route::resource('social-service', SocialServiceController::class);

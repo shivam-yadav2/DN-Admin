@@ -7,14 +7,18 @@ use Illuminate\Http\Request;
 use App\Models\Package;
 use App\Models\Package_Feature;
 use Illuminate\Support\Facades\Validator;
-
+use Inertia\Inertia;
 class PackageController extends Controller
 {
     // Get all packages with features
     public function index()
     {
         $packages = Package::with('features')->get();
-        return response()->json($packages, 200);
+        // return response()->json($packages, 200);
+        return Inertia::render('Admin/Other/Package', [
+            'packages' => $packages,
+            'packageTypes' => ['SEO', 'SMM', 'SMP', 'Google_Ads', 'Development', 'Design']
+        ]);
     }
 
     // Store a new package with features
@@ -48,10 +52,11 @@ class PackageController extends Controller
         ]);
 
 
-        return response()->json([
-            'message' => 'Package created successfully',
-            'data' =>   $package,
-        ], 201);
+        // return response()->json([
+        //     'message' => 'Package created successfully',
+        //     'data' =>   $package,
+        // ], 201);
+        return redirect()->route('packages.index')->with('message', 'Package added successfully');
     }
 
     // Show packages by ID or package_for
@@ -98,10 +103,12 @@ class PackageController extends Controller
             'audience'          => $request->audience ?? $package->audience,
         ]);
 
-        return response()->json([
-            'message' => 'Package updated successfully',
-            'data' => $package
-        ], 200);
+        // return response()->json([
+        //     'message' => 'Package updated successfully',
+        //     'data' => $package
+        // ], 200);
+        return redirect()->route('packages.index')->with('message', 'Package updated successfully');
+
     }
 
     // Delete package with features
@@ -110,9 +117,11 @@ class PackageController extends Controller
         $package = Package::findOrFail($id);
         $package->delete();
 
-        return response()->json([
-            'message' => 'Package deleted successfully'
-        ], 200);
+        // return response()->json([
+        //     'message' => 'Package deleted successfully'
+        // ], 200);
+                return redirect()->route('packages.index')->with('message', 'Package deleted successfully');
+
     }
 
 }

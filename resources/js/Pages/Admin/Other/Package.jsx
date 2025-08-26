@@ -1,434 +1,593 @@
-import { useState } from "react";
-import { useForm, usePage, router } from "@inertiajs/react";
-import { Plus, Edit, Trash2, X, Package, Upload, Image, DollarSign, Target, FileText } from "lucide-react";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import Layout from "@/Layouts/Layout";
+import React, { useState, useEffect } from 'react';
+import { Head, useForm, router } from '@inertiajs/react';
+import { Plus, Edit, Trash2,  Settings, Eye, EyeOff } from 'lucide-react';
 
-const Packages = () => {
-    const { auth, packages, flash } = usePage().props;
-    const [editingPackage, setEditingPackage] = useState(null);
-    const [alertMessage, setAlertMessage] = useState("");
-    const [alertType, setAlertType] = useState("");
-    const [imagePreview, setImagePreview] = useState("");
+// shadcn/ui components (you'll need to install these)
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import Layout from '@/Layouts/Layout';
 
-    console.log(packages)
+export default function Package({ packages, packageTypes , flash }) {
+   
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [showFeatureModal, setShowFeatureModal] = useState(false);
+    const [selectedPackage, setSelectedPackage] = useState(null);
+    const [selectedTab, setSelectedTab] = useState('all');
+    const [showFeatures, setShowFeatures] = useState({});
 
-    // Single form for both create and edit
-    const form = useForm({
-        heading: "",
-        img: null,
-        price: "",
-        description: "",
-        target_audience: "",
+    // Package form
+    const packageForm = useForm({
+        icon: '',
+        package_for: '',
+        package_name: '',
+        price: '',
+        description: '',
+        label: '',
+        audience: ''
     });
 
-    const showAlert = (message, type = 'success') => {
-        setAlertMessage(message);
-        setAlertType(type);
-        setTimeout(() => {
-            setAlertMessage("");
-            setAlertType("");
-        }, 4000);
-    };
+    // Feature form
+    const featureForm = useForm({
+        package_id: '',
+        features: [{ key: '', value: '' }]
+    });
 
-    const resetForm = () => {
-        form.reset();
-        form.setData({
-            heading: "",
-            img: null,
-            price: "",
-            description: "",
-            target_audience: "",
+    // Filter packages based on selected tab
+    const filteredPackages = selectedTab === 'all' 
+        ? packages 
+        : packages.filter(pkg => pkg.package_for === selectedTab);
+
+    // Handle package creation
+    const handleCreatePackage = (e) => {
+        e.preventDefault();
+        packageForm.post('/packages', {
+            onSuccess: () => {
+                setShowCreateModal(false);
+                packageForm.reset();
+            }
         });
-        form.clearErrors();
-        setEditingPackage(null);
-        setImagePreview("");
     };
 
-    const handleEdit = (pkg) => {
-        setEditingPackage(pkg);
-        form.setData({
-            heading: pkg.heading || "",
-            img: null,
-            price: pkg.price || "",
-            description: pkg.description || "",
-            target_audience: pkg.target_audience || "",
+    // Handle package update
+    const handleUpdatePackage = (e) => {
+        e.preventDefault();
+        packageForm.put(`/packages/${selectedPackage.id}`, {
+            onSuccess: () => {
+                setShowEditModal(false);
+                packageForm.reset();
+                setSelectedPackage(null);
+            }
         });
-        form.clearErrors();
-        
-        // Set image preview for existing package
-        if (pkg.img) {
-            setImagePreview(`/assets/images/package/${pkg.img}`);
-        }
-        
-        // Scroll to form
-        document.getElementById('packageForm')?.scrollIntoView({ behavior: 'smooth' });
     };
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            form.setData('img', file);
-            
-            // Create preview
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setImagePreview(e.target.result);
-            };
-            reader.readAsDataURL(file);
+    // Handle package deletion
+    const handleDeletePackage = (packageId) => {
+        if (confirm('Are you sure you want to delete this package?')) {
+            router.delete(`/packages/${packageId}`);
         }
     };
 
-    const handleSubmit = () => {
-        if (editingPackage) {
-            // Update existing package
-            form.post(route("packages.update", editingPackage.id), {
-                forceFormData: true,
-                _method: 'PUT',
-                onSuccess: () => {
-                    resetForm();
-                    showAlert("Package updated successfully!");
-                },
-                onError: (errors) => {
-                    showAlert("Failed to update package. Please check the form.", "error");
-                },
-            });
-        } else {
-            // Create new package
-            form.post(route("packages.store"), {
-                forceFormData: true,
-                onSuccess: () => {
-                    resetForm();
-                    showAlert("Package added successfully!");
-                },
-                onError: (errors) => {
-                    showAlert("Failed to add package. Please check the form.", "error");
-                },
-            });
+    // Handle feature creation
+    const handleCreateFeature = (e) => {
+        e.preventDefault();
+        featureForm.post('/package-features', {
+            onSuccess: () => {
+                setShowFeatureModal(false);
+                featureForm.reset();
+                featureForm.setData('features', [{ key: '', value: '' }]);
+            }
+        });
+    };
+
+    // Handle feature deletion
+    const handleDeleteFeature = (featureId) => {
+        if (confirm('Are you sure you want to delete this feature?')) {
+            router.delete(`/package-features/${featureId}`);
         }
     };
 
-    const handleDelete = (id) => {
-        if (confirm("Are you sure you want to delete this package?")) {
-            router.delete(route("packages.destroy", id), {
-                onSuccess: () => {
-                    showAlert("Package deleted successfully!");
-                },
-                onError: () => {
-                    showAlert("Failed to delete package.", "error");
-                },
-            });
-        }
+    // Add feature field
+    const addFeatureField = () => {
+        featureForm.setData('features', [...featureForm.data.features, { key: '', value: '' }]);
+    };
+
+    // Remove feature field
+    const removeFeatureField = (index) => {
+        const newFeatures = featureForm.data.features.filter((_, i) => i !== index);
+        featureForm.setData('features', newFeatures);
+    };
+
+    // Update feature field
+    const updateFeatureField = (index, field, value) => {
+        const newFeatures = featureForm.data.features.map((feature, i) => 
+            i === index ? { ...feature, [field]: value } : feature
+        );
+        featureForm.setData('features', newFeatures);
+    };
+
+    // Open edit modal
+    const openEditModal = (pkg) => {
+        setSelectedPackage(pkg);
+        packageForm.setData({
+            icon: pkg.icon,
+            package_for: pkg.package_for,
+            package_name: pkg.package_name,
+            price: pkg.price,
+            description: pkg.description,
+            label: pkg.label,
+            audience: pkg.audience
+        });
+        setShowEditModal(true);
+    };
+
+    // Open feature modal
+    const openFeatureModal = (pkg) => {
+        featureForm.setData('package_id', pkg.id);
+        setShowFeatureModal(true);
+    };
+
+    // Toggle feature visibility
+    const toggleFeatures = (packageId) => {
+        setShowFeatures(prev => ({
+            ...prev,
+            [packageId]: !prev[packageId]
+        }));
     };
 
     return (
-        <Layout
+        <Layout>
+            <Head title="Package Management" />
             
-        >
-            <div className="min-h-screen bg-gray-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    
-                    {/* Alert Messages */}
-                    {(alertMessage || flash?.message) && (
-                        <div className={`mb-6 p-4 rounded-lg border ${
-                            (alertType === 'error' || flash?.type === 'error') 
-                                ? 'bg-red-50 border-red-200 text-red-800' 
-                                : 'bg-green-50 border-green-200 text-green-800'
-                        }`}>
-                            <div className="flex items-center justify-between">
-                                <span>{alertMessage || flash?.message}</span>
-                                <button 
-                                    onClick={() => setAlertMessage("")}
-                                    className="text-gray-400 hover:text-gray-600"
-                                >
-                                    <X className="h-4 w-4" />
-                                </button>
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+                <div className="max-w-7xl mx-auto">
+                    {/* Header */}
+                    <div className="mb-8">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h1 className="text-4xl font-bold text-gray-900 mb-2">Package Management</h1>
+                                <p className="text-gray-600">Manage your company's service packages and features</p>
                             </div>
+                            <Button 
+                                onClick={() => setShowCreateModal(true)}
+                                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
+                            >
+                                <Plus className="w-5 h-5 mr-2" />
+                                Create Package
+                            </Button>
                         </div>
+                    </div>
+
+                    {/* Flash Messages */}
+                    {flash?.success && (
+                        <Alert className="mb-6 border-green-200 bg-green-50 text-green-800">
+                            <AlertDescription>{flash.success}</AlertDescription>
+                        </Alert>
                     )}
 
-                    {/* Add/Edit Form */}
-                    <div id="packageForm" className="bg-white rounded-lg shadow-md p-6 mb-8">
-                        <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
-                            <Plus className="h-5 w-5" />
-                            {editingPackage ? 'Edit Package' : 'Add New Package'}
-                        </h2>
+                    {/* Package Filter Tabs */}
+                    <Tabs value={selectedTab} onValueChange={setSelectedTab} className="mb-6">
+                        <TabsList className="grid grid-cols-7 w-full bg-white shadow-sm">
+                            <TabsTrigger value="all" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">
+                                All Packages
+                            </TabsTrigger>
+                            {packageTypes.map(type => (
+                                <TabsTrigger 
+                                    key={type} 
+                                    value={type}
+                                    className="data-[state=active]:bg-blue-500 data-[state=active]:text-white"
+                                >
+                                    {type}
+                                </TabsTrigger>
+                            ))}
+                        </TabsList>
 
-                        <div className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Package Title Field */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Package Title *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={form.data.heading}
-                                        onChange={(e) => form.setData('heading', e.target.value)}
-                                        className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                                            form.errors.heading ? 'border-red-300' : 'border-gray-300'
-                                        }`}
-                                        placeholder="Enter package title"
-                                    />
-                                    {form.errors.heading && (
-                                        <p className="text-red-500 text-sm mt-1">{form.errors.heading}</p>
-                                    )}
-                                </div>
+                        <TabsContent value={selectedTab} className="mt-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {filteredPackages.map((pkg) => (
+                                    <Card key={pkg.id} className="hover:shadow-xl transition-all duration-300 border-0 shadow-md bg-white/80 backdrop-blur-sm">
+                                        <CardHeader className="pb-3">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center space-x-3">
+                                                    <div className="text-2xl">{pkg.icon}</div>
+                                                    <div>
+                                                        <CardTitle className="text-lg">{pkg.package_name}</CardTitle>
+                                                        <Badge variant="secondary" className="mt-1">
+                                                            {pkg.package_for}
+                                                        </Badge>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <div className="text-2xl font-bold text-blue-600">{pkg.price}</div>
+                                                    <Badge variant="outline" className="text-xs">
+                                                        {pkg.label}
+                                                    </Badge>
+                                                </div>
+                                            </div>
+                                        </CardHeader>
 
-                                {/* Price Field */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Price ($) *
-                                    </label>
-                                    <div className="relative">
-                                        <DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                                        <input
-                                            type="number"
-                                            min="0"
-                                            step="0.01"
-                                            value={form.data.price}
-                                            onChange={(e) => form.setData('price', e.target.value)}
-                                            className={`w-full pl-10 pr-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                                                form.errors.price ? 'border-red-300' : 'border-gray-300'
-                                            }`}
-                                            placeholder="0.00"
-                                        />
-                                    </div>
-                                    {form.errors.price && (
-                                        <p className="text-red-500 text-sm mt-1">{form.errors.price}</p>
-                                    )}
-                                </div>
+                                        <CardContent className="space-y-3">
+                                            <p className="text-gray-600 text-sm">{pkg.description}</p>
+                                            <div className="flex items-center text-sm text-gray-500">
+                                                <span className="font-medium">Target Audience:</span>
+                                                <span className="ml-2">{pkg.audience}</span>
+                                            </div>
 
-                                {/* Target Audience Field */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Target Audience *
-                                    </label>
-                                    <div className="relative">
-                                        <Target className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                                        <input
-                                            type="text"
-                                            value={form.data.target_audience}
-                                            onChange={(e) => form.setData('target_audience', e.target.value)}
-                                            className={`w-full pl-10 pr-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                                                form.errors.target_audience ? 'border-red-300' : 'border-gray-300'
-                                            }`}
-                                            placeholder="e.g., Beginners, Advanced, Professionals"
-                                        />
-                                    </div>
-                                    {form.errors.target_audience && (
-                                        <p className="text-red-500 text-sm mt-1">{form.errors.target_audience}</p>
-                                    )}
-                                </div>
-
-                                {/* Image Upload */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Package Image {!editingPackage && '*'}
-                                    </label>
-                                    <div className="space-y-3">
-                                        <div className="flex items-center space-x-4">
-                                            <label className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm cursor-pointer hover:bg-gray-50 focus-within:ring-2 focus-within:ring-blue-500">
-                                                <Upload className="h-5 w-5 text-gray-400 mr-2" />
-                                                <span className="text-sm text-gray-600">Choose Image</span>
-                                                <input
-                                                    type="file"
-                                                    accept="image/*"
-                                                    onChange={handleImageChange}
-                                                    className="hidden"
-                                                />
-                                            </label>
-                                            {imagePreview && (
-                                                <div className="relative">
-                                                    <img
-                                                        src={imagePreview}
-                                                        alt="Preview"
-                                                        className="h-16 w-16 object-cover rounded-lg border"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => {
-                                                            setImagePreview("");
-                                                            form.setData('img', null);
-                                                        }}
-                                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                                                    >
-                                                        <X className="h-3 w-3" />
-                                                    </button>
+                                            {/* Features Section */}
+                                            {pkg.features && pkg.features.length > 0 && (
+                                                <div className="border-t pt-3">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-sm font-medium text-gray-700">
+                                                            Features ({pkg.features.length})
+                                                        </span>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => toggleFeatures(pkg.id)}
+                                                        >
+                                                            {showFeatures[pkg.id] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                                        </Button>
+                                                    </div>
+                                                    
+                                                    {showFeatures[pkg.id] && (
+                                                        <div className="mt-2 space-y-1 max-h-32 overflow-y-auto">
+                                                            {pkg.features.map((feature) => (
+                                                                <div key={feature.id} className="flex justify-between items-center text-xs bg-gray-50 p-2 rounded">
+                                                                    <span className="font-medium">{feature.feature_key}:</span>
+                                                                    <div className="flex items-center space-x-2">
+                                                                        <span>{feature.feature_value}</span>
+                                                                        <Button
+                                                                            variant="ghost"
+                                                                            size="sm"
+                                                                            onClick={() => handleDeleteFeature(feature.id)}
+                                                                            className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                                                                        >
+                                                                            <Trash2 className="w-3 h-3" />
+                                                                        </Button>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
-                                        </div>
-                                        <p className="text-sm text-gray-500">
-                                            Supported formats: JPEG, JPG, PNG. Max size: 2MB. Images will be resized to 200x200px and converted to WebP.
-                                        </p>
-                                    </div>
-                                    {form.errors.img && (
-                                        <p className="text-red-500 text-sm mt-1">{form.errors.img}</p>
-                                    )}
-                                </div>
-                            </div>
+                                        </CardContent>
 
-                            {/* Description Field - Full Width */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Description *
-                                </label>
-                                <div className="relative">
-                                    <FileText className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                                    <textarea
-                                        value={form.data.description}
-                                        onChange={(e) => form.setData('description', e.target.value)}
-                                        rows={4}
-                                        className={`w-full pl-10 pr-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none ${
-                                            form.errors.description ? 'border-red-300' : 'border-gray-300'
-                                        }`}
-                                        placeholder="Provide a detailed description of the package..."
+                                        <CardFooter className="flex justify-between">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => openFeatureModal(pkg)}
+                                                className="flex items-center space-x-1"
+                                            >
+                                                <Settings className="w-4 h-4" />
+                                                <span>Add Features</span>
+                                            </Button>
+                                            
+                                            <div className="flex space-x-2">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => openEditModal(pkg)}
+                                                >
+                                                    <Edit className="w-4 h-4" />
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => handleDeletePackage(pkg.id)}
+                                                    className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </Button>
+                                            </div>
+                                        </CardFooter>
+                                    </Card>
+                                ))}
+
+                                {filteredPackages.length === 0 && (
+                                    <div className="col-span-full text-center py-12">
+                                        <Settings className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                        <h3 className="text-lg font-medium text-gray-600 mb-2">No packages found</h3>
+                                        <p className="text-gray-400">Create your first package to get started</p>
+                                    </div>
+                                )}
+                            </div>
+                        </TabsContent>
+                    </Tabs>
+
+                    {/* Create Package Modal */}
+                    <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+                        <DialogContent className="max-w-2xl">
+                            <DialogHeader>
+                                <DialogTitle>Create New Package</DialogTitle>
+                                <DialogDescription>Add a new service package to your portfolio</DialogDescription>
+                            </DialogHeader>
+                            
+                            <form onSubmit={handleCreatePackage} className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <Label htmlFor="icon">Icon (Emoji)</Label>
+                                        <Input
+                                            id="icon"
+                                            value={packageForm.data.icon}
+                                            onChange={(e) => packageForm.setData('icon', e.target.value)}
+                                            placeholder="📦"
+                                            className="text-lg"
+                                        />
+                                        {packageForm.errors.icon && <span className="text-red-500 text-sm">{packageForm.errors.icon}</span>}
+                                    </div>
+                                    
+                                    <div>
+                                        <Label htmlFor="package_for">Package Type</Label>
+                                        <Select onValueChange={(value) => packageForm.setData('package_for', value)}>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select type" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {packageTypes.map(type => (
+                                                    <SelectItem key={type} value={type}>{type}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        {packageForm.errors.package_for && <span className="text-red-500 text-sm">{packageForm.errors.package_for}</span>}
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <Label htmlFor="package_name">Package Name</Label>
+                                        <Input
+                                            id="package_name"
+                                            value={packageForm.data.package_name}
+                                            onChange={(e) => packageForm.setData('package_name', e.target.value)}
+                                            placeholder="Basic SEO Package"
+                                        />
+                                        {packageForm.errors.package_name && <span className="text-red-500 text-sm">{packageForm.errors.package_name}</span>}
+                                    </div>
+                                    
+                                    <div>
+                                        <Label htmlFor="price">Price</Label>
+                                        <Input
+                                            id="price"
+                                            value={packageForm.data.price}
+                                            onChange={(e) => packageForm.setData('price', e.target.value)}
+                                            placeholder="$99/month"
+                                        />
+                                        {packageForm.errors.price && <span className="text-red-500 text-sm">{packageForm.errors.price}</span>}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <Label htmlFor="description">Description</Label>
+                                    <Textarea
+                                        id="description"
+                                        value={packageForm.data.description}
+                                        onChange={(e) => packageForm.setData('description', e.target.value)}
+                                        placeholder="Describe your package..."
+                                        rows={3}
+                                    />
+                                    {packageForm.errors.description && <span className="text-red-500 text-sm">{packageForm.errors.description}</span>}
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <Label htmlFor="label">Label</Label>
+                                        <Input
+                                            id="label"
+                                            value={packageForm.data.label}
+                                            onChange={(e) => packageForm.setData('label', e.target.value)}
+                                            placeholder="Popular, Premium, etc."
+                                        />
+                                        {packageForm.errors.label && <span className="text-red-500 text-sm">{packageForm.errors.label}</span>}
+                                    </div>
+                                    
+                                    <div>
+                                        <Label htmlFor="audience">Target Audience</Label>
+                                        <Input
+                                            id="audience"
+                                            value={packageForm.data.audience}
+                                            onChange={(e) => packageForm.setData('audience', e.target.value)}
+                                            placeholder="Small businesses, Startups, etc."
+                                        />
+                                        {packageForm.errors.audience && <span className="text-red-500 text-sm">{packageForm.errors.audience}</span>}
+                                    </div>
+                                </div>
+
+                                <DialogFooter>
+                                    <Button type="button" variant="outline" onClick={() => setShowCreateModal(false)}>
+                                        Cancel
+                                    </Button>
+                                    <Button type="submit" disabled={packageForm.processing}>
+                                        {packageForm.processing ? 'Creating...' : 'Create Package'}
+                                    </Button>
+                                </DialogFooter>
+                            </form>
+                        </DialogContent>
+                    </Dialog>
+
+                    {/* Edit Package Modal */}
+                    <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+                        <DialogContent className="max-w-2xl">
+                            <DialogHeader>
+                                <DialogTitle>Edit Package</DialogTitle>
+                                <DialogDescription>Update package information</DialogDescription>
+                            </DialogHeader>
+                            
+                            <form onSubmit={handleUpdatePackage} className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <Label htmlFor="edit_icon">Icon (Emoji)</Label>
+                                        <Input
+                                            id="edit_icon"
+                                            value={packageForm.data.icon}
+                                            onChange={(e) => packageForm.setData('icon', e.target.value)}
+                                            className="text-lg"
+                                        />
+                                    </div>
+                                    
+                                    <div>
+                                        <Label htmlFor="edit_package_for">Package Type</Label>
+                                        <Select value={packageForm.data.package_for} onValueChange={(value) => packageForm.setData('package_for', value)}>
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {packageTypes.map(type => (
+                                                    <SelectItem key={type} value={type}>{type}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <Label htmlFor="edit_package_name">Package Name</Label>
+                                        <Input
+                                            id="edit_package_name"
+                                            value={packageForm.data.package_name}
+                                            onChange={(e) => packageForm.setData('package_name', e.target.value)}
+                                        />
+                                    </div>
+                                    
+                                    <div>
+                                        <Label htmlFor="edit_price">Price</Label>
+                                        <Input
+                                            id="edit_price"
+                                            value={packageForm.data.price}
+                                            onChange={(e) => packageForm.setData('price', e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <Label htmlFor="edit_description">Description</Label>
+                                    <Textarea
+                                        id="edit_description"
+                                        value={packageForm.data.description}
+                                        onChange={(e) => packageForm.setData('description', e.target.value)}
+                                        rows={3}
                                     />
                                 </div>
-                                {form.errors.description && (
-                                    <p className="text-red-500 text-sm mt-1">{form.errors.description}</p>
-                                )}
-                            </div>
 
-                            {/* Form Actions */}
-                            <div className="flex items-center justify-end space-x-4 pt-4 border-t">
-                                {editingPackage && (
-                                    <button
-                                        type="button"
-                                        onClick={resetForm}
-                                        className="px-4 py-2 text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
-                                    >
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <Label htmlFor="edit_label">Label</Label>
+                                        <Input
+                                            id="edit_label"
+                                            value={packageForm.data.label}
+                                            onChange={(e) => packageForm.setData('label', e.target.value)}
+                                        />
+                                    </div>
+                                    
+                                    <div>
+                                        <Label htmlFor="edit_audience">Target Audience</Label>
+                                        <Input
+                                            id="edit_audience"
+                                            value={packageForm.data.audience}
+                                            onChange={(e) => packageForm.setData('audience', e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+
+                                <DialogFooter>
+                                    <Button type="button" variant="outline" onClick={() => setShowEditModal(false)}>
                                         Cancel
-                                    </button>
-                                )}
-                                <button
+                                    </Button>
+                                    <Button type="submit" disabled={packageForm.processing}>
+                                        {packageForm.processing ? 'Updating...' : 'Update Package'}
+                                    </Button>
+                                </DialogFooter>
+                            </form>
+                        </DialogContent>
+                    </Dialog>
+
+                    {/* Add Features Modal */}
+                    <Dialog open={showFeatureModal} onOpenChange={setShowFeatureModal}>
+                        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                            <DialogHeader>
+                                <DialogTitle>Add Package Features</DialogTitle>
+                                <DialogDescription>Add multiple features to the package</DialogDescription>
+                            </DialogHeader>
+                            
+                            <form onSubmit={handleCreateFeature} className="space-y-4">
+                                <div className="space-y-4">
+                                    {featureForm.data.features.map((feature, index) => (
+                                        <div key={index} className="flex items-end space-x-2 p-4 border rounded-lg bg-gray-50">
+                                            <div className="flex-1">
+                                                <Label htmlFor={`feature_key_${index}`}>Feature Name</Label>
+                                                <Input
+                                                    id={`feature_key_${index}`}
+                                                    value={feature.key}
+                                                    onChange={(e) => updateFeatureField(index, 'key', e.target.value)}
+                                                    placeholder="e.g., Keywords Research"
+                                                />
+                                            </div>
+                                            <div className="flex-1">
+                                                <Label htmlFor={`feature_value_${index}`}>Feature Value</Label>
+                                                <Input
+                                                    id={`feature_value_${index}`}
+                                                    value={feature.value}
+                                                    onChange={(e) => updateFeatureField(index, 'value', e.target.value)}
+                                                    placeholder="e.g., Up to 50 keywords"
+                                                />
+                                            </div>
+                                            {featureForm.data.features.length > 1 && (
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => removeFeatureField(index)}
+                                                    className="text-red-600 hover:text-red-700"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </Button>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <Button
                                     type="button"
-                                    onClick={handleSubmit}
-                                    disabled={form.processing}
-                                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                                    variant="outline"
+                                    onClick={addFeatureField}
+                                    className="w-full"
                                 >
-                                    {form.processing ? (
-                                        <>
-                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                            Processing...
-                                        </>
-                                    ) : (
-                                        <>
-                                            {editingPackage ? <Edit className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-                                            {editingPackage ? 'Update Package' : 'Add Package'}
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    Add Another Feature
+                                </Button>
 
-                    {/* Packages List */}
-                    <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                        <div className="px-6 py-4 border-b border-gray-200">
-                            <h2 className="text-xl font-semibold text-gray-900">Packages</h2>
-                        </div>
+                                {featureForm.errors.features && (
+                                    <div className="text-red-500 text-sm">
+                                        {typeof featureForm.errors.features === 'string' 
+                                            ? featureForm.errors.features 
+                                            : JSON.stringify(featureForm.errors.features)
+                                        }
+                                    </div>
+                                )}
 
-                        {packages && packages.length > 0 ? (
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full divide-y divide-gray-200">
-                                    <thead className="bg-gray-50">
-                                        <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Package
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Price
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Target Audience
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Description
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Actions
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="bg-white divide-y divide-gray-200">
-                                        {packages.map((pkg) => (
-                                            <tr key={pkg.id} className="hover:bg-gray-50">
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="flex items-center">
-                                                        <div className="flex-shrink-0 h-12 w-12">
-                                                            {pkg.img ? (
-                                                                <img
-                                                                    className="h-12 w-12 rounded-lg object-cover"
-                                                                    src={`/assets/images/package/${pkg.img}`}
-                                                                    alt={pkg.heading}
-                                                                    
-                                                                />
-                                                            ) : (
-                                                                <div className="h-12 w-12 rounded-lg bg-gray-300 flex items-center justify-center">
-                                                                    <Image className="h-6 w-6 text-gray-500" />
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                        <div className="ml-4">
-                                                            <div className="text-sm font-medium text-gray-900">
-                                                                {pkg.heading}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm font-semibold text-green-600">
-                                                        ${Number(pkg.price).toFixed(2)}
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
-                                                        {pkg.target_audience}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <div className="text-sm text-gray-900 max-w-xs truncate">
-                                                        {pkg.description}
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                    <div className="flex items-center space-x-3">
-                                                        <button
-                                                            onClick={() => handleEdit(pkg)}
-                                                            className="text-blue-600 hover:text-blue-900 flex items-center gap-1"
-                                                        >
-                                                            <Edit className="h-4 w-4" />
-                                                            Edit
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleDelete(pkg.id)}
-                                                            className="text-red-600 hover:text-red-900 flex items-center gap-1"
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                            Delete
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        ) : (
-                            <div className="text-center py-12">
-                                {/* <Package className="mx-auto h-12 w-12 text-gray-400" /> */}
-                                <h3 className="mt-2 text-sm font-medium text-gray-900">No packages</h3>
-                                <p className="mt-1 text-sm text-gray-500">
-                                    Get started by adding your first package.
-                                </p>
-                            </div>
-                        )}
-                    </div>
+                                <DialogFooter>
+                                    <Button type="button" variant="outline" onClick={() => setShowFeatureModal(false)}>
+                                        Cancel
+                                    </Button>
+                                    <Button type="submit" disabled={featureForm.processing}>
+                                        {featureForm.processing ? 'Adding...' : 'Add Features'}
+                                    </Button>
+                                </DialogFooter>
+                            </form>
+                        </DialogContent>
+                    </Dialog>
                 </div>
             </div>
         </Layout>
     );
-};
-
-export default Packages;
+}
