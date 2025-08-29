@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useForm, usePage } from "@inertiajs/react";
 import { Head } from "@inertiajs/react";
 import Layout from "@/Layouts/Layout";
+import ShowImg from "@/Pages/utils/ShowImg";
 
 export default function SeoDigital({ seoDigitals }) {
     const { flash } = usePage().props;
@@ -76,9 +77,12 @@ export default function SeoDigital({ seoDigitals }) {
         <Layout>
             <div className="container mx-auto p-6">
                 <Head title="SEO Digital Processes" />
-                <h1 className="text-3xl font-bold mb-6">
-                    SEO Digital Processes
-                </h1>
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-3xl font-bold mb-6">
+                        SEO Digital Processes
+                    </h1>
+                    <ShowImg img="/assets/refImg/SEOdigital.png" />
+                </div>
 
                 {/* Flash Messages */}
                 {flash?.message && (

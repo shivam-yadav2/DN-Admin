@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
-import { usePage } from '@inertiajs/react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useEffect } from "react";
+import toast, { Toaster } from "react-hot-toast";
+import { usePage } from "@inertiajs/react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     Table,
     TableBody,
@@ -9,33 +9,34 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Link } from '@inertiajs/react';
-import { LogOut } from 'lucide-react';
-import Layout from '@/Layouts/Layout'; // Adjust path to your layout
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Link } from "@inertiajs/react";
+import { LogOut } from "lucide-react";
+import Layout from "@/Layouts/Layout"; // Adjust path to your layout
+import ShowImg from "@/Pages/utils/ShowImg";
 
 // Map for current_traffic display
 const TRAFFIC_MAP = {
     Low: {
-        displayName: 'Low',
+        displayName: "Low",
         badge: {
-            variant: 'secondary',
-            className: 'bg-red-100 text-red-800 hover:bg-red-200',
+            variant: "secondary",
+            className: "bg-red-100 text-red-800 hover:bg-red-200",
         },
     },
     Medium: {
-        displayName: 'Medium',
+        displayName: "Medium",
         badge: {
-            variant: 'default',
-            className: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
+            variant: "default",
+            className: "bg-yellow-100 text-yellow-800 hover:bg-yellow-200",
         },
     },
     High: {
-        displayName: 'High',
+        displayName: "High",
         badge: {
-            variant: 'default',
-            className: 'bg-green-100 text-green-800 hover:bg-green-200',
+            variant: "default",
+            className: "bg-green-100 text-green-800 hover:bg-green-200",
         },
     },
 };
@@ -61,15 +62,17 @@ export default function Manage() {
                     toastOptions={{
                         duration: 3000,
                         style: {
-                            borderRadius: '8px',
-                            background: '#333',
-                            color: '#fff',
+                            borderRadius: "8px",
+                            background: "#333",
+                            color: "#fff",
                         },
                     }}
                 />
 
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-3xl font-bold">SEO Forms Dashboard</h1>
+                    <ShowImg img="/assets/refImg/SEOform.png" />
+
                     <Link
                         href="/logout"
                         method="post"
@@ -105,7 +108,9 @@ export default function Manage() {
                                 </TableHeader>
                                 <TableBody>
                                     {seo_forms.map((form) => {
-                                        const trafficInfo = TRAFFIC_MAP[form.current_traffic] || TRAFFIC_MAP.Low;
+                                        const trafficInfo =
+                                            TRAFFIC_MAP[form.current_traffic] ||
+                                            TRAFFIC_MAP.Low;
                                         return (
                                             <TableRow key={form.id}>
                                                 <TableCell>
@@ -116,10 +121,12 @@ export default function Manage() {
                                                             className="w-16 h-16 object-cover rounded"
                                                         />
                                                     ) : (
-                                                        'N/A'
+                                                        "N/A"
                                                     )}
                                                 </TableCell>
-                                                <TableCell>{form.name}</TableCell>
+                                                <TableCell>
+                                                    {form.name}
+                                                </TableCell>
                                                 <TableCell>
                                                     <a
                                                         href={form.website_url}
@@ -130,22 +137,36 @@ export default function Manage() {
                                                         {form.website_url}
                                                     </a>
                                                 </TableCell>
-                                                <TableCell>{form.email}</TableCell>
+                                                <TableCell>
+                                                    {form.email}
+                                                </TableCell>
                                                 <TableCell>
                                                     <Badge
-                                                        variant={trafficInfo.badge.variant}
-                                                        className={trafficInfo.badge.className}
+                                                        variant={
+                                                            trafficInfo.badge
+                                                                .variant
+                                                        }
+                                                        className={
+                                                            trafficInfo.badge
+                                                                .className
+                                                        }
                                                     >
-                                                        {trafficInfo.displayName}
+                                                        {
+                                                            trafficInfo.displayName
+                                                        }
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell>
                                                     <div
                                                         className="text-sm text-gray-600 line-clamp-2"
-                                                        dangerouslySetInnerHTML={{ __html: form.message }}
+                                                        dangerouslySetInnerHTML={{
+                                                            __html: form.message,
+                                                        }}
                                                     />
                                                 </TableCell>
-                                                <TableCell>{form.button}</TableCell>
+                                                <TableCell>
+                                                    {form.button}
+                                                </TableCell>
                                             </TableRow>
                                         );
                                     })}
