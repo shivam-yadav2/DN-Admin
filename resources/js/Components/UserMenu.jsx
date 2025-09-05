@@ -16,7 +16,7 @@ export default function UserMenu({ user }) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center gap-2 rounded px-2 py-1 hover:bg-accent">
-                <span className="text-sm">{user.name}</span>
+                <span className="text-sm">{user.data.name}</span>
                 <svg width="16" height="16" viewBox="0 0 20 20">
                     <path
                         d="M5.5 7.5l4.5 4.5 4.5-4.5"
@@ -29,8 +29,8 @@ export default function UserMenu({ user }) {
 
             <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel className="leading-tight">
-                    <div className="font-medium">{user.name}</div>
-                    <div className="text-xs opacity-70">{user.email}</div>
+                    <div className="font-medium">{user.data.name}</div>
+                    <div className="text-xs opacity-70">{user.data.email}</div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
 

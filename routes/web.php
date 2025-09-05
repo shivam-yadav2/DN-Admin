@@ -43,6 +43,14 @@ use App\Http\Controllers\Api\SmmFacebookController;
 use App\Http\Controllers\Api\SmmYoutubeController;
 use App\Http\Controllers\Api\SocialServiceController;
 use App\Http\Controllers\Api\PackageFeatureController;
+use App\Http\Controllers\AdminController;
+
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\RevokePermissionController;
+
+
 Route::get('/test', function () {
     return Inertia::render('Test');
 });
@@ -117,6 +125,21 @@ Route::resource('social-service', SocialServiceController::class);
 
 });
 
+Route::middleware(['auth' , 'role:admin'])->group(function () {
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+});
 
+Route::resource('/users', UserController::class);
+// Route::resource('/roles', RoleController::class);
+Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+Route::get('/roles/create', [RoleController::class, 'create'])->name('roles.create');
+Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
+Route::get('/roles/{id}', [RoleController::class, 'show'])->name('roles.show');
+Route::get('/roles/{id}/edit', [RoleController::class, 'edit'])->name('roles.edit');
+Route::put('/roles/{id}', [RoleController::class, 'update'])->name('roles.update');
+Route::delete('/roles/{id}', [RoleController::class, 'destroy'])->name('roles.destroy');
+Route::resource('/permissions', PermissionController::class);
+
+Route::delete('/roles/{role}/permission/{permission}',[RevokePermissionController::class ,'revoke']);
 
 require __DIR__ . "/auth.php";
