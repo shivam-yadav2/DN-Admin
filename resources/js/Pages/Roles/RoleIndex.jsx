@@ -3,13 +3,14 @@ import { usePage, Link, router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Search } from 'lucide-react';
+import { Search, Shield } from 'lucide-react';
 import Layout from '@/Layouts/Layout';
 
 const RoleIndex = () => {
     const { props } = usePage();
     const { roles } = props;
     const [searchTerm, setSearchTerm] = useState('');
+    console.log(props)
 
     const handleDelete = (id) => {
         router.delete(`/roles/${id}`, {
@@ -19,12 +20,48 @@ const RoleIndex = () => {
         });
     };
 
-    // Filter roles based on search term
     const filteredRoles = roles.data?.filter(
         (role) =>
             role.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            role.guard_name.toLowerCase().includes(searchTerm.toLowerCase())
+            role.guard_name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    // Helper function to render permissions
+    const renderPermissions = (permissions) => {
+        if (!permissions || permissions.length === 0) {
+            return <span className="text-gray-400 italic">No permissions</span>;
+        }
+
+        const displayCount = 3; // Show first 3 permissions
+        const visiblePermissions = permissions;
+        const remainingCount = permissions.length - displayCount;
+
+        return (
+            <div className="space-y-1">
+                <div className="flex flex-wrap gap-1">
+                    {visiblePermissions.map((permission) => (
+                        <span
+                            key={permission.id}
+                            className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"
+                        >
+                            <Shield className="w-3 h-3 mr-1" />
+                            {permission.name}
+                        </span>
+                    ))}
+                </div>
+                {/* {remainingCount > 0 && (
+                    <span className="text-xs text-gray-500 font-medium">
+                        +{remainingCount} more
+                    </span>
+                )} */}
+            </div>
+        );
+    };
+
+    // Helper function to get permission count
+    const getPermissionCount = (permissions) => {
+        return permissions ? permissions.length : 0;
+    };
 
     return (
         <Layout>
@@ -57,7 +94,7 @@ const RoleIndex = () => {
                 </div>
 
                 {/* Roles Table */}
-                {filteredRoles.length === 0 ? (
+                {filteredRoles?.length === 0 ? (
                     <div className="bg-white rounded-lg border shadow-sm">
                         <div className="flex flex-col items-center justify-center py-16 px-6">
                             <h3 className="text-xl font-semibold text-gray-900 mb-2">No roles found</h3>
@@ -74,63 +111,72 @@ const RoleIndex = () => {
                         </div>
                     </div>
                 ) : (
-                    <Table className="bg-white rounded-lg border shadow-sm">
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[100px]">ID</TableHead>
-                                <TableHead>Name</TableHead>
-                               
-                               
-                                <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {filteredRoles.map((role) => (
-                                <TableRow key={role.id}>
-                                    <TableCell className="font-medium">{role.id}</TableCell>
-                                    <TableCell>{role.name}</TableCell>
-                                    {/* <TableCell>{role.guard_name}</TableCell>
-                                    <TableCell>{new Date(role.created_at).toLocaleDateString()}</TableCell>
-                                    <TableCell>{new Date(role.updated_at).toLocaleDateString()}</TableCell> */}
-                                    <TableCell className="text-right">
-                                        <div className="flex justify-end space-x-2">
-                                            <Link href={`/roles/${role.id}`}>
-                                                <Button variant="outline" size="sm">
-                                                    View
-                                                </Button>
-                                            </Link>
-                                            <Link href={`/roles/${role.id}/edit`}>
-                                                <Button variant="outline" size="sm">
-                                                    Edit
-                                                </Button>
-                                            </Link>
-                                            <AlertDialog>
-                                                <AlertDialogTrigger asChild>
-                                                    <Button variant="destructive" size="sm">
-                                                        Delete
-                                                    </Button>
-                                                </AlertDialogTrigger>
-                                                <AlertDialogContent>
-                                                    <AlertDialogHeader>
-                                                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                                        <AlertDialogDescription>
-                                                            This action cannot be undone. This will permanently delete the role "{role.name}".
-                                                        </AlertDialogDescription>
-                                                    </AlertDialogHeader>
-                                                    <AlertDialogFooter>
-                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                        <AlertDialogAction onClick={() => handleDelete(role.id)}>
-                                                            Delete
-                                                        </AlertDialogAction>
-                                                    </AlertDialogFooter>
-                                                </AlertDialogContent>
-                                            </AlertDialog>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                    <div className="bg-white rounded-lg border shadow-sm overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-[80px]">ID</TableHead>
+                                        <TableHead className="min-w-[150px]">Name</TableHead>
+                                        <TableHead className="min-w-[100px] text-center">Permission Count</TableHead>
+                                        <TableHead className="min-w-[300px]">Permissions</TableHead>
+                                        <TableHead className="text-right min-w-[200px]">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {filteredRoles?.map((role) => (
+                                        <TableRow key={role.id}>
+                                            <TableCell className="font-medium">{role.id}</TableCell>
+                                            <TableCell className="font-medium">{role.name}</TableCell>
+                                            <TableCell className="text-center">
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                    {getPermissionCount(role.permissions)}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell>
+                                                {renderPermissions(role.permissions)}
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex justify-end space-x-2">
+                                                    {/* <Link href={`/roles/${role.id}`}>
+                                                        <Button variant="outline" size="sm">
+                                                            View
+                                                        </Button>
+                                                    </Link> */}
+                                                    <Link href={`/roles/${role.id}/edit`}>
+                                                        <Button variant="outline" size="sm">
+                                                            Edit
+                                                        </Button>
+                                                    </Link>
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button variant="destructive" size="sm">
+                                                                Delete
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    This action cannot be undone. This will permanently delete the role "{role.name}".
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                <AlertDialogAction onClick={() => handleDelete(role.id)}>
+                                                                    Delete
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </div>
                 )}
             </div>
         </Layout>

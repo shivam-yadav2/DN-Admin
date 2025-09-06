@@ -20,14 +20,14 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Search } from "lucide-react";
+import { Search, Users, Shield } from "lucide-react";
 import Layout from "@/Layouts/Layout";
 
 const UserIndex = () => {
     const { props } = usePage();
     const { users } = props;
     const [searchTerm, setSearchTerm] = useState("");
-    console.log(users)
+    console.log(props)
 
     const handleDelete = (id) => {
         router.delete(`/users/${id}`, {
@@ -43,6 +43,59 @@ const UserIndex = () => {
             user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             user.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    // Helper function to render roles
+    const renderRoles = (roles) => {
+        if (!roles || roles.length === 0) {
+            return <span className="text-gray-400 italic">No roles</span>;
+        }
+        
+        return (
+            <div className="flex flex-wrap gap-1">
+                {roles.map((role) => (
+                    <span
+                        key={role.id}
+                        className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                    >
+                        <Users className="w-3 h-3 mr-1" />
+                        {role.name}
+                    </span>
+                ))}
+            </div>
+        );
+    };
+
+    // Helper function to render permissions
+    const renderPermissions = (permissions) => {
+        if (!permissions || permissions.length === 0) {
+            return <span className="text-gray-400 italic">No permissions</span>;
+        }
+
+        const displayCount = 2; // Show first 2 permissions
+        const visiblePermissions = permissions;
+        const remainingCount = permissions.length - displayCount;
+
+        return (
+            <div className="space-y-1">
+                <div className="flex flex-wrap gap-1">
+                    {visiblePermissions.map((permission) => (
+                        <span
+                            key={permission.id}
+                            className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"
+                        >
+                            <Shield className="w-3 h-3 mr-1" />
+                            {permission.name}
+                        </span>
+                    ))}
+                </div>
+                {/* {remainingCount > 0 && (
+                    <span className="text-xs text-gray-500 font-medium">
+                        +{remainingCount} more
+                    </span>
+                )} */}
+            </div>
+        );
+    };
 
     return (
         <Layout>
@@ -96,93 +149,103 @@ const UserIndex = () => {
                         </div>
                     </div>
                 ) : (
-                    <Table className="bg-white rounded-lg border shadow-sm">
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[100px]">ID</TableHead>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Email</TableHead>
-                                {/* <TableHead>Created At</TableHead>
-                                <TableHead>Updated At</TableHead> */}
-                                <TableHead className="text-right">
-                                    Actions
-                                </TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {filteredUsers.map((user) => (
-                                <TableRow key={user.id}>
-                                    <TableCell className="font-medium">
-                                        {user.id}
-                                    </TableCell>
-                                    <TableCell>{user.name}</TableCell>
-                                    <TableCell>{user.email}</TableCell>
-                                    {/* <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
-                                    <TableCell>{new Date(user.updated_at).toLocaleDateString()}</TableCell> */}
-                                    <TableCell className="text-right">
-                                        <div className="flex justify-end space-x-2">
-                                            <Link href={`/users/${user.id}`}>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                >
-                                                    View
-                                                </Button>
-                                            </Link>
-                                            <Link
-                                                href={`/users/${user.id}/edit`}
-                                            >
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                >
-                                                    Edit
-                                                </Button>
-                                            </Link>
-                                            <AlertDialog>
-                                                <AlertDialogTrigger asChild>
-                                                    <Button
-                                                        variant="destructive"
-                                                        size="sm"
-                                                    >
-                                                        Delete
-                                                    </Button>
-                                                </AlertDialogTrigger>
-                                                <AlertDialogContent>
-                                                    <AlertDialogHeader>
-                                                        <AlertDialogTitle>
-                                                            Are you sure?
-                                                        </AlertDialogTitle>
-                                                        <AlertDialogDescription>
-                                                            This action cannot
-                                                            be undone. This will
-                                                            permanently delete
-                                                            the user "
-                                                            {user.name}".
-                                                        </AlertDialogDescription>
-                                                    </AlertDialogHeader>
-                                                    <AlertDialogFooter>
-                                                        <AlertDialogCancel>
-                                                            Cancel
-                                                        </AlertDialogCancel>
-                                                        <AlertDialogAction
-                                                            onClick={() =>
-                                                                handleDelete(
-                                                                    user.id
-                                                                )
-                                                            }
+                    <div className="bg-white rounded-lg border shadow-sm overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-[80px]">ID</TableHead>
+                                        <TableHead className="min-w-[150px]">Name</TableHead>
+                                        <TableHead className="min-w-[200px]">Email</TableHead>
+                                        <TableHead className="min-w-[200px]">Roles</TableHead>
+                                        <TableHead className="min-w-[250px]">Permissions</TableHead>
+                                        <TableHead className="text-right min-w-[200px]">
+                                            Actions
+                                        </TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {filteredUsers.map((user) => (
+                                        <TableRow key={user.id}>
+                                            <TableCell className="font-medium">
+                                                {user.id}
+                                            </TableCell>
+                                            <TableCell className="font-medium">
+                                                {user.name}
+                                            </TableCell>
+                                            <TableCell>{user.email}</TableCell>
+                                            <TableCell>
+                                                {renderRoles(user.roles)}
+                                            </TableCell>
+                                            <TableCell>
+                                                {renderPermissions(user.permissions)}
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex justify-end space-x-2">
+                                                    <Link href={`/users/${user.id}`}>
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
                                                         >
-                                                            Delete
-                                                        </AlertDialogAction>
-                                                    </AlertDialogFooter>
-                                                </AlertDialogContent>
-                                            </AlertDialog>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                                                            View
+                                                        </Button>
+                                                    </Link>
+                                                    <Link
+                                                        href={`/users/${user.id}/edit`}
+                                                    >
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                        >
+                                                            Edit
+                                                        </Button>
+                                                    </Link>
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button
+                                                                variant="destructive"
+                                                                size="sm"
+                                                            >
+                                                                Delete
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>
+                                                                    Are you sure?
+                                                                </AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    This action cannot
+                                                                    be undone. This will
+                                                                    permanently delete
+                                                                    the user "
+                                                                    {user.name}".
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>
+                                                                    Cancel
+                                                                </AlertDialogCancel>
+                                                                <AlertDialogAction
+                                                                    onClick={() =>
+                                                                        handleDelete(
+                                                                            user.id
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    Delete
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </div>
                 )}
             </div>
         </Layout>

@@ -20,8 +20,10 @@ class RoleController extends Controller
     public function index()
     {
         return Inertia::render('Roles/RoleIndex', [
-            'roles' => RoleResource::collection(Role::all())
-        ]);
+        'roles' => RoleResource::collection(
+            Role::with('permissions')->get()
+        )
+    ]);
     }
 
     /**
